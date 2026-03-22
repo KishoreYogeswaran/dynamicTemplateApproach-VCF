@@ -147,7 +147,9 @@ export async function recordScene({
     });
 
     // Step 3: Trigger playback FIRST, then immediately start screencast.
-    // Start ALL videos and audio simultaneously so they're in sync.
+    // Measure the gap so we can trim it from the audio to maintain lip sync.
+    const playStartTime = Date.now();
+
     await page.evaluate(() => {
       const audio = document.getElementById('scene-audio');
       const allVideos = [...document.querySelectorAll('video')];
@@ -177,6 +179,12 @@ export async function recordScene({
       crop: { x: 0, y: 0, width: 1920, height: 1080 },
     });
 
+    // The screencast starts AFTER playback — it missed the first N ms.
+    // The video in the WebM shows the avatar already N ms into playing,
+    // but the audio file starts at t=0. So we trim N ms from audio start.
+    const audioOffsetSec = (Date.now() - playStartTime) / 1000;
+    console.log(`    [rec] Audio offset: ${(audioOffsetSec * 1000).toFixed(0)}ms`);
+
     // Step 5: Wait for scene to play out
     await sleep(totalDuration);
 
@@ -185,14 +193,16 @@ export async function recordScene({
 
     console.log(`    [rec] Screencast done, encoding to MP4...`);
 
-    // Step 6: Convert WebM to MP4 and mux with original audio file
-    // Playback is triggered BEFORE screencast starts, so video and audio
-    // are naturally aligned — no offset correction needed.
+    // Step 6: Convert WebM to MP4 and mux with original audio file.
+    // Use -ss on audio input to skip the gap the screencast missed,
+    // so audio and video start at the same playback moment.
     if (audioPath) {
+      const audioDur = await getDurationSeconds(audioPath);
       await execFileAsync('ffmpeg', [
         '-y',
         '-fflags', '+genpts',
         '-i', webmPath,
+        '-ss', String(audioOffsetSec),
         '-i', audioPath,
         '-c:v', 'libx264',
         '-preset', 'fast',
@@ -202,7 +212,7 @@ export async function recordScene({
         '-pix_fmt', 'yuv420p',
         '-c:a', 'aac',
         '-b:a', '192k',
-        '-shortest',
+        '-t', String(audioDur > 0 ? audioDur : totalDuration / 1000),
         outputPath,
       ], { timeout: 120000 });
     } else {
@@ -225,7 +235,7 @@ export async function recordScene({
     await unlink(webmPath).catch(() => {});
 
     const finalSize = (await stat(outputPath)).size;
-    console.log(`    [rec] ✓ ${(finalSize / 1024 / 1024).toFixed(1)}MB`);
+    console.log(`    [rec] Done ${(finalSize / 1024 / 1024).toFixed(1)}MB`);
 
     return { success: true, outputPath, durationMs: totalDuration };
 

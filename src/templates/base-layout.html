@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="{{language}}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  {{fontLinkTag}}
+  <style>
+    /* === Theme Variables === */
+    {{themeCSS}}
+
+    /* === Font Variables === */
+    :root {
+      {{fontCSSVars}}
+    }
+
+    /* === Reset & Base === */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      font-family: var(--font-primary);
+      background: var(--theme-bg-gradient);
+      color: var(--theme-text-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* === Animation Library === */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeSlideRight {
+      from { opacity: 0; transform: translateX(-40px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes fadeSlideLeft {
+      from { opacity: 0; transform: translateX(40px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.85); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes highlightPulse {
+      0% { box-shadow: 0 0 0 0 var(--theme-ost-highlight); }
+      50% { box-shadow: 0 0 0 8px transparent; }
+      100% { box-shadow: 0 0 0 0 transparent; }
+    }
+
+    @keyframes kenBurns {
+      from { transform: scale(1) translate(0, 0); }
+      to { transform: scale(1.08) translate(-1%, -1%); }
+    }
+
+    @keyframes kenBurnsReverse {
+      from { transform: scale(1.08) translate(-1%, -1%); }
+      to { transform: scale(1) translate(0, 0); }
+    }
+
+    @keyframes subtleFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    /* GSAP handles text animations — these are only for non-GSAP elements */
+    .anim-highlight { animation: highlightPulse 0.8s var(--theme-ease); }
+    .anim-kenBurns { animation: kenBurns var(--scene-duration, 10s) linear forwards; }
+    .anim-kenBurnsReverse { animation: kenBurnsReverse var(--scene-duration, 10s) linear forwards; }
+
+    /* Hidden until animation triggers — will-change promotes to GPU layer early */
+    .anim-hidden { opacity: 0; will-change: transform, opacity; }
+
+    /* === Glassmorphism Card === */
+    .glass-card {
+      background: var(--theme-ost-bg);
+      border: 1px solid var(--theme-ost-border);
+      border-radius: 16px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+      padding: 24px 32px;
+    }
+
+    /* === Typography Scale === */
+    .text-header {
+      font-family: var(--font-heading);
+      font-size: 54px;
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--theme-text-primary);
+      text-shadow: var(--theme-shadow-text);
+    }
+
+    .text-subheader {
+      font-family: var(--font-heading);
+      font-size: 34px;
+      font-weight: 600;
+      line-height: 1.25;
+      color: var(--theme-text-secondary);
+    }
+
+    .text-bullet {
+      font-size: 30px;
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--theme-text-primary);
+    }
+
+    .text-keyphrase {
+      font-family: var(--font-heading);
+      font-size: 38px;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--theme-text-primary);
+      /* CLEAN keyphrase — no background box, no padding box.
+         LLM chooses accent style per scene: underline, accent color, or left bar.
+         These are applied via sceneCSS, not here. */
+    }
+
+    /* === Keyphrase accent options (LLM picks one per scene via sceneCSS) === */
+    .keyphrase-underline {
+      border-bottom: 3px solid var(--theme-accent);
+      padding-bottom: 6px;
+    }
+
+    .keyphrase-accent-color {
+      color: var(--theme-accent);
+    }
+
+    .keyphrase-left-bar {
+      border-left: 3px solid var(--theme-accent);
+      padding-left: 12px;
+    }
+
+    /* === Bullet Marker === */
+    .bullet-marker {
+      display: inline-block;
+      color: var(--theme-accent, var(--theme-bullet-marker));
+      font-size: 28px;
+      font-weight: 700;
+      margin-right: 14px;
+      flex-shrink: 0;
+      line-height: 1.5;
+    }
+    .bullet-marker::before {
+      content: '›';
+    }
+
+    .bullet-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      margin: 6px 0;
+      background: var(--theme-bg-card);
+      border: 1px solid var(--theme-bg-card-border);
+      border-radius: 10px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    /* === Avatar Containers === */
+    .avatar-circle {
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #ffffff;
+      border: 5px solid #ffffff;
+      box-shadow: 0 0 48px rgba(0, 0, 0, 0.45);
+    }
+
+    .avatar-circle video,
+    .avatar-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-torso {
+      width: 480px;
+      height: 640px;
+      overflow: hidden;
+    }
+
+    .avatar-torso video,
+    .avatar-torso img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+    }
+
+    /* === Image Treatment === */
+    .bg-image-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .bg-image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .bg-image-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.15) 100%);
+    }
+
+    /* === Video Background === */
+    .bg-video-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .bg-video-container video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .bg-video-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* === Scene-Specific Styles (LLM-generated) === */
+    {{sceneCSS}}
+  </style>
+</head>
+<body>
+  {{sceneContent}}
+
+  {{avatarOverlay}}
+
+  <!-- Audio element for Puppeteer recording sync -->
+  <audio id="scene-audio" src="{{audioPath}}" preload="auto"></audio>
+
+  <!-- GSAP for smooth animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <script>
+    // Injected timing data
+    const timings = {{timingsJSON}};
+
+    const audio = document.getElementById('scene-audio');
+    const avatarVideo = document.getElementById('avatar-video');
+    const hasAudio = audio.src && audio.src !== window.location.href;
+
+    // ── GSAP animation presets — smooth reveals ────────────────
+    const gsapPresets = {
+      'anim-fadeIn':        { from: { opacity: 0 },                                                  duration: 0.8, ease: 'power2.inOut' },
+      'anim-fadeSlideUp':   { from: { opacity: 0, y: 40 },                                           duration: 0.9, ease: 'power2.out' },
+      'anim-fadeSlideDown': { from: { opacity: 0, y: -40 },                                          duration: 0.9, ease: 'power2.out' },
+      'anim-fadeSlideRight':{ from: { opacity: 0, x: -40 },                                          duration: 0.8, ease: 'power2.out' },
+      'anim-fadeSlideLeft': { from: { opacity: 0, x: 40 },                                           duration: 0.8, ease: 'power2.out' },
+      'anim-scaleIn':       { from: { opacity: 0, scale: 0.85, transformOrigin: 'center center' },   duration: 0.8, ease: 'back.out(1.4)' },
+    };
+
+    function triggerAnimations() {
+      if (!timings || !timings.ost_timings) return;
+
+      timings.ost_timings.forEach(t => {
+        const el = document.getElementById(t.element);
+        if (!el) return;
+
+        const preset = gsapPresets[t.animation];
+        if (preset) {
+          // Use fromTo for explicit control over both start and end states
+          gsap.fromTo(el,
+            { ...preset.from, force3D: true },
+            {
+              opacity: 1, x: 0, y: 0, scale: 1,
+              duration: preset.duration,
+              ease: preset.ease,
+              delay: t.appear_ms / 1000,
+              force3D: true,
+              onStart: () => el.classList.remove('anim-hidden'),
+            }
+          );
+        } else {
+          // Fallback for non-GSAP animations (kenBurns etc.)
+          setTimeout(() => {
+            el.classList.remove('anim-hidden');
+            el.classList.add(t.animation);
+          }, t.appear_ms);
+        }
+      });
+    }
+
+    // ── Playback modes ─────────────────────────────────────────
+    // Mode 1: Avatar video with audio — avatar drives everything (perfect lip sync)
+    // Mode 2: Separate <audio> element — audio drives playback (no avatar, or non-avatar scenes)
+    // Mode 3: No audio at all — just trigger animations on load
+
+    const avatarHasAudio = avatarVideo && !avatarVideo.muted;
+
+    if (avatarHasAudio) {
+      // ── MODE 1: Avatar video IS the audio source ──────────────
+      let started = false;
+
+      function startFromAvatar() {
+        if (started) return;
+        started = true;
+        console.log('[scene] Avatar ready — starting (avatar drives audio)');
+        avatarVideo.currentTime = 0;
+        avatarVideo.play().catch(e => console.error('[avatar] play blocked:', e.message));
+        triggerAnimations();
+      }
+
+      if (avatarVideo.readyState >= 2) {
+        startFromAvatar();
+      } else {
+        avatarVideo.addEventListener('canplay', startFromAvatar, { once: true });
+        avatarVideo.addEventListener('error', () => {
+          console.error('[avatar] video load error:', avatarVideo.error?.code, avatarVideo.error?.message);
+          triggerAnimations(); // Still show text even if avatar fails
+        }, { once: true });
+      }
+
+    } else if (hasAudio) {
+      // ── MODE 2: Separate audio element drives playback ────────
+      let audioReady = false;
+      let videoReady = !avatarVideo;
+      let started = false;
+
+      function tryStartScene() {
+        if (started || !audioReady || !videoReady) return;
+        started = true;
+        console.log('[scene] Media ready — starting (audio drives)');
+        audio.play().catch(e => console.error('[audio] play blocked:', e.message));
+      }
+
+      if (audio.readyState >= 2) {
+        audioReady = true;
+      } else {
+        audio.addEventListener('canplay', () => { audioReady = true; tryStartScene(); }, { once: true });
+      }
+
+      if (avatarVideo) {
+        if (avatarVideo.readyState >= 2) {
+          videoReady = true;
+        } else {
+          avatarVideo.addEventListener('canplay', () => { videoReady = true; tryStartScene(); }, { once: true });
+          avatarVideo.addEventListener('error', () => { videoReady = true; tryStartScene(); }, { once: true });
+        }
+      }
+
+      audio.addEventListener('play', () => {
+        triggerAnimations();
+        if (avatarVideo && avatarVideo.readyState >= 2) {
+          avatarVideo.currentTime = audio.currentTime;
+          avatarVideo.play().catch(() => {});
+        }
+      }, { once: true });
+
+      if (audioReady && videoReady) {
+        tryStartScene();
+      }
+
+    } else {
+      // ── MODE 3: No audio — just show everything on load ───────
+      document.addEventListener('DOMContentLoaded', () => {
+        if (avatarVideo) avatarVideo.play().catch(() => {});
+        triggerAnimations();
+      });
+    }
+
+    // Scene-specific script (if any)
+    {{sceneScript}}
+  </script>
+</body>
+</html>

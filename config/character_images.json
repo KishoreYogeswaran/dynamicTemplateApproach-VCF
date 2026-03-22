@@ -1,0 +1,10 @@
+{
+  "motor_vehicle_workshop": {
+    "narrator": "ANIL",
+    "image": "ANIL_motor_vehicle_workshop.png"
+  },
+  "electrician": {
+    "narrator": "",
+    "image": ""
+  }
+}

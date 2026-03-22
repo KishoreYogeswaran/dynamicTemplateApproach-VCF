@@ -1,0 +1,42 @@
+:root {
+  /* Primary palette */
+  --theme-primary: #EF4444;
+  --theme-primary-light: #F87171;
+  --theme-primary-dark: #B91C1C;
+  --theme-secondary: #FBBF24;
+  --theme-accent: #22D3EE;
+
+  /* Backgrounds */
+  --theme-bg-solid: #09090B;
+  --theme-bg-gradient: linear-gradient(135deg, #09090B 0%, #18181B 50%, #0C0C0F 100%);
+  --theme-bg-card: rgba(255, 255, 255, 0.05);
+  --theme-bg-card-border: rgba(255, 255, 255, 0.08);
+
+  /* Text */
+  --theme-text-primary: #FAFAFA;
+  --theme-text-secondary: #D4D4D8;
+  --theme-text-muted: #71717A;
+
+  /* OST specific */
+  --theme-ost-bg: rgba(9, 9, 11, 0.7);
+  --theme-ost-border: rgba(255, 255, 255, 0.06);
+  --theme-ost-highlight: #FBBF24;
+  --theme-bullet-marker: #EF4444;
+  --theme-keyphrase-bg: rgba(251, 191, 36, 0.12);
+  --theme-keyphrase-border: #FBBF24;
+
+  /* Table specific */
+  --theme-table-header-bg: #B91C1C;
+  --theme-table-row-even: rgba(255, 255, 255, 0.02);
+  --theme-table-row-odd: rgba(255, 255, 255, 0.05);
+  --theme-table-border: rgba(255, 255, 255, 0.06);
+  --theme-table-highlight: rgba(251, 191, 36, 0.1);
+
+  /* Shadows & effects */
+  --theme-shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --theme-shadow-text: 0 2px 8px rgba(0, 0, 0, 0.7);
+
+  /* Animation */
+  --theme-transition-speed: 0.4s;
+  --theme-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}

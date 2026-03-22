@@ -1,0 +1,385 @@
+{
+  "timestamp": "2026-02-05T14:33:34Z",
+  "step": "8.2_media_prompts_en",
+  "domain_key": "motor_vehicle_workshop",
+  "dominant_gender": "male",
+  "module_number": 2,
+  "module_name": "Develop Your Personal Business Plan",
+  "lesson_number": 3,
+  "lesson_name": "Market Analysis II: Understanding Competitors",
+  "ml_id": "ML3",
+  "ml_title": "Identify Gaps and Find Your Edge",
+  "learning_objectives": [
+    "Identify market gaps by combining customer and competitor observations.",
+    "Identify ways a business can differentiate itself to gain a competitive edge."
+  ],
+  "recommended_video_type": "Concept Explainer",
+  "total_word_count": 205,
+  "approximate_duration_seconds": 131,
+  "number_of_scenes": 9,
+  "scenes": [
+    {
+      "scene_id": "M2_L3_ML3_SC1",
+      "character": "Anil",
+      "word_count": 11,
+      "approx_duration_seconds": 7,
+      "vo_scripts": {
+        "intro_template_1_voScript_1": "Hi, welcome to the video, 'Identify Gaps and Find Your Edge'."
+      },
+      "recommended_video_type": "Concept Explainer",
+      "scene_purpose": "Welcoming learners and introducing the topic of identifying market gaps and finding a competitive edge for a small motor workshop business.",
+      "scene_typology_name": "intro_scene",
+      "visualization_notes": "Show a modest, single-bay motor vehicle workshop on a small Indian neighborhood street. The garage should look like a typical micro-entrepreneur setup: a simple open shutter, one or two motorbikes and a small car parked just outside, basic tool racks fixed to bare walls, a low-cost hydraulic jack, a few tyres stacked in a corner, and an oil-stained but functional concrete floor. The space should feel slightly cramped but workable, suggesting limited initial investment and a hands-on owner-operated business. Nearby, hint at other small workshops or repair stalls through partially visible facades without any readable shop names or boards, suggesting a competitive area without focusing on any text. Avoid showing any people; the environment alone should communicate the setting of a small local garage where service quality and competition matter. All text, symbols, numbers illegible through positioning/light blur/camera angle",
+      "selected_family_id": "intro_scene_fam_1",
+      "selected_family_name": "intro_scene_family_1_1avatar_1img_1hdr",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "intro_template_1_header_1": "Identify Gaps and Find Your Edge"
+        },
+        "subHeaders": {},
+        "bulletPoints": {},
+        "keyPhrases": {},
+        "media": {
+          "intro_template_1_image_1_prompt": "Vertical portrait view of a modest single-bay motor vehicle workshop on a narrow semi-urban Indian neighborhood street, with a simple metal shutter rolled fully open to reveal a compact service bay. Just outside the entrance, one small car and one or two motorbikes are parked close together on the lane, showing how limited space is used fully. Inside, basic tool racks are fixed directly to bare walls, a low-cost hydraulic jack sits on the oil-stained but functional concrete floor, and a short stack of used tyres occupies one corner, giving the space a slightly cramped yet workable feel that matches a hands-on, owner-operated micro-entrepreneur garage. Along the street, partial facades of other small repair stalls and workshops are visible, but any boards or markings are turned away or softly defocused so no shop names can be read. No people are present anywhere in the scene; the quiet workspace itself suggests competition and the importance of service quality. Natural daylight from the open street, photorealistic, natural lighting. All text, symbols, numbers illegible through positioning/defocus.",
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "vertical",
+          "numberOf_subImages": 0,
+          "intro_template_1_image_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/02/05/M2_L3_ML3_SC1/background_image.png?st=2026-02-05T08%3A51%3A38Z&se=2036-02-03T08%3A51%3A38Z&sp=r&sv=2025-07-05&sr=b&sig=dSM7IzTM/XWBmEEz143dnIYbI%2BhSdbDkwxPKI5dDOfI%3D"
+        }
+      },
+      "selected_template_id": "8ab9b1e3b44046c0986a2a3c02ca5691",
+      "selected_template_name": "ME_intro_template_1"
+    },
+    {
+      "scene_id": "M2_L3_ML3_SC2",
+      "character": "Anil",
+      "word_count": 22,
+      "approx_duration_seconds": 14,
+      "vo_scripts": {
+        "learning_objective_template_1_voScript_1": "By the end of this video, you will be able to spot gaps and choose simple ways to be different from competitors."
+      },
+      "recommended_video_type": "Concept Explainer",
+      "scene_purpose": "Presenting learning objectives so learners know they will learn to identify market gaps and select simple differentiators against competitors.",
+      "scene_typology_name": "learning_objective_scene",
+      "visualization_notes": "Not applicable. This scene uses the standard learning_objective_scene template with predefined visuals and on-screen text; no additional AI-generated background image is required.",
+      "selected_family_id": "learning_objective_scene_fam_1",
+      "selected_family_name": "learning_objective_scene_family_1_1avatar_1hdr_2bullet",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "learning_objective_template_1_header_1": "Learning Objectives"
+        },
+        "subHeaders": {},
+        "bulletPoints": {
+          "learning_objective_template_1_bulletpoint_1": "Identify market gaps by combining customer and competitor observations.",
+          "learning_objective_template_1_bulletpoint_2": "Identify ways a business can differentiate itself to gain a competitive edge."
+        },
+        "keyPhrases": {},
+        "media": {
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "0",
+          "numberOf_subImages": 0
+        }
+      },
+      "selected_template_id": "b0a9ba4dde7346fc91c20606f1bbd84c",
+      "selected_template_name": "ME_learning_objective_template_1"
+    },
+    {
+      "scene_id": "M2_L3_ML3_SC3",
+      "character": "Anil",
+      "word_count": 22,
+      "approx_duration_seconds": 14,
+      "vo_scripts": {
+        "avatarAI_template_8_voScript_1": "In workshops, a gap is a customer need that garages do not meet well, such as safe repairs, updates, or fair treatment."
+      },
+      "recommended_video_type": "Concept Explainer",
+      "scene_purpose": "Introduce and define what a 'gap' means in a workshop context by linking it to concrete unmet customer needs like safety, communication, and fair treatment.",
+      "scene_typology_name": "avatar_image_circle",
+      "visualization_notes": "Create a realistic interior of a small Indian motor workshop run by a micro-entrepreneur. The space should be modest: one service bay with a motorbike on a simple stand, basic hand tools on a rough wooden bench, a few spare parts stacked on open shelves, and dim natural lighting from the open entrance. In the foreground, show an Indian customer with brown skin tone standing near the motorbike, looking unsure or slightly worried, arms lightly crossed or holding a helmet, while a mechanic in worn overalls works without proper safety practices (for example, no gloves, tools scattered on the floor). The floor can have some oil stains and clutter, and there is no clear waiting area, subtly hinting at poor safety and low comfort. The customer's expression should suggest concern and lack of trust, conveying that important needs like safe repairs, clear updates, and fair treatment are not being met in this kind of setup. Avoid any readable signs, labels, or paperwork; any documents or boards in the background should be out of focus and not central. All text, symbols, numbers illegible through positioning/light blur/camera angle",
+      "selected_family_id": "avatar_image_fam_4",
+      "selected_family_name": "avatar_image_family_4_1avatar_1img_1hdr_3bullet_1keyphrase",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "avatarAI_template_8_header_1": "Meaning of a Gap"
+        },
+        "subHeaders": {},
+        "bulletPoints": {
+          "avatarAI_template_8_bulletpoint_1": "Safe repairs",
+          "avatarAI_template_8_bulletpoint_2": "Clear updates",
+          "avatarAI_template_8_bulletpoint_3": "Fair treatment"
+        },
+        "keyPhrases": {
+          "avatarAI_template_8_keyPhrase_1": "Unmet Customer Needs"
+        },
+        "media": {
+          "avatarAI_template_8_image_1_prompt": "Inside a small semi-urban Indian motor workshop run by a micro-entrepreneur, USE CHARACTER REFERENCE - Anil (KEY NARRATOR OF THIS SCENE) works beside a motorbike raised on a simple stand in the single service bay, leaning slightly forward as he uses a basic hand tool taken from a rough wooden bench. Anil is an Indian man with brown skin tone in well-used overalls, surrounded by a few hand tools and spare parts left scattered on the oil-stained concrete floor and open shelves along the wall, with dim natural light entering from the open shutter. In the foreground, USE CHARACTER REFERENCE - Geeta Ji (Indian female customer with brown skin tone in a simple cotton salwar kameez, hair tied back) stands close to the motorbike holding her helmet in front of her body, her shoulders slightly tense and her face showing a worried, uncertain expression as she watches the work. There is no clear waiting area, only a cramped layout with clutter underfoot, hinting at poor safety and low comfort without showing any immediately dangerous actions. The overall mood suggests that important needs like careful, safe repairs, clear updates, and fair treatment are not fully met in this workshop. Soft natural daylight from the entrance, photorealistic, natural lighting. All text, symbols, numbers illegible through positioning/defocus.",
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 0,
+          "avatarAI_template_8_image_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/02/05/M2_L3_ML3_SC3/background_image.png?st=2026-02-05T08%3A51%3A42Z&se=2036-02-03T08%3A51%3A42Z&sp=r&sv=2025-07-05&sr=b&sig=grrNdWxMafu/mzvyuFV/YHFTg/yHA/%2BBdfpm2B2E0Ec%3D"
+        }
+      },
+      "selected_template_id": "dede510f13c94b9fa8ca252dda5fd5fc",
+      "selected_template_name": "ME_avatarAI_template_8"
+    },
+    {
+      "scene_id": "M2_L3_ML3_SC4",
+      "character": "Anil",
+      "word_count": 25,
+      "approx_duration_seconds": 16,
+      "vo_scripts": {
+        "slideshow_template_40_voScript_1": "To find gaps, quietly observe customers in the workshop while they sit and wait.",
+        "slideshow_template_40_voScript_2": "Listen carefully when customers pay the bill and talk about money or confusion.",
+        "slideshow_template_40_voScript_3": "Also notice what they say when collecting vehicles; repeated complaints show a clear gap."
+      },
+      "recommended_video_type": "Concept Explainer",
+      "scene_purpose": "Guide learners on where and how to observe customers in and around workshops so they can start noticing repeated complaints that signal gaps.",
+      "scene_typology_name": "ai_image_slideshow",
+      "visualization_notes": "Design a slideshow of three images that together show Anil carefully observing customers at different moments in a small workshop.\nImage 1: Inside a cramped waiting area within a modest Indian motor garage, Anil, an Indian mechanic-entrepreneur with brown skin tone, stands near the entrance casually leaning on a wall, paying attention to two or three Indian customers with brown skin tone sitting on simple plastic chairs. One customer looks impatient, glancing toward the repair bay or loosely holding a helmet, another looks tired. The workshop interior is basic, with a fan on the ceiling, some tools on the walls, and a partially visible vehicle being repaired in the background.\nImage 2: At a simple wooden counter inside the same small workshop, show Anil standing slightly to the side, listening while an Indian customer with brown skin tone (Geeta Ji) talks to another worker about the payment amount. Geeta Ji's facial expression should show confusion or mild frustration as she looks at a paper bill in her hand. The paper is angled so any writing is impossible to read, and the main focus is on her expression and Anil's attentive listening.\nImage 3: Just outside the workshop entrance, show Anil handing vehicle keys to Geeta Ji as she collects a motorbike, while another generic Indian customer with brown skin tone is nearby asking a question or commenting. Their expressions suggest they are repeating similar concerns or complaints. The workshop behind them remains small and modest, with limited equipment and a narrow frontage opening directly to the street.\nAcross all images, emphasize that Anil is quietly listening and observing patterns in what customers say in real moments: while waiting, paying, and collecting vehicles. All documents, clocks, or any potential text-bearing surfaces should be small, angled, or softly defocused. All text, symbols, numbers illegible through positioning/light blur/camera angle",
+      "selected_family_id": "ai_image_slideshow_fam_4",
+      "selected_family_name": "ai_image_slideshow_family_4_3img_3hdr_3keyphrase_3slides",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "slideshow_template_40_header_1": "Observe Customers",
+          "slideshow_template_40_header_2": "Listen at Payment",
+          "slideshow_template_40_header_3": "Notice Repeated Complaints"
+        },
+        "subHeaders": {},
+        "bulletPoints": {},
+        "keyPhrases": {
+          "slideshow_template_40_keyPhrase_1": "While They Wait",
+          "slideshow_template_40_keyPhrase_2": "While They Pay",
+          "slideshow_template_40_keyPhrase_3": "When They Collect"
+        },
+        "media": {
+          "slideshow_template_40_image_1_prompt": "Inside a cramped waiting area of a modest semi-urban Indian motor workshop, USE CHARACTER REFERENCE - Anil (KEY NARRATOR OF THIS SCENE) stands near the open entrance lightly leaning against the wall, quietly watching customers as they sit and wait on simple plastic chairs. USE CHARACTER REFERENCE - Ramesh (middle-aged Indian male customer with brown skin tone, neatly trimmed mustache, average build, wearing a checked short-sleeve shirt and dark trousers) sits forward on one chair, loosely holding his helmet and glancing impatiently toward the repair bay where a motorbike is partially visible. Another younger Indian male customer in his late 20s with brown skin tone, clean-shaven round face, slim build, wearing a faded T-shirt and jeans, slumps back looking tired. A basic ceiling fan is mounted on the ceiling, a few tools and spare parts hang from hooks on the wall, and a single vehicle is being repaired in the background, all within a small, owner-operated garage. Daylight from the street lights the scene, photorealistic, natural lighting. All text, symbols, numbers illegible through positioning/defocus.",
+          "slideshow_template_40_image_2_prompt": "At a plain wooden counter inside the same compact semi-urban motor workshop, USE CHARACTER REFERENCE - Anil (KEY NARRATOR OF THIS SCENE) stands a little to the side with an attentive posture, listening carefully as USE CHARACTER REFERENCE - Geeta Ji (Indian female customer with brown skin tone in a simple cotton saree, hair tied back) speaks to another Indian male worker with brown skin tone behind the counter. Geeta Ji holds a small paper bill in one hand, tilting it toward herself, her eyebrows slightly furrowed and mouth tight to show confusion or mild frustration about the amount, while the older worker, an Indian mechanic with brown skin tone in an oil-marked shirt, looks at her and responds. The bill and any other papers rest at angles so their printed sides face away from the viewer, with no writing visible. Behind the counter, simple shelves with spare parts and a few hanging tools suggest a low-investment neighborhood workshop. Indoor lighting mixes with daylight from the entrance, photorealistic, natural lighting. All text, symbols, numbers illegible through positioning/defocus.",
+          "slideshow_template_40_image_3_prompt": "Just outside the narrow entrance of the same small semi-urban garage, USE CHARACTER REFERENCE - Anil (KEY NARRATOR OF THIS SCENE) stands near the doorway handing a set of motorbike keys to USE CHARACTER REFERENCE - Geeta Ji (Indian female customer with brown skin tone in a simple saree), who stands beside her repaired bike with a serious expression as she talks, clearly sharing her concerns. Nearby, USE CHARACTER REFERENCE - Ramesh (middle-aged Indian male customer with brown skin tone, neatly trimmed mustache, average build, in a checked shirt and dark trousers) stands with his helmet in one hand, slightly leaning toward them and speaking as if repeating a similar complaint. The workshop interior behind them looks modest, with only a few basic tools and equipment visible, and the frontage opens directly onto a narrow neighborhood street where one or two other parked bikes can be seen. The scene captures real moments of customers voicing dissatisfaction while Anil pays close attention. Late-afternoon natural light, photorealistic, natural lighting. All text, symbols, numbers illegible through positioning/defocus.",
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "square",
+          "numberOf_subImages": 0,
+          "slideshow_template_40_image_3": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/02/05/M2_L3_ML3_SC4/slideshow_image_3.png?st=2026-02-05T08%3A51%3A44Z&se=2036-02-03T08%3A51%3A44Z&sp=r&sv=2025-07-05&sr=b&sig=LEcp2Y%2BT/f7wXagYa9VHkVSkpmMhSVtFsUkHWAevMsw%3D",
+          "slideshow_template_40_image_2": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/02/05/M2_L3_ML3_SC4/slideshow_image_2.png?st=2026-02-05T08%3A51%3A47Z&se=2036-02-03T08%3A51%3A47Z&sp=r&sv=2025-07-05&sr=b&sig=pLXjGQxskv2B1kncA4yYhGmpozlxwgGuPgBchv1EflM%3D",
+          "slideshow_template_40_image_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/02/05/M2_L3_ML3_SC4/slideshow_image_1.png?st=2026-02-05T08%3A51%3A49Z&se=2036-02-03T08%3A51%3A49Z&sp=r&sv=2025-07-05&sr=b&sig=5GBR6TabdMHKbkHtpaJtufEQ6dQVYKE1nuXyj8fOpew%3D"
+        }
+      },
+      "selected_template_id": "f78625600ccb44aa9f0c9f1ad43b2eb4",
+      "selected_template_name": "ME_slideshow_template_40"
+    },
+    {
+      "scene_id": "M2_L3_ML3_SC5",
+      "character": "Anil",
+      "word_count": 25,
+      "approx_duration_seconds": 16,
+      "vo_scripts": {
+        "avatarAI_template_8_voScript_1": "When you hear complaints like waiting, confusion about the bill, or feeling ignored, it shows needs such as faster service, clearer estimates, or respectful behaviour."
+      },
+      "recommended_video_type": "Concept Explainer",
+      "scene_purpose": "Show concrete examples of typical customer complaints and help learners connect those complaints to underlying needs like speed, clarity, and respect.",
+      "scene_typology_name": "avatar_image_circle",
+      "visualization_notes": "Create a single contextual image inside a small, slightly crowded Indian motor workshop that captures several customers expressing dissatisfaction in a natural way. In the mid-ground, show a simple waiting/interaction zone: a plain wooden counter and a couple of plastic chairs. One Indian customer with brown skin tone stands near the counter looking at a small paper bill with a puzzled expression, tilting the paper toward themselves while the printed side faces away from the viewer. Another customer in a chair checks a wristwatch or looks toward the repair bay with an impatient posture, suggesting frustration with long waiting time. A third customer stands near the counter with arms loosely crossed and an expectant expression, while a mechanic in the background focuses only on tools or a vehicle, not making eye contact, subtly implying the customer feels ignored. The environment remains modest-basic shelves with spare parts, a hanging light, and a single fan-with no fancy equipment, emphasizing a realistic micro-entrepreneur setting. Any bills, wall charts, or small notices should be present only as blurred background shapes with no readable content. The overall mood should communicate that these visible complaints point to deeper needs for faster service, clearer explanations of cost, and respectful interaction. All text, symbols, numbers illegible through positioning/light blur/camera angle",
+      "selected_family_id": "avatar_image_fam_4",
+      "selected_family_name": "avatar_image_family_4_1avatar_1img_1hdr_3bullet_1keyphrase",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "avatarAI_template_8_header_1": "Read Complaints as Signals"
+        },
+        "subHeaders": {},
+        "bulletPoints": {
+          "avatarAI_template_8_bulletpoint_1": "Faster service",
+          "avatarAI_template_8_bulletpoint_2": "Clearer estimates",
+          "avatarAI_template_8_bulletpoint_3": "Respectful behaviour"
+        },
+        "keyPhrases": {
+          "avatarAI_template_8_keyPhrase_1": "Hidden Customer Needs"
+        },
+        "media": {
+          "avatarAI_template_8_image_1_prompt": "Inside a small, slightly crowded semi-urban Indian motor workshop, a simple waiting and interaction area is arranged around a plain wooden counter and two plastic chairs. Near the counter, USE CHARACTER REFERENCE - Geeta Ji (Indian female customer with brown skin tone in a modest cotton saree, hair tied back) stands looking down at a small paper bill with a puzzled expression, tilting the bill toward herself so the printed side faces away from the viewer. On one of the plastic chairs, USE CHARACTER REFERENCE - Ramesh (middle-aged Indian male customer with brown skin tone, neatly trimmed mustache, average build, wearing a checked short-sleeve shirt and dark trousers) sits checking his wristwatch and glancing toward the repair bay with an impatient posture, his helmet resting at his feet, clearly frustrated by the wait. Nearby, a younger Indian female customer with brown skin tone in a simple salwar kameez stands with arms loosely crossed and an expectant, slightly displeased expression, as if feeling ignored. In the background, USE CHARACTER REFERENCE - Anil (KEY NARRATOR OF THIS SCENE), an Indian man with brown skin tone in oil-marked overalls, focuses only on a vehicle and his tools instead of looking at the waiting customers, underlining their sense of being overlooked. Open shelves with spare parts, a single ceiling fan, and a hanging light emphasize the modest, low-investment setup. Any bills, charts, or notices on walls or counter surfaces appear only as soft, unfocused shapes with no legible details. Photorealistic, natural lighting. All text, symbols, numbers illegible through positioning/defocus.",
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 0,
+          "avatarAI_template_8_image_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/02/05/M2_L3_ML3_SC5/background_image.png?st=2026-02-05T08%3A51%3A51Z&se=2036-02-03T08%3A51%3A51Z&sp=r&sv=2025-07-05&sr=b&sig=gcuikwM8N6N/E3qie9EgGZr3fnnNtcqsROfQg887p2I%3D"
+        }
+      },
+      "selected_template_id": "dede510f13c94b9fa8ca252dda5fd5fc",
+      "selected_template_name": "ME_avatarAI_template_8"
+    },
+    {
+      "scene_id": "M2_L3_ML3_SC6",
+      "character": "Anil",
+      "word_count": 22,
+      "approx_duration_seconds": 14,
+      "vo_scripts": {
+        "slideshow_template_12_voScript_1": "Also watch competitor workshops carefully and notice how they welcome new customers at entry.",
+        "slideshow_template_12_voScript_2": "Pay attention to how they explain repair problems and whether customers truly understand them.",
+        "slideshow_template_12_voScript_3": "Look at how clean they keep the place and which useful services are missing."
+      },
+      "recommended_video_type": "Concept Explainer",
+      "scene_purpose": "Explain how to systematically observe competitors to spot weak points in their customer welcome, explanation of problems, cleanliness, and range of services.",
+      "scene_typology_name": "ai_image_slideshow",
+      "visualization_notes": "Design a slideshow of four images that show Anil studying different aspects of competitor workshops in the same locality.\nImage 1: Outside a neighboring small roadside garage, Anil, an Indian mechanic-entrepreneur with brown skin tone, stands just beyond the entrance watching a competitor, Ravi (an Indian mechanic with brown skin tone), who is busy looking down at tools while a customer arrives. Ravi does not look up or greet the customer, illustrating a weak welcome. The garage is modest with one bay and basic tools, similar in scale to Anil's.\nImage 2: Inside Ravi's workshop, show Ravi pointing vaguely toward an open engine bay while talking quickly to an Indian customer with brown skin tone, whose face shows confusion. Anil stands a little further back, observing. There are no diagrams or clear aids; the scene suggests poor explanation rather than specific words.\nImage 3: A view of the same competitor workshop floor and waiting area: tools scattered, oily rags on the ground, a dust-covered bench, and no proper seating for customers. Anil is visible in the corner of the frame, quietly noting the overall unclean and disorganized state.\nImage 4: Another small competitor setup focused only on tyre puncture repair, with a few tyre tools and a hand pump visible but no equipment for other common services. Anil watches as a generic Indian customer with brown skin tone asks Ravi about a service that clearly cannot be provided there (for example, pointing toward the motorbike's engine), hinting that some services are missing. All visual emphasis should be on the physical environment and interactions, not on any labels, signboards, or written lists.\nThroughout all images, keep the garages small, simple, and realistic for low-capital workshops. Any documents, boards, or packaging with text should be turned away or softly defocused. All text, symbols, numbers illegible through positioning/light blur/camera angle",
+      "selected_family_id": "ai_image_slideshow_fam_3",
+      "selected_family_name": "ai_image_slideshow_family_3_3img_3hdr_3subhdr_3keyphrase_3slides",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "slideshow_template_12_header_1": "Notice Weak Greetings",
+          "slideshow_template_12_header_2": "Check Problem Clarity",
+          "slideshow_template_12_header_3": "Review Setup and Services"
+        },
+        "subHeaders": {
+          "slideshow_template_12_subHeader_1": "Competitor Entry Experience",
+          "slideshow_template_12_subHeader_2": "How They Explain Work",
+          "slideshow_template_12_subHeader_3": "Cleanliness and Service Range"
+        },
+        "bulletPoints": {},
+        "keyPhrases": {
+          "slideshow_template_12_keyPhrase_1": "Customer Welcome",
+          "slideshow_template_12_keyPhrase_2": "Explaining Problems",
+          "slideshow_template_12_keyPhrase_3": "Place and Services"
+        },
+        "media": {
+          "slideshow_template_12_image_1_prompt": "Outside a neighboring small roadside motor garage in a semi-urban Indian neighborhood, USE CHARACTER REFERENCE - Anil (KEY NARRATOR OF THIS SCENE) stands just beyond the entrance on the lane, watching quietly. Inside the open shutter, USE CHARACTER REFERENCE - Ravi (Indian male competitor mechanic with brown skin tone, medium build, slight stubble, wearing an oil-stained work shirt and dark trousers) is bent over his tools near a motorbike, focused on his work and not looking up. An older Indian male customer in his 40s with brown skin tone, gray-flecked hair, and average build, wearing a light-colored shirt and trousers, steps into the doorway holding a helmet, looking toward Ravi but receiving no greeting or eye contact, clearly illustrating a weak welcome. The garage itself is modest, with a single service bay, a few basic tools on the wall, and one vehicle inside, matching the scale of Anil's own micro-entrepreneur workshop. Daytime natural light from the street, photorealistic, natural lighting. All text, symbols, numbers illegible through positioning/defocus.",
+          "slideshow_template_12_image_2_prompt": "Inside the same competitor's small motor workshop, USE CHARACTER REFERENCE - Ravi (Indian male competitor mechanic with brown skin tone in an oil-stained work shirt and dark trousers) stands beside an open engine bay, gesturing vaguely toward the exposed parts as he talks quickly to USE CHARACTER REFERENCE - Geeta Ji (Indian female customer with brown skin tone in a simple cotton saree). Geeta Ji looks confused, brows drawn together and head slightly tilted, as she tries to follow his explanation. In the background, USE CHARACTER REFERENCE - Anil (KEY NARRATOR OF THIS SCENE), an Indian man with brown skin tone, stands a little further back near the wall, watching the interaction carefully to study how the explanation is given. Tools and parts lie around the open engine, and there are no diagrams or visual aids, hinting at poor clarity rather than focusing on any words. Workshop walls show only indistinct shapes of charts or packaging, none readable. Photorealistic, natural lighting. All text, symbols, numbers illegible through positioning/defocus.",
+          "slideshow_template_12_image_3_prompt": "Inside the same competitor workshop, the narrow floor and waiting area appear cluttered and uninviting: scattered tools and oily rags lie on the concrete, a dust-covered bench stands against one wall, and there are no proper chairs for customers. Near the edge of the frame, USE CHARACTER REFERENCE - Anil (KEY NARRATOR OF THIS SCENE), an Indian man with brown skin tone, stands observing with a thoughtful expression, taking in the scene. In the middle ground, a younger Indian male customer in his 30s with brown skin tone, clean-shaven face, slim build, wearing a casual shirt and jeans, points toward a motorbike engine as if asking about another service, while USE CHARACTER REFERENCE - Ravi (Indian male competitor mechanic with brown skin tone in his oil-stained work shirt) stands beside a very simple tyre-puncture setup with just a few tyre tools and a hand pump, indicating that only limited services are offered. The small garage walls and any boards show only blurred colors and shapes without readable markings. Photorealistic, natural lighting. All text, symbols, numbers illegible through positioning/defocus.",
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 0,
+          "slideshow_template_12_image_3": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/02/05/M2_L3_ML3_SC6/slideshow_image_3.png?st=2026-02-05T08%3A51%3A54Z&se=2036-02-03T08%3A51%3A54Z&sp=r&sv=2025-07-05&sr=b&sig=wjDyIGxYrpsjtlV7n6WprE0bwVcQRMPVjU7fT35xVuY%3D",
+          "slideshow_template_12_image_2": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/02/05/M2_L3_ML3_SC6/slideshow_image_2.png?st=2026-02-05T08%3A51%3A58Z&se=2036-02-03T08%3A51%3A58Z&sp=r&sv=2025-07-05&sr=b&sig=YmLnJiGxEBuVApGgvqeqee0BDMYPX/c/rC7PPM9W47o%3D",
+          "slideshow_template_12_image_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/02/05/M2_L3_ML3_SC6/slideshow_image_1.png?st=2026-02-05T08%3A52%3A00Z&se=2036-02-03T08%3A52%3A00Z&sp=r&sv=2025-07-05&sr=b&sig=ov2DTeQWGdziB0X4vqktyVSJ9Pnc6Vabj2wcDbqItMs%3D"
+        }
+      },
+      "selected_template_id": "856deb4cd7ef4ba6b9ec346749b44299",
+      "selected_template_name": "ME_slideshow_template_12"
+    },
+    {
+      "scene_id": "M2_L7_ML2_SC7",
+      "character": "Anil",
+      "word_count": 24,
+      "approx_duration_seconds": 15,
+      "narrative_arc_step": "Hook with Conflict",
+      "vo_scripts": {
+        "firstPerson_template_4_voScript_1": "In my early days, I handled jobs randomly. I rushed between customers, searched for tools, and delivered vehicles late, which increased stress for everyone."
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Hook scenario and problem statement showing how unplanned work created delays, tool searching, and stress, motivating the need for better time and resource management.",
+      "scene_typology_name": "first_person_video_staticBg",
+      "visualization_notes": "Create the interior of a small, busy neighborhood motor workshop that looks slightly cluttered but still functional. Show two motorcycles and one small car parked close together, one bike with its seat and side panel removed and parts lying on a low workbench. Several hand tools and spare parts are spread across the bench and on a side shelf, with some items left on a simple concrete floor, hinting that tools are not kept in fixed places. At the back, a simple metal rack holds cartons and parts in an unorganised way, and a wall clock is visible but not readable. The rolling shutter is partly open so the street and a parked taxi can be seen outside, suggesting customers come and go. Lighting should convey an active but slightly chaotic workspace, making it clear that jobs and resources are not yet planned properly. All text, symbols, numbers illegible through positioning/light blur/camera angle",
+      "selected_family_id": "first_person_video_staticBg_fam_3",
+      "selected_family_name": "first_person_video_staticBg_family_3_1vid_1hdr_2bullet_1keyphrase",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "firstPerson_template_4_header_1": "Unplanned Work Creates Stress"
+        },
+        "subHeaders": {},
+        "bulletPoints": {
+          "firstPerson_template_4_bulletpoint_1": "Random job handling",
+          "firstPerson_template_4_bulletpoint_2": "Searching for tools"
+        },
+        "keyPhrases": {
+          "firstPerson_template_4_keyPhrase_1": "Problems Faced"
+        },
+        "media": {
+          "firstPerson_template_4_video_1_prompt": "The character stands completely still with body and hands motionless and narrates the provided speech in a calm and professional way. The background must remain completely static. All background elements should stay perfectly still and unchanged throughout the video.",
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 0,
+          "firstPerson_template_4_video_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/motor_vehicle_workshop/2026/02/18/M2_L7_ML2_SC3/first_person_video_muted.mp4?st=2026-02-18T13%3A13%3A21Z&se=2036-02-16T13%3A13%3A21Z&sp=r&sv=2025-07-05&sr=b&sig=ig88gGYQgvA06T%2BWIXHAbXl7I1aOSb1XcE2PY/mKErY%3D",
+          "firstPerson_template_4_audio_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/motor_vehicle_workshop/2026/02/18/M2_L7_ML2_SC3/voiceover.mp3?st=2026-02-18T13%3A13%3A23Z&se=2036-02-16T13%3A13%3A23Z&sp=r&sv=2025-07-05&sr=b&sig=O1VF%2BTG9ph6uulnbglkxeTQSlCuqORWzqcGbpX9oZ2Q%3D"
+        }
+      },
+      "selected_template_id": "30c030c5f02640088ef387e70f5db83b",
+      "selected_template_name": "ME_firstPerson_template_4"
+    },
+    {
+      "scene_id": "M2_L3_ML3_SC8",
+      "character": "Anil",
+      "word_count": 28,
+      "approx_duration_seconds": 18,
+      "vo_scripts": {
+        "SplitScreenImage_template_4_voScript_1": "Once you see these gaps, think how a workshop could be different. One promise might be faster jobs, cleaner workspace, honest estimates, or clear communication through phone updates."
+      },
+      "recommended_video_type": "Concept Explainer",
+      "scene_purpose": "Help learners think of simple, realistic promises and practices a small workshop can adopt to turn identified gaps into a competitive edge.",
+      "scene_typology_name": "split_screen_image",
+      "visualization_notes": "Use four parallel images to show practical ways a small workshop like Anil's can stand out by addressing the gaps.\nImage 1 (Faster jobs): Inside a compact, tidy garage, Anil, an Indian mechanic-entrepreneur with brown skin tone, works efficiently with one assistant on a motorbike. Tools are already laid out neatly on a small trolley, and another finished bike is ready near the entrance. A wall clock is visible but angled or slightly out of focus so no numbers can be read, suggesting attention to time without any clear text.\nImage 2 (Cleaner workspace): Show the same workshop at a quieter moment. Anil is sweeping the concrete floor or wiping down an oily area, while organized shelves with spare parts and tools are visible in the background. A small dustbin is placed nearby, and the floor looks noticeably cleaner than in earlier examples, reinforcing cleanliness as part of the promise.\nImage 3 (Honest estimates): At a simple counter, Anil faces Geeta Ji, an Indian customer with brown skin tone, explaining an approximate cost using open hand gestures and calm facial expression. Geeta Ji appears relaxed and trusting. A piece of paper or rough estimate slip lies on the counter, oriented so the printed side points away from the camera, making any writing illegible. The emphasis is on their eye contact and respectful conversation, not on the document.\nImage 4 (Clear communication via phone updates): Outside the same small workshop, Anil stands near the entrance holding a smartphone with the solid dark phone back facing the camera, talking into it with a friendly, focused expression, as if giving a repair update. In the background, the clean workshop interior and a couple of finished vehicles are visible, indicating organised work. No phone screen is shown at any angle; only the phone back or thin edge is visible.\nAll images should reflect a realistic, low-investment garage that has become more organized and customer-focused through simple changes rather than expensive equipment. Any papers, clocks, or potential text-bearing items must be minor, angled, or defocused. All text, symbols, numbers illegible through positioning/light blur/camera_angle",
+      "selected_family_id": "split_screen_image_fam_4",
+      "selected_family_name": "split_screen_image_family_4_1img_1hdr_4bullet_composite_4subimg_subaspect_vertical",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "SplitScreenImage_template_4_header_1": "Turn Gaps Into Promises"
+        },
+        "subHeaders": {},
+        "bulletPoints": {
+          "SplitScreenImage_template_4_bulletpoint_1": "Faster, organised jobs",
+          "SplitScreenImage_template_4_bulletpoint_2": "Cleaner, safer workspace",
+          "SplitScreenImage_template_4_bulletpoint_3": "Clear, honest estimates",
+          "SplitScreenImage_template_4_bulletpoint_4": "Phone updates on repairs"
+        },
+        "keyPhrases": {},
+        "media": {
+          "SplitScreenImage_template_4_image_1_prompt": "Four-panel vertical composite image with four tall portrait panels arranged side by side in one horizontal row, panels touching edge to edge with no gaps or borders, filling the full width and height of the frame. In the leftmost panel, inside a compact, tidy semi-urban motor garage, USE CHARACTER REFERENCE - Anil (KEY NARRATOR OF THIS SCENE), an Indian man with brown skin tone in simple work clothes, works efficiently with one younger Indian male assistant with brown skin tone, slim build, wearing a plain shirt and trousers, both focused on a motorbike on a stand; a small trolley beside them holds a neatly arranged set of hand tools, and another finished bike stands ready near the workshop entrance, while a wall clock high on the wall is slightly out of focus so its numbers cannot be read, hinting at attention to faster jobs. In the second panel from the left, showing the same workshop during a quieter moment, USE CHARACTER REFERENCE - Anil (KEY NARRATOR OF THIS SCENE) sweeps the concrete floor with a simple broom or wipes an oily patch with a cloth, while organized shelves of spare parts and tools line the wall and a small dustbin sits nearby, making the space look noticeably cleaner and safer than before. In the third panel, at a plain wooden counter, USE CHARACTER REFERENCE - Anil (KEY NARRATOR OF THIS SCENE) faces USE CHARACTER REFERENCE - Geeta Ji (Indian female customer with brown skin tone in a cotton saree), using open, calm hand gestures as he explains an approximate repair cost; both of them appear relaxed and trusting, and a single paper estimate slip lies on the counter with its printed side turned away from the viewer so no details are visible, emphasizing honest, clear conversation rather than the document itself. In the rightmost panel, outside the same workshop entrance with a couple of finished vehicles parked neatly nearby, USE CHARACTER REFERENCE - Anil (KEY NARRATOR OF THIS SCENE) stands near the doorway holding a smartphone in one hand close to his mouth, speaking with a friendly, focused expression as if giving a repair update to a customer, while the clean, organized interior is visible behind him, reinforcing clear communication and organised work without revealing any digital screen content. Consistent photorealistic, natural lighting across all four panels. All text, symbols, numbers illegible through positioning/defocus.",
+          "compositeImage": "TRUE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 4,
+          "SplitScreenImage_template_4_image_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/02/05/M2_L3_ML3_SC8/split_screen.png?st=2026-02-05T08%3A52%3A05Z&se=2036-02-03T08%3A52%3A05Z&sp=r&sv=2025-07-05&sr=b&sig=UseWpc0VtOdQTym%2BeBVPFqGR9dfGjAuA4YaVfHe3sJQ%3D"
+        }
+      },
+      "selected_template_id": "7bc4529707274527b2ab04ad0b865ab8",
+      "selected_template_name": "ME_SplitScreenImage_template_4"
+    },
+    {
+      "scene_id": "M2_L3_ML3_SC9",
+      "character": "Anil",
+      "word_count": 22,
+      "approx_duration_seconds": 14,
+      "vo_scripts": {
+        "avatarPresenter_template_13_voScript_1": "To recap, gaps appear when customer needs and competitor performance do not match, and a clear edge helps a workshop stand out."
+      },
+      "recommended_video_type": "Concept Explainer",
+      "scene_purpose": "Recap the key message that gaps arise when customer needs and competitor performance do not match, and that a clear edge helps a small workshop stand out.",
+      "scene_typology_name": "avatar_presenter_torso",
+      "visualization_notes": "Not applicable. This scene uses the standard avatar_presenter_torso outro template with predefined visuals and on-screen text; no additional AI-generated background image is required.",
+      "selected_family_id": "avatar_presenter_fam_2",
+      "selected_family_name": "avatar_presenter_family_2_1avatar_1hdr_2bullet",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "avatarPresenter_template_13_header_1": "Key Takeaways"
+        },
+        "subHeaders": {},
+        "bulletPoints": {
+          "avatarPresenter_template_13_bulletpoint_1": "Gaps are unmet customer needs",
+          "avatarPresenter_template_13_bulletpoint_2": "Clear edge makes you stand out"
+        },
+        "keyPhrases": {},
+        "media": {
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "0",
+          "numberOf_subImages": 0
+        }
+      },
+      "selected_template_id": "dfb0986540bf464cbd8da7eaba19e5d0",
+      "selected_template_name": "ME_avatarPresenter_template_13"
+    }
+  ],
+  "template_selection_timestamp": "20251222_202520",
+  "random_seed_used": "none",
+  "language": "en"
+}

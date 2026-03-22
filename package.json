@@ -1,0 +1,23 @@
+{
+  "name": "video-content-factory",
+  "version": "1.0.0",
+  "description": "Automated pipeline: Storyboard JSON → HTML scenes → Final video",
+  "type": "module",
+  "main": "src/pipeline/orchestrator.js",
+  "scripts": {
+    "start": "node src/pipeline/orchestrator.js",
+    "preview": "node src/pipeline/orchestrator.js --preview",
+    "test:parser": "node --test src/utils/__tests__/storyboard-parser.test.js",
+    "test:theme": "node --test src/utils/__tests__/theme-loader.test.js",
+    "test:font": "node --test src/utils/__tests__/font-loader.test.js",
+    "test": "node --test src/utils/__tests__/*.test.js"
+  },
+  "keywords": [],
+  "license": "PRIVATE",
+  "dependencies": {
+    "@azure/storage-blob": "^12.31.0",
+    "@google/genai": "^1.46.0",
+    "dotenv": "^17.3.1",
+    "puppeteer": "^24.40.0"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "base_themes": [
+    "professional-blue",
+    "warm-earth",
+    "fresh-green",
+    "vibrant-orange",
+    "calm-neutral",
+    "bold-contrast"
+  ],
+  "domain_theme_mapping": {
+    "motor_vehicle_workshop": "vibrant-orange",
+    "tailoring": "warm-earth",
+    "kirana_store": "fresh-green",
+    "beauty_salon": "calm-neutral",
+    "electrician": "bold-contrast",
+    "plumbing": "professional-blue",
+    "carpentry": "warm-earth",
+    "food_processing": "vibrant-orange",
+    "dairy_farming": "fresh-green",
+    "poultry_farming": "warm-earth"
+  }
+}

@@ -14,7 +14,7 @@
  */
 
 import { resolve, join } from 'path';
-import { mkdir, writeFile, stat } from 'fs/promises';
+import { mkdir, writeFile, readFile, stat, unlink } from 'fs/promises';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { parseStoryboard, getFullVoText, sceneNeedsAvatar, getAvatarCropStyle, sceneHasMediaAudio, sceneHasMediaVideo } from '../utils/storyboard-parser.js';
@@ -296,6 +296,41 @@ async function downloadMediaAudio(scene, outputDir) {
   }
 }
 
+// ─── Step 3b: Generate alignment for scenes with media audio ─────────────────
+
+/**
+ * For scenes that have media audio (not TTS), we still need word-level
+ * alignment for OST sync. Generate TTS just for timestamps, discard the audio.
+ */
+async function getAlignmentForMediaAudio(scene, storyboard, outputDir) {
+  const voText = getFullVoText(scene);
+  if (!voText.trim()) return null;
+
+  const ttsClient = new ElevenLabsTTSClient();
+  await ttsClient.loadCharacterVoices();
+
+  const tempPath = join(outputDir, `${scene.sceneId}_alignment_temp.mp3`);
+
+  console.log(`  [align] ${scene.sceneId}: Generating alignment from voScript...`);
+  const result = await ttsClient.generateSpeechWithTimestamps({
+    text: voText,
+    outputPath: tempPath,
+    characterName: scene.character,
+    language: storyboard.language,
+  });
+
+  // Discard the temp audio — we only needed timestamps
+  unlink(tempPath).catch(() => {});
+
+  if (!result.success) {
+    console.error(`  [align] ${scene.sceneId}: FAILED — ${result.error}`);
+    return null;
+  }
+
+  console.log(`  [align] ${scene.sceneId}: ✓ Got ${result.alignment?.length || 0} word timestamps`);
+  return result.alignment || null;
+}
+
 // ─── Concurrency pool ────────────────────────────────────────────────────────
 
 /**
@@ -350,16 +385,48 @@ async function processScene(scene, sceneIdx, allScenes, storyboard, ctx) {
   };
 
   // Step 1: Audio — TTS or download media audio
+  let wordAlignment = null;
+
   if (needs.tts && !skipTTS) {
     const ttsResult = await generateTTS(scene, storyboard, audioDir);
     result.audioPath = ttsResult.audioPath || '';
+    wordAlignment = ttsResult.alignment;
+
+    // Save alignment for reuse with --skip-tts
+    if (wordAlignment) {
+      const alignPath = join(audioDir, `${sceneId}_alignment.json`);
+      await writeFile(alignPath, JSON.stringify(wordAlignment, null, 2));
+    }
   } else if (needs.tts && skipTTS) {
     // Reuse existing audio file if available
     const existingAudio = join(audioDir, `${sceneId}_vo.mp3`);
     try { await stat(existingAudio); result.audioPath = existingAudio; console.log(`  [tts] ${sceneId}: Reusing existing audio`); } catch { /* no existing file */ }
+
+    // Load saved alignment
+    const alignPath = join(audioDir, `${sceneId}_alignment.json`);
+    try {
+      const data = await readFile(alignPath, 'utf-8');
+      wordAlignment = JSON.parse(data);
+      console.log(`  [timing] ${sceneId}: Loaded saved alignment (${wordAlignment.length} words)`);
+    } catch { /* no saved alignment */ }
   }
   if (!result.audioPath && needs.hasMediaAudio) {
     result.audioPath = await downloadMediaAudio(scene, audioDir) || '';
+
+    // Media audio scenes: generate alignment from voScript
+    if (result.audioPath && !wordAlignment) {
+      const alignPath = join(audioDir, `${sceneId}_alignment.json`);
+      try {
+        const data = await readFile(alignPath, 'utf-8');
+        wordAlignment = JSON.parse(data);
+        console.log(`  [timing] ${sceneId}: Loaded saved alignment (${wordAlignment.length} words)`);
+      } catch {
+        wordAlignment = await getAlignmentForMediaAudio(scene, storyboard, audioDir);
+        if (wordAlignment) {
+          await writeFile(alignPath, JSON.stringify(wordAlignment, null, 2));
+        }
+      }
+    }
   }
 
   // Step 2: Avatar — needs audio first
@@ -401,7 +468,14 @@ async function processScene(scene, sceneIdx, allScenes, storyboard, ctx) {
   if (durationSource) {
     result.audioDurationMs = await getAudioDurationMs(durationSource);
   }
-  const timings = calculateTimings(scene, result.audioDurationMs);
+  const timings = calculateTimings(scene, result.audioDurationMs, wordAlignment);
+  if (wordAlignment) {
+    console.log(`  [timing] ${sceneId}: alignment=${wordAlignment.length} words, duration=${result.audioDurationMs}ms`);
+  }
+  if (timings.ost_timings.length > 0) {
+    const ostSummary = timings.ost_timings.map(t => `${t.element}@${t.appear_ms}ms`).join(', ');
+    console.log(`  [timing] ${sceneId}: OST timings: ${ostSummary}`);
+  }
 
   const neighbors = {
     prev: sceneIdx > 0 ? allScenes[sceneIdx - 1] : null,

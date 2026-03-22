@@ -86,6 +86,9 @@
     /* Hidden until animation triggers — will-change promotes to GPU layer early */
     .anim-hidden { opacity: 0; will-change: transform, opacity; }
 
+    /* Container cards hidden until first OST appears — revealed by GSAP */
+    .ost-container { opacity: 0; }
+
     /* === Glassmorphism Card === */
     .glass-card {
       background: var(--theme-ost-bg);
@@ -150,16 +153,22 @@
 
     /* === Bullet Marker === */
     .bullet-marker {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
       color: var(--theme-accent, var(--theme-bullet-marker));
-      font-size: 28px;
-      font-weight: 700;
+      font-size: 0;
       margin-right: 14px;
       flex-shrink: 0;
-      line-height: 1.5;
+      overflow: hidden;
     }
-    .bullet-marker::before {
+    .bullet-marker::after {
       content: '›';
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1;
     }
 
     .bullet-item {
@@ -222,14 +231,7 @@
       object-fit: cover;
     }
 
-    .bg-image-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.15) 100%);
-    }
+    /* bg-image-overlay removed — images show without darkening */
 
     /* === Video Background === */
     .bg-video-container {
@@ -290,6 +292,27 @@
 
     function triggerAnimations() {
       if (!timings || !timings.ost_timings) return;
+
+      // Reveal each .ost-container when its first child OST element appears
+      const containers = document.querySelectorAll('.ost-container');
+      containers.forEach(c => {
+        // Find the earliest OST timing for any element inside this container
+        let earliestMs = Infinity;
+        timings.ost_timings.forEach(t => {
+          const el = document.getElementById(t.element);
+          if (el && c.contains(el)) {
+            earliestMs = Math.min(earliestMs, t.appear_ms);
+          }
+        });
+        if (earliestMs === Infinity) {
+          // No OST elements found inside — use global first appear
+          earliestMs = Math.min(...timings.ost_timings.map(t => t.appear_ms));
+        }
+        gsap.fromTo(c,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.5, ease: 'power2.out', delay: earliestMs / 1000 }
+        );
+      });
 
       timings.ost_timings.forEach(t => {
         const el = document.getElementById(t.element);

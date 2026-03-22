@@ -51,7 +51,8 @@ Do NOT add any avatar element. If there is text content, keep it subtle so it do
 
   ai_image_slideshow: `## SCENE CONTEXT
 This is a **single slide** from a slideshow sequence. One full-screen image with a header and optionally a keyphrase. No avatar.
-The image is the hero — overlay the text creatively with proper gradient for readability.
+The image is the hero — let it fill the screen.
+**Layout constraint:** Place the text in a compact glass-card in ONE CORNER of the screen (bottom-left, bottom-right, top-left, or top-right). The card must be LESS THAN HALF the screen width (max ~800px). Do NOT create a full-width horizontal banner across the top or bottom. The card should be a compact rectangle or square, not a strip.
 This is a static frame — do NOT write any slideshow transition JS.`,
 
   // split_screen_image is built dynamically in buildSplitScreenContext() below
@@ -206,13 +207,25 @@ ${themeCSS}
 
 **Layout:** Use position:absolute for layout blocks. Z-index order: background (1) → overlay (2) → content (3).
 
+### No image overlays
+Do NOT add any gradient overlay, darkening div, or semi-transparent layer on top of background images. Images must show without any overlay. Use glass-cards for text readability instead.
+
+### Container visibility
+EVERY container, card, box, or wrapper div that holds or surrounds OST text elements (headers, bullets, keyphrases, subheaders) MUST have the CSS class \`ost-container\`. This includes glass-cards, label containers, header strips, bullet wrappers — any div with a visible background, border, or backdrop that wraps text. The container stays invisible until the first OST element inside it animates in. If you have separate containers (e.g. header card at top, bullet card at bottom), EACH one needs \`ost-container\`. Example: \`<div class="glass-card ost-container">\`
+
+### Bullet structure
+Each bullet must use this exact structure: \`<div class="bullet-item" id="bullet_N" class="anim-hidden"><span class="bullet-marker"></span><span class="text-bullet">text here</span></div>\`
+The bullet-marker span must be EMPTY — the chevron marker is added via CSS ::after. Do NOT put any text or symbol inside the bullet-marker span.
+
 ### Things to Avoid
-- Never place text directly on a busy image without a gradient or glass card
+- Never place text directly on a busy image without a glass card
+- Never add gradient overlays or darkening divs on images
 - Never let content clip outside the canvas or its container
 - Never hardcode colors — always use theme CSS variables
 - Never invent text, labels, or categories not in the provided content
 - Never apply continuous/looping animation (zoom, pulse, float) to images — images must be static
 - Never make a keyphrase larger than the header
+- Never create random or extra bullet points not in the provided content
 
 ## OUTPUT FORMAT
 Return ONLY a raw JSON object. No markdown, no backticks, no commentary:

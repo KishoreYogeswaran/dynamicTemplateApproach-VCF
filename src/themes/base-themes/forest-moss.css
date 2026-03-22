@@ -1,0 +1,42 @@
+:root {
+  /* Primary palette */
+  --theme-primary: #4D7C0F;
+  --theme-primary-light: #A3E635;
+  --theme-primary-dark: #365314;
+  --theme-secondary: #D97706;
+  --theme-accent: #84CC16;
+
+  /* Backgrounds */
+  --theme-bg-solid: #0A1205;
+  --theme-bg-gradient: linear-gradient(135deg, #0A1205 0%, #141F0B 50%, #080E04 100%);
+  --theme-bg-card: rgba(163, 230, 53, 0.06);
+  --theme-bg-card-border: rgba(163, 230, 53, 0.10);
+
+  /* Text */
+  --theme-text-primary: #F7FEE7;
+  --theme-text-secondary: #D9F99D;
+  --theme-text-muted: #6B8A50;
+
+  /* OST specific */
+  --theme-ost-bg: rgba(10, 18, 5, 0.7);
+  --theme-ost-border: rgba(163, 230, 53, 0.1);
+  --theme-ost-highlight: #A3E635;
+  --theme-bullet-marker: #A3E635;
+  --theme-keyphrase-bg: rgba(163, 230, 53, 0.12);
+  --theme-keyphrase-border: #A3E635;
+
+  /* Table specific */
+  --theme-table-header-bg: #365314;
+  --theme-table-row-even: rgba(163, 230, 53, 0.03);
+  --theme-table-row-odd: rgba(163, 230, 53, 0.06);
+  --theme-table-border: rgba(163, 230, 53, 0.08);
+  --theme-table-highlight: rgba(163, 230, 53, 0.12);
+
+  /* Shadows & effects */
+  --theme-shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --theme-shadow-text: 0 2px 8px rgba(0, 0, 0, 0.6);
+
+  /* Animation */
+  --theme-transition-speed: 0.4s;
+  --theme-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}

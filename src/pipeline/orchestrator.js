@@ -255,8 +255,7 @@ async function generateAvatar(scene, storyboard, audioPath, outputDir) {
       '-pix_fmt', 'yuva420p',
       '-b:v', '1M',
       '-auto-alt-ref', '0',
-      '-c:a', 'libopus',
-      '-b:a', '128k',
+      '-an',
       '-y', compressedPath,
     ], { timeout: 300_000 });
 
@@ -402,13 +401,21 @@ async function processScene(scene, sceneIdx, allScenes, storyboard, ctx) {
     const existingAudio = join(audioDir, `${sceneId}_vo.mp3`);
     try { await stat(existingAudio); result.audioPath = existingAudio; console.log(`  [tts] ${sceneId}: Reusing existing audio`); } catch { /* no existing file */ }
 
-    // Load saved alignment
+    // Load saved alignment, or generate alignment-only if missing
     const alignPath = join(audioDir, `${sceneId}_alignment.json`);
     try {
       const data = await readFile(alignPath, 'utf-8');
       wordAlignment = JSON.parse(data);
       console.log(`  [timing] ${sceneId}: Loaded saved alignment (${wordAlignment.length} words)`);
-    } catch { /* no saved alignment */ }
+    } catch {
+      // No saved alignment — generate one from voScript (discards temp audio)
+      if (result.audioPath) {
+        wordAlignment = await getAlignmentForMediaAudio(scene, storyboard, audioDir);
+        if (wordAlignment) {
+          await writeFile(alignPath, JSON.stringify(wordAlignment, null, 2));
+        }
+      }
+    }
   }
   if (!result.audioPath && needs.hasMediaAudio) {
     result.audioPath = await downloadMediaAudio(scene, audioDir) || '';
@@ -463,8 +470,8 @@ async function processScene(scene, sceneIdx, allScenes, storyboard, ctx) {
   }
 
   // Step 4: Calculate timings + render HTML via LLM
-  // For avatar scenes, duration comes from the avatar video (which has audio baked in)
-  const durationSource = (needs.avatar && avatarLocalPath) ? avatarLocalPath : result.audioPath;
+  // Duration always comes from the TTS/media audio file
+  const durationSource = result.audioPath;
   if (durationSource) {
     result.audioDurationMs = await getAudioDurationMs(durationSource);
   }
@@ -496,8 +503,8 @@ async function processScene(scene, sceneIdx, allScenes, storyboard, ctx) {
     const videoPath = join(videoDir, `${sceneId}.mp4`);
     console.log(`[${sceneId}] Recording...`);
 
-    // For avatar scenes, audio comes from the avatar video file (not separate TTS)
-    const recordAudioPath = needs.avatar && avatarLocalPath ? avatarLocalPath : result.audioPath;
+    // Audio always comes from the TTS MP3 (avatar video is muted)
+    const recordAudioPath = result.audioPath;
 
     const recResult = await recordScene({
       htmlPath: result.htmlPath,

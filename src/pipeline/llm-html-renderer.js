@@ -214,8 +214,15 @@ Do NOT add any gradient overlay, darkening div, or semi-transparent layer on top
 EVERY container, card, box, or wrapper div that holds or surrounds OST text elements (headers, bullets, keyphrases, subheaders) MUST have the CSS class \`ost-container\`. This includes glass-cards, label containers, header strips, bullet wrappers — any div with a visible background, border, or backdrop that wraps text. The container stays invisible until the first OST element inside it animates in. If you have separate containers (e.g. header card at top, bullet card at bottom), EACH one needs \`ost-container\`. Example: \`<div class="glass-card ost-container">\`
 
 ### Bullet structure
-Each bullet must use this exact structure: \`<div class="bullet-item" id="bullet_N" class="anim-hidden"><span class="bullet-marker"></span><span class="text-bullet">text here</span></div>\`
+Each bullet must use this exact structure: \`<div class="bullet-item anim-hidden" id="bullet_N"><span class="bullet-marker"></span><span class="text-bullet">text here</span></div>\`
 The bullet-marker span must be EMPTY — the chevron marker is added via CSS ::after. Do NOT put any text or symbol inside the bullet-marker span.
+**CRITICAL:** Do NOT restyle \`.bullet-marker\` or \`.bullet-item\` in your CSS. These classes are already fully styled in the base CSS with the correct chevron, padding, background, and border-radius. If you redefine them, you will break the design system.
+
+### Keyphrase styling
+Keyphrases must use the \`text-keyphrase\` class and one accent class: \`keyphrase-underline\`, \`keyphrase-accent-color\`, or \`keyphrase-left-bar\`. Do NOT create background boxes, padding boxes, or custom containers around keyphrases. The keyphrase should be clean inline text with only the accent style applied.
+
+### Do NOT override base component styles
+The following CSS classes are pre-styled in the base layout and must NOT be redefined in your scene CSS: \`.bullet-item\`, \`.bullet-marker\`, \`.text-bullet\`, \`.text-header\`, \`.text-subheader\`, \`.text-keyphrase\`, \`.glass-card\`, \`.avatar-circle\`, \`.avatar-torso\`. You may create new custom classes but never redefine these.
 
 ### Things to Avoid
 - Never place text directly on a busy image without a glass card
@@ -293,7 +300,7 @@ function buildAvatarOverlay(avatarVideoUrl, sceneType, avatarPosition = 'bottom-
     <!-- Avatar overlay (circle) — audio comes from this video -->
     <div id="avatar" style="position:absolute; ${pos} z-index:10;">
       <div class="avatar-circle">
-        <video id="avatar-video" src="${avatarVideoUrl}" playsinline preload="auto"></video>
+        <video id="avatar-video" src="${avatarVideoUrl}" muted playsinline preload="auto"></video>
       </div>
     </div>`;
   }
@@ -301,18 +308,18 @@ function buildAvatarOverlay(avatarVideoUrl, sceneType, avatarPosition = 'bottom-
   // Learning objective scenes: avatar takes left half, 80%+ height, bottom-anchored
   if (sceneType === 'learning_objective_scene') {
     return `
-    <!-- Avatar overlay (large half-screen) — audio comes from this video -->
+    <!-- Avatar overlay (muted video) — audio comes from separate <audio> element -->
     <div id="avatar" style="position:absolute; bottom:0; left:0; width:50%; height:85%; z-index:10; overflow:hidden;">
-      <video id="avatar-video" src="${avatarVideoUrl}" playsinline preload="auto"
+      <video id="avatar-video" src="${avatarVideoUrl}" muted playsinline preload="auto"
         style="width:100%; height:100%; object-fit:cover; object-position:center top;"></video>
     </div>`;
   }
 
   return `
-    <!-- Avatar overlay (torso) — audio comes from this video -->
+    <!-- Avatar overlay (muted torso) — audio comes from separate <audio> element -->
     <div id="avatar" style="position:absolute; bottom:0; left:0; z-index:10;">
       <div class="avatar-torso">
-        <video id="avatar-video" src="${avatarVideoUrl}" playsinline preload="auto"></video>
+        <video id="avatar-video" src="${avatarVideoUrl}" muted playsinline preload="auto"></video>
       </div>
     </div>`;
 }
@@ -358,10 +365,9 @@ export async function renderSceneHTMLWithLLM(scene, storyboard, options = {}) {
 
   // Build avatar overlay HTML
   const avatarHtml = buildAvatarOverlay(avatarVideoUrl, scene.sceneType, result.avatarPosition);
-  const hasAvatarWithAudio = !!avatarHtml; // Avatar video now contains audio
 
-  // For avatar scenes, audio comes from the avatar video — no separate <audio> element needed
-  const finalAudioSrc = hasAvatarWithAudio ? '' : (audioUrl || audioPath);
+  // Avatar video is muted — audio always comes from the <audio> element
+  const finalAudioSrc = audioUrl || audioPath;
 
   let html = baseLayout
     .replace('{{language}}', storyboard.language)

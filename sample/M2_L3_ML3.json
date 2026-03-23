@@ -264,45 +264,43 @@
       "selected_template_name": "ME_slideshow_template_12"
     },
     {
-      "scene_id": "M2_L7_ML2_SC7",
+      "scene_id": "M2_L3_ML3_SC7",
       "character": "Anil",
-      "word_count": 24,
-      "approx_duration_seconds": 15,
-      "narrative_arc_step": "Hook with Conflict",
+      "word_count": 28,
+      "approx_duration_seconds": 18,
       "vo_scripts": {
-        "firstPerson_template_4_voScript_1": "In my early days, I handled jobs randomly. I rushed between customers, searched for tools, and delivered vehicles late, which increased stress for everyone."
+        "SplitScreenImage_template_4_voScript_1": "Combine what customers say with what you see. If people complain about late delivery, early closing, or dirty areas, the pattern shows a gap in timing and cleanliness."
       },
-      "recommended_video_type": "Character Conversation",
-      "scene_purpose": "Hook scenario and problem statement showing how unplanned work created delays, tool searching, and stress, motivating the need for better time and resource management.",
-      "scene_typology_name": "first_person_video_staticBg",
-      "visualization_notes": "Create the interior of a small, busy neighborhood motor workshop that looks slightly cluttered but still functional. Show two motorcycles and one small car parked close together, one bike with its seat and side panel removed and parts lying on a low workbench. Several hand tools and spare parts are spread across the bench and on a side shelf, with some items left on a simple concrete floor, hinting that tools are not kept in fixed places. At the back, a simple metal rack holds cartons and parts in an unorganised way, and a wall clock is visible but not readable. The rolling shutter is partly open so the street and a parked taxi can be seen outside, suggesting customers come and go. Lighting should convey an active but slightly chaotic workspace, making it clear that jobs and resources are not yet planned properly. All text, symbols, numbers illegible through positioning/light blur/camera angle",
-      "selected_family_id": "first_person_video_staticBg_fam_3",
-      "selected_family_name": "first_person_video_staticBg_family_3_1vid_1hdr_2bullet_1keyphrase",
+      "recommended_video_type": "Concept Explainer",
+      "scene_purpose": "Demonstrate how to combine customer complaints and direct observations to recognize clear patterns that reveal gaps in timing and cleanliness.",
+      "scene_typology_name": "split_screen_image",
+      "visualization_notes": "Display four images side by side to show how Anil connects what customers say with what is happening in and around workshops.\nImage 1: Inside a small workshop, Anil, an Indian mechanic-entrepreneur with brown skin tone, stands at a simple counter listening as Geeta Ji, an Indian customer with brown skin tone, points to her watch and gestures toward a motorbike still on the stand. Her face shows irritation, indicating a late delivery. The environment remains modest with limited space and tools.\nImage 2: Early evening outside a different small garage with a half-closed shutter. Geeta Ji stands in front of the closed entrance looking disappointed, while Anil observes from a short distance on the street, hands at his sides, noting that the place has shut earlier than customers expect.\nImage 3: Inside a workshop walkway, Anil walks carefully between two vehicles, looking down at the floor where there are scattered tools, oil spills, and dust. Corners have piled-up scrap parts, and there is no clear path for customers, illustrating dirty, neglected areas.\nImage 4: Back at Anil's simple workspace-a small corner with a wooden table and a stool-Anil sits thinking with a focused expression. On the table are a small notebook and a pen, but the notebook lies partly closed or at an angle so any writing is not visible. Behind Anil, faintly suggest a blurred mental \"mix\" of what he heard (customers gesturing) and what he saw (dirty floors, closed shutter) through the choice of props and his thoughtful posture rather than any diagrams or icons.\nAcross the four images, the viewer should feel that Anil is matching repeated complaints about late work and early closing with visible signs of poor timing and cleanliness in competitor workshops, revealing a pattern of gaps. Any text-bearing objects like notebooks or labels should remain secondary and impossible to read. All text, symbols, numbers illegible through positioning/light blur/camera_angle",
+      "selected_family_id": "split_screen_image_fam_4",
+      "selected_family_name": "split_screen_image_family_4_1img_1hdr_4bullet_composite_4subimg_subaspect_vertical",
       "characterCrop": "0",
       "characterPosition": "0",
       "content_elements": {
         "headers": {
-          "firstPerson_template_4_header_1": "Unplanned Work Creates Stress"
+          "SplitScreenImage_template_4_header_1": "Combine Complaints and Clues"
         },
         "subHeaders": {},
         "bulletPoints": {
-          "firstPerson_template_4_bulletpoint_1": "Random job handling",
-          "firstPerson_template_4_bulletpoint_2": "Searching for tools"
+          "SplitScreenImage_template_4_bulletpoint_1": "Late delivery complaints",
+          "SplitScreenImage_template_4_bulletpoint_2": "Early closing complaints",
+          "SplitScreenImage_template_4_bulletpoint_3": "Dirty, cluttered areas",
+          "SplitScreenImage_template_4_bulletpoint_4": "Timing and cleanliness gap"
         },
-        "keyPhrases": {
-          "firstPerson_template_4_keyPhrase_1": "Problems Faced"
-        },
+        "keyPhrases": {},
         "media": {
-          "firstPerson_template_4_video_1_prompt": "The character stands completely still with body and hands motionless and narrates the provided speech in a calm and professional way. The background must remain completely static. All background elements should stay perfectly still and unchanged throughout the video.",
-          "compositeImage": "FALSE",
+          "SplitScreenImage_template_4_image_1_prompt": "Four-panel vertical composite image with four tall portrait panels arranged side by side in one horizontal row, panels touching edge to edge with no gaps or borders, filling the full width and height of the frame. In the leftmost panel, inside a small semi-urban motor workshop, USE CHARACTER REFERENCE - Anil (KEY NARRATOR OF THIS SCENE), an Indian man with brown skin tone, stands at a simple wooden counter listening closely as USE CHARACTER REFERENCE - Geeta Ji (Indian female customer with brown skin tone in a cotton saree) points to her wristwatch and gestures toward a motorbike that is still up on a stand behind them; her expression is clearly irritated, showing a late delivery complaint, while basic tools and limited space frame the scene. In the second panel from the left, during early evening outside a different small garage with its metal shutter already half closed, USE CHARACTER REFERENCE - Geeta Ji stands in front of the closed entrance with a disappointed look, while USE CHARACTER REFERENCE - Anil (KEY NARRATOR OF THIS SCENE) watches from a short distance on the narrow street, hands relaxed by his sides, noting how early closing upsets customers; nearby facades of other small shops line the lane with any signboards softly defocused. In the third panel, inside a workshop walkway, USE CHARACTER REFERENCE - Anil (KEY NARRATOR OF THIS SCENE) walks carefully between two parked vehicles, eyes directed down at the floor where scattered tools, oil spills, dust, and piles of scrap parts clutter the path, clearly revealing dirty, neglected areas that customers must cross. In the rightmost panel, in a simple corner of his own workspace, USE CHARACTER REFERENCE - Anil (KEY NARRATOR OF THIS SCENE) sits on a stool at a small wooden table, leaning slightly forward with a focused, thoughtful expression; a notebook and pen rest on the table with the notebook partly closed or angled so any writing is hidden, while the blurred background hints at shapes of shutters, vehicles, and messy floors, suggesting how he mentally combines what customers say with what he has seen to identify patterns in timing and cleanliness gaps. Consistent photorealistic, natural lighting across all four panels. All text, symbols, numbers illegible through positioning/defocus.",
+          "compositeImage": "TRUE",
           "image_aspectRatio": "horizontal",
-          "numberOf_subImages": 0,
-          "firstPerson_template_4_video_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/motor_vehicle_workshop/2026/02/18/M2_L7_ML2_SC3/first_person_video_muted.mp4?st=2026-02-18T13%3A13%3A21Z&se=2036-02-16T13%3A13%3A21Z&sp=r&sv=2025-07-05&sr=b&sig=ig88gGYQgvA06T%2BWIXHAbXl7I1aOSb1XcE2PY/mKErY%3D",
-          "firstPerson_template_4_audio_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/motor_vehicle_workshop/2026/02/18/M2_L7_ML2_SC3/voiceover.mp3?st=2026-02-18T13%3A13%3A23Z&se=2036-02-16T13%3A13%3A23Z&sp=r&sv=2025-07-05&sr=b&sig=O1VF%2BTG9ph6uulnbglkxeTQSlCuqORWzqcGbpX9oZ2Q%3D"
+          "numberOf_subImages": 4,
+          "SplitScreenImage_template_4_image_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/02/05/M2_L3_ML3_SC7/split_screen.png?st=2026-02-05T08%3A52%3A03Z&se=2036-02-03T08%3A52%3A03Z&sp=r&sv=2025-07-05&sr=b&sig=LFwXj/jivNFwF9pwDdFhUDO3cA7mXwR9C6ccU2PT66M%3D"
         }
       },
-      "selected_template_id": "30c030c5f02640088ef387e70f5db83b",
-      "selected_template_name": "ME_firstPerson_template_4"
+      "selected_template_id": "7bc4529707274527b2ab04ad0b865ab8",
+      "selected_template_name": "ME_SplitScreenImage_template_4"
     },
     {
       "scene_id": "M2_L3_ML3_SC8",
@@ -365,8 +363,8 @@
         },
         "subHeaders": {},
         "bulletPoints": {
-          "avatarPresenter_template_13_bulletpoint_1": "Gaps are unmet customer needs",
-          "avatarPresenter_template_13_bulletpoint_2": "Clear edge makes you stand out"
+          "avatarPresenter_template_13_bulletpoint_1": "Gaps are unmet customer needs Gaps are unmet customer needs",
+          "avatarPresenter_template_13_bulletpoint_2": "Clear edge makes you stand out Gaps are unmet customer needs"
         },
         "keyPhrases": {},
         "media": {

@@ -189,7 +189,7 @@ async function generateAvatar(scene, storyboard, audioPath, outputDir) {
   const narratorImagePath = await getNarratorImagePath(storyboard.domainKey);
   if (!narratorImagePath) {
     console.error(`  [avatar] ${scene.sceneId}: No narrator image found for domain "${storyboard.domainKey}".`);
-    return null;
+    return { videoPath: null, extractedAudioPath: null };
   }
 
   // Upload audio + image to Azure for public URLs (WAN needs HTTPS URLs)
@@ -221,12 +221,25 @@ async function generateAvatar(scene, storyboard, audioPath, outputDir) {
 
   if (!wanResult.success) {
     console.error(`  [avatar] ${scene.sceneId}: WAN FAILED — ${wanResult.error}`);
-    return null;
+    return { videoPath: null, extractedAudioPath: null };
   }
 
   console.log(`  [avatar] ${scene.sceneId}: ✓ WAN video generated (${wanResult.processingTime?.toFixed(1)}s)`);
 
-  // Step 2b: Remove background via FIBO
+  // Step 2b: Extract audio from WAN video — this is the audio the lips were synced to
+  const extractedAudioPath = join(wanOutputDir, 'avatar_audio.mp3');
+  try {
+    await execFileAsync('ffmpeg', [
+      '-y', '-i', wanVideoPath,
+      '-vn', '-c:a', 'libmp3lame', '-b:a', '192k',
+      extractedAudioPath,
+    ], { timeout: 30000 });
+    console.log(`  [avatar] ${scene.sceneId}: ✓ Extracted audio from WAN video`);
+  } catch (err) {
+    console.error(`  [avatar] ${scene.sceneId}: Audio extraction failed — ${err.message}`);
+  }
+
+  // Step 2c: Remove background via FIBO
   console.log(`  [avatar] ${scene.sceneId}: Removing background via FIBO...`);
   const bgRemover = new TransparentVideoClient();
 
@@ -241,7 +254,7 @@ async function generateAvatar(scene, storyboard, audioPath, outputDir) {
   if (!bgResult.success) {
     console.error(`  [avatar] ${scene.sceneId}: FIBO FAILED — ${bgResult.error}`);
     // Fall back to raw video without transparency
-    return wanVideoPath;
+    return { videoPath: wanVideoPath, extractedAudioPath };
   }
 
   // Step 2c: Compress ProRes MOV → VP9 WebM with alpha (75MB → ~2-3MB)
@@ -263,10 +276,10 @@ async function generateAvatar(scene, storyboard, audioPath, outputDir) {
     const compressedSize = (await stat(compressedPath)).size;
     console.log(`  [avatar] ${scene.sceneId}: ✓ Compressed ${(originalSize / 1024 / 1024).toFixed(1)}MB → ${(compressedSize / 1024 / 1024).toFixed(1)}MB`);
 
-    return compressedPath;
+    return { videoPath: compressedPath, extractedAudioPath };
   } catch (err) {
     console.error(`  [avatar] ${scene.sceneId}: Compression failed — ${err.message}, using uncompressed`);
-    return bgResult.transparentVideo;
+    return { videoPath: bgResult.transparentVideo, extractedAudioPath };
   }
 }
 
@@ -439,7 +452,17 @@ async function processScene(scene, sceneIdx, allScenes, storyboard, ctx) {
   // Step 2: Avatar — needs audio first
   let avatarLocalPath = '';
   if (needs.avatar && !skipAvatar && result.audioPath) {
-    avatarLocalPath = await generateAvatar(scene, storyboard, result.audioPath, avatarDir) || '';
+    const avatarResult = await generateAvatar(scene, storyboard, result.audioPath, avatarDir);
+    avatarLocalPath = avatarResult.videoPath || '';
+
+    // Use audio extracted from WAN video — this is what the lips were synced to
+    if (avatarResult.extractedAudioPath) {
+      try {
+        await stat(avatarResult.extractedAudioPath);
+        result.audioPath = avatarResult.extractedAudioPath;
+        console.log(`  [avatar] ${sceneId}: Using WAN-extracted audio for perfect lip sync`);
+      } catch { /* extraction failed, keep original TTS audio */ }
+    }
   } else if (needs.avatar && skipAvatar) {
     // Reuse existing avatar file if available
     const existingWebm = join(avatarDir, sceneId, 'avatar_transparent.webm');
@@ -447,6 +470,14 @@ async function processScene(scene, sceneIdx, allScenes, storyboard, ctx) {
     try { await stat(existingWebm); avatarLocalPath = existingWebm; console.log(`  [avatar] ${sceneId}: Reusing existing WebM`); } catch {
       try { await stat(existingMp4); avatarLocalPath = existingMp4; console.log(`  [avatar] ${sceneId}: Reusing existing MP4`); } catch { /* no existing file */ }
     }
+
+    // Also reuse extracted audio if available
+    const existingExtractedAudio = join(avatarDir, sceneId, 'avatar_audio.mp3');
+    try {
+      await stat(existingExtractedAudio);
+      result.audioPath = existingExtractedAudio;
+      console.log(`  [avatar] ${sceneId}: Reusing WAN-extracted audio`);
+    } catch { /* no extracted audio, keep TTS */ }
   }
 
   // Step 3: Upload assets to Azure
@@ -470,7 +501,7 @@ async function processScene(scene, sceneIdx, allScenes, storyboard, ctx) {
   }
 
   // Step 4: Calculate timings + render HTML via LLM
-  // Duration always comes from the TTS/media audio file
+  // Duration comes from the audio file (WAN-extracted for avatar scenes, TTS/media for others)
   const durationSource = result.audioPath;
   if (durationSource) {
     result.audioDurationMs = await getAudioDurationMs(durationSource);
@@ -543,8 +574,9 @@ async function processScene(scene, sceneIdx, allScenes, storyboard, ctx) {
  * @param {boolean} [opts.skipAvatar]   — skip avatar generation
  * @param {boolean} [opts.skipRecord]   — skip Puppeteer recording
  * @param {boolean} [opts.skipStitch]   — skip FFmpeg stitching
- * @param {number}  [opts.fps]          — recording FPS (default: 30)
- * @param {number}  [opts.crossfadeMs]  — crossfade between scenes in ms (default: 500, 0 = hard cut)
+ * @param {boolean} [opts.stitchOnly]  — only stitch existing MP4s, skip all generation
+ * @param {number}  [opts.fps]          — recording FPS (default: 24)
+ * @param {number}  [opts.crossfadeMs]  — crossfade between scenes in ms (default: 0 = hard cut)
  * @param {string}  [opts.themeOverride] — override theme name
  */
 export async function runPipeline(storyboardPath, opts = {}) {
@@ -556,8 +588,10 @@ export async function runPipeline(storyboardPath, opts = {}) {
     skipAvatar = false,
     skipRecord = false,
     skipStitch = false,
+    stitchOnly = false,
     fps = 24,
-    crossfadeMs = 500,
+    crossfadeMs = 0,
+    gapMs = 700,
     themeOverride = null,
   } = opts;
 
@@ -603,27 +637,53 @@ export async function runPipeline(storyboardPath, opts = {}) {
     return { scenes: [], recordings: [], finalVideo: null };
   }
 
-  // 2. Process all scenes in parallel with concurrency limit
-  //    Each scene goes through: TTS → Avatar → Upload → HTML → Record
-  console.log(`── Processing ${scenes.length} scenes ─────────────────────\n`);
+  // 2. Process scenes or skip to stitch
+  let results = [];
+  let successfulRecordings = [];
 
-  const ctx = { audioDir, avatarDir, htmlDir, videoDir, skipTTS, skipAvatar, skipRecord, fps, themeOverride };
+  if (stitchOnly) {
+    // Stitch-only mode: find existing MP4s in video dir
+    console.log(`── Stitch-only mode: finding existing scene videos ──\n`);
+    const { readdir } = await import('fs/promises');
+    const existingFiles = await readdir(videoDir);
+    const sceneMp4s = scenes
+      .map(s => {
+        const filename = `${s.sceneId}.mp4`;
+        if (existingFiles.includes(filename)) {
+          const videoPath = join(videoDir, filename);
+          console.log(`  Found: ${filename}`);
+          return { sceneId: s.sceneId, videoPath, recordSuccess: true };
+        }
+        console.log(`  Missing: ${filename}`);
+        return null;
+      })
+      .filter(Boolean);
 
-  const tasks = scenes.map((scene, idx) => () => processScene(scene, idx, scenes, storyboard, ctx));
-  const results = await runWithConcurrency(tasks, concurrency);
+    successfulRecordings = sceneMp4s;
+    results = sceneMp4s;
+    console.log(`\n  ${sceneMp4s.length}/${scenes.length} scene videos found\n`);
+  } else {
+    // Normal mode: process all scenes
+    console.log(`── Processing ${scenes.length} scenes ─────────────────────\n`);
+
+    const ctx = { audioDir, avatarDir, htmlDir, videoDir, skipTTS, skipAvatar, skipRecord, fps, themeOverride };
+
+    const tasks = scenes.map((scene, idx) => () => processScene(scene, idx, scenes, storyboard, ctx));
+    results = await runWithConcurrency(tasks, concurrency);
+    successfulRecordings = results.filter(r => r.recordSuccess && r.videoPath);
+  }
 
   // 3. Stitch all scene videos into final MP4 (must be sequential — needs all scenes done)
   let finalVideoResult = null;
-  const successfulRecordings = results.filter(r => r.recordSuccess && r.videoPath);
 
-  if (!skipRecord && !skipStitch && successfulRecordings.length > 0) {
+  if (!skipStitch && successfulRecordings.length > 0) {
     console.log('\n── Stitching final video (FFmpeg) ──────────────\n');
 
     const finalPath = join(outputDir, `${storyboard.mlId || 'final'}_video.mp4`);
     finalVideoResult = await stitchScenes({
       inputPaths: successfulRecordings.map(r => r.videoPath),
       outputPath: finalPath,
-      crossfadeMs,
+      gapMs,
     });
 
     if (finalVideoResult.success) {

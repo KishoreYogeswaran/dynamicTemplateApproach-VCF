@@ -2,13 +2,13 @@
  * Video Stitcher
  *
  * Concatenates scene MP4 files into a single final video using FFmpeg.
- * Supports optional crossfade transitions between scenes.
+ * Supports freeze-frame gaps between scenes for a natural pause.
  */
 
 import { writeFile, mkdir, stat, unlink } from 'fs/promises';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
-import { join, dirname } from 'path';
+import { dirname } from 'path';
 
 const execFileAsync = promisify(execFile);
 
@@ -18,10 +18,10 @@ const execFileAsync = promisify(execFile);
  * @param {object} opts
  * @param {string[]} opts.inputPaths     — ordered array of scene MP4 paths
  * @param {string}   opts.outputPath     — final output MP4 path
- * @param {number}   [opts.crossfadeMs]  — crossfade duration between scenes (0 = hard cut, default: 500)
+ * @param {number}   [opts.gapMs]        — freeze-frame pause between scenes in ms (default: 700, 0 = hard cut)
  * @returns {{ success, outputPath, durationSeconds?, fileSizeMB?, error? }}
  */
-export async function stitchScenes({ inputPaths, outputPath, crossfadeMs = 500 }) {
+export async function stitchScenes({ inputPaths, outputPath, gapMs = 700 }) {
   if (!inputPaths.length) {
     return { success: false, error: 'No input files provided' };
   }
@@ -45,18 +45,93 @@ export async function stitchScenes({ inputPaths, outputPath, crossfadeMs = 500 }
     };
   }
 
-  if (crossfadeMs > 0) {
-    return stitchWithCrossfade({ inputPaths, outputPath, crossfadeMs });
+  if (gapMs > 0) {
+    return stitchWithFreezeGap({ inputPaths, outputPath, gapMs });
   }
 
-  return stitchWithConcat({ inputPaths, outputPath });
+  return stitchHardCut({ inputPaths, outputPath });
+}
+
+/**
+ * Concat with freeze-frame gap between scenes.
+ * Uses FFmpeg filter_complex: tpad clones the last frame, apad adds silence.
+ * Then concat filter joins them all in one pass.
+ */
+async function stitchWithFreezeGap({ inputPaths, outputPath, gapMs }) {
+  const gapSec = gapMs / 1000;
+  const n = inputPaths.length;
+
+  console.log(`  [stitch] Concatenating ${n} scenes with ${gapMs}ms freeze-frame gaps...`);
+
+  // Build inputs
+  const inputs = inputPaths.flatMap(p => ['-i', p]);
+
+  // Build filter_complex:
+  // - Each scene except the last gets tpad (freeze last frame) + apad (silence)
+  // - Then all streams get concat'd
+  const filters = [];
+  const concatInputs = [];
+
+  for (let i = 0; i < n; i++) {
+    const isLast = i === n - 1;
+
+    if (isLast) {
+      // Last scene — no gap needed
+      filters.push(`[${i}:v]null[v${i}]`);
+      filters.push(`[${i}:a]anull[a${i}]`);
+    } else {
+      // Add freeze-frame + silence padding
+      filters.push(`[${i}:v]tpad=stop_mode=clone:stop_duration=${gapSec}[v${i}]`);
+      filters.push(`[${i}:a]apad=pad_dur=${gapSec}[a${i}]`);
+    }
+
+    concatInputs.push(`[v${i}][a${i}]`);
+  }
+
+  filters.push(`${concatInputs.join('')}concat=n=${n}:v=1:a=1[vout][aout]`);
+
+  const filterComplex = filters.join(';');
+
+  try {
+    await execFileAsync('ffmpeg', [
+      '-y',
+      ...inputs,
+      '-filter_complex', filterComplex,
+      '-map', '[vout]',
+      '-map', '[aout]',
+      '-c:v', 'libx264',
+      '-preset', 'fast',
+      '-crf', '21',
+      '-pix_fmt', 'yuv420p',
+      '-c:a', 'aac',
+      '-b:a', '192k',
+      '-ar', '44100',
+      outputPath,
+    ], { timeout: 600000 });
+
+    const info = await stat(outputPath);
+    const duration = await getDuration(outputPath);
+
+    console.log(`  [stitch] ✓ Final video: ${duration.toFixed(1)}s, ${(info.size / 1024 / 1024).toFixed(1)}MB`);
+
+    return {
+      success: true,
+      outputPath,
+      durationSeconds: duration,
+      fileSizeMB: (info.size / 1024 / 1024).toFixed(1),
+    };
+  } catch (err) {
+    console.error(`  [stitch] Filter concat failed: ${err.message}`);
+    // Fall back to hard cut
+    console.log(`  [stitch] Falling back to hard cut...`);
+    return stitchHardCut({ inputPaths, outputPath });
+  }
 }
 
 /**
  * Hard-cut concat using FFmpeg concat demuxer (fast, no re-encode).
  */
-async function stitchWithConcat({ inputPaths, outputPath }) {
-  // Create concat list file
+async function stitchHardCut({ inputPaths, outputPath }) {
   const concatListPath = outputPath.replace('.mp4', '_concat.txt');
   const concatContent = inputPaths.map(p => `file '${p}'`).join('\n');
   await writeFile(concatListPath, concatContent, 'utf-8');
@@ -89,77 +164,6 @@ async function stitchWithConcat({ inputPaths, outputPath }) {
   } catch (err) {
     await unlink(concatListPath).catch(() => {});
     return { success: false, error: err.message };
-  }
-}
-
-/**
- * Crossfade concat using FFmpeg xfade filter (re-encodes).
- */
-async function stitchWithCrossfade({ inputPaths, outputPath, crossfadeMs }) {
-  const fadeSec = crossfadeMs / 1000;
-
-  // Get durations of all clips
-  const durations = [];
-  for (const p of inputPaths) {
-    durations.push(await getDuration(p));
-  }
-
-  console.log(`  [stitch] Concatenating ${inputPaths.length} scenes with ${crossfadeMs}ms crossfade...`);
-
-  // Build FFmpeg filter chain for xfade
-  // For N clips, we need N-1 xfade filters chained
-  const inputs = inputPaths.flatMap((p, i) => ['-i', p]);
-
-  let filterComplex = '';
-  let prevLabel = '0:v';
-  let prevALabel = '0:a';
-  let offset = durations[0] - fadeSec;
-
-  for (let i = 1; i < inputPaths.length; i++) {
-    const outLabel = i < inputPaths.length - 1 ? `v${i}` : 'vout';
-    const outALabel = i < inputPaths.length - 1 ? `a${i}` : 'aout';
-
-    filterComplex += `[${prevLabel}][${i}:v]xfade=transition=fade:duration=${fadeSec}:offset=${offset.toFixed(3)}[${outLabel}];`;
-    filterComplex += `[${prevALabel}][${i}:a]acrossfade=d=${fadeSec}[${outALabel}];`;
-
-    prevLabel = outLabel;
-    prevALabel = outALabel;
-
-    if (i < inputPaths.length - 1) {
-      offset += durations[i] - fadeSec;
-    }
-  }
-
-  try {
-    await execFileAsync('ffmpeg', [
-      '-y',
-      ...inputs,
-      '-filter_complex', filterComplex,
-      '-map', '[vout]',
-      '-map', '[aout]',
-      '-c:v', 'libx264',
-      '-preset', 'fast',
-      '-crf', '23',
-      '-c:a', 'aac',
-      '-b:a', '192k',
-      outputPath,
-    ], { timeout: 600000 });
-
-    const info = await stat(outputPath);
-    const duration = await getDuration(outputPath);
-
-    console.log(`  [stitch] ✓ Final video: ${duration.toFixed(1)}s, ${(info.size / 1024 / 1024).toFixed(1)}MB`);
-
-    return {
-      success: true,
-      outputPath,
-      durationSeconds: duration,
-      fileSizeMB: (info.size / 1024 / 1024).toFixed(1),
-    };
-  } catch (err) {
-    // Crossfade failed — fall back to hard cut
-    console.error(`  [stitch] Crossfade failed, falling back to hard cut: ${err.message}`);
-    return stitchWithConcat({ inputPaths, outputPath });
   }
 }
 

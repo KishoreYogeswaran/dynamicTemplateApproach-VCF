@@ -54,7 +54,8 @@ export async function recordScene({
   }
   if (!duration) duration = 10000;
 
-  const totalDuration = duration;
+  // Small buffer so late-appearing animations finish before recording stops
+  const totalDuration = duration + 1000;
 
   await mkdir(dirname(outputPath), { recursive: true });
 
@@ -174,14 +175,23 @@ export async function recordScene({
         triggerAnimations();
       }
 
+      // Play all non-avatar videos (background videos etc.)
       allVideos.forEach(v => {
-        v.currentTime = 0;
-        v.play().catch(() => {});
+        if (v.id !== 'avatar-video') {
+          v.currentTime = 0;
+          v.play().catch(() => {});
+        }
       });
 
+      // Start audio first, then sync avatar to it
       if (hasAudio) {
         audio.currentTime = 0;
         audio.play().catch(() => {});
+      }
+
+      if (avatarVideo) {
+        avatarVideo.currentTime = hasAudio ? audio.currentTime : 0;
+        avatarVideo.play().catch(() => {});
       }
     });
 

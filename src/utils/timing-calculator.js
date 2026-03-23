@@ -112,8 +112,15 @@ function syncTimingsToVoiceover(elements, alignment, totalDurationMs) {
       appearMs = lastMs + MIN_GAP;
     }
 
-    // Don't exceed total duration
-    appearMs = Math.min(appearMs, totalDurationMs - 500);
+    // If this element would appear in the last 2 seconds, pull it back
+    if (appearMs > totalDurationMs - 2000) {
+      appearMs = totalDurationMs - 2000;
+    }
+
+    // Enforce minimum gap still applies after pullback
+    if (i > 0 && appearMs < lastMs + MIN_GAP) {
+      appearMs = lastMs + MIN_GAP;
+    }
 
     lastMs = appearMs;
     return {

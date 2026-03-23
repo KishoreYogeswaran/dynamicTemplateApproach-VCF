@@ -37,7 +37,15 @@ The image sets the mood — let it breathe while making the text content clear a
 
   avatar_presenter_torso: `## SCENE CONTEXT
 This is a **presenter-driven scene** — the narrator is summarizing or concluding. You have a header and bullet points, no background image (use theme gradient).
-A torso-sized avatar video of the narrator will be overlaid on the left side later (~25-30% width). Design the text content to work alongside that.`,
+An avatar video of the narrator will be overlaid later. You must choose ONE of these layout options and set avatarPosition accordingly:
+
+**Option A — "presenter-left"**: Avatar on the left (~30% width, 85% height, bottom-anchored). Place text on the right 55% of the screen. Good for 3-4+ bullet points that need vertical space.
+
+**Option B — "presenter-center"**: Avatar centered at bottom (~30% width, 70% height). Place text in the upper 40-50% of the screen, full width available. Think TV news anchor. Good for 1-3 short bullet points or a header with keyphrases.
+
+**Option C — "presenter-right"**: Avatar on the right (~30% width, 85% height, bottom-anchored). Place text on the left 55% of the screen. Good for variety when previous scenes had left-anchored layouts.
+
+Choose the option that best fits the amount of content you have and provides visual variety from neighboring scenes. Set avatarPosition to one of: "presenter-left", "presenter-center", "presenter-right".`,
 
   character_image_torso: `## SCENE CONTEXT
 A **character** (not the narrator) is speaking in a pre-rendered video. The video plays as the full-screen background — the character is already visible in it.
@@ -315,12 +323,19 @@ function buildAvatarOverlay(avatarVideoUrl, sceneType, avatarPosition = 'bottom-
     </div>`;
   }
 
+  // Presenter torso — position based on LLM choice
+  const torsoPositions = {
+    'presenter-left': 'bottom:0; left:40px; width:30%; height:85%;',
+    'presenter-center': 'bottom:0; left:50%; transform:translateX(-50%); width:30%; height:70%;',
+    'presenter-right': 'bottom:0; right:40px; width:30%; height:85%;',
+  };
+  const torsoStyle = torsoPositions[avatarPosition] || torsoPositions['presenter-left'];
+
   return `
     <!-- Avatar overlay (muted torso) — audio comes from separate <audio> element -->
-    <div id="avatar" style="position:absolute; bottom:0; left:0; z-index:10;">
-      <div class="avatar-torso">
-        <video id="avatar-video" src="${avatarVideoUrl}" muted playsinline preload="auto"></video>
-      </div>
+    <div id="avatar" style="position:absolute; ${torsoStyle} z-index:10; overflow:hidden;">
+      <video id="avatar-video" src="${avatarVideoUrl}" muted playsinline preload="auto"
+        style="width:100%; height:100%; object-fit:cover; object-position:center top;"></video>
     </div>`;
 }
 
@@ -356,6 +371,11 @@ export async function renderSceneHTMLWithLLM(scene, storyboard, options = {}) {
   const sceneDuration = scene.approxDurationSeconds || 10;
 
   const prompt = buildPrompt(scene, storyboard, themeCSS, neighbors);
+
+  // Save the latest prompt for debugging (overwrites each run)
+  const promptsDir = join(__dirname, '../../prompts');
+  await mkdir(promptsDir, { recursive: true });
+  await writeFile(join(promptsDir, 'scene-html-generator.txt'), prompt, 'utf-8');
 
   console.log(`  [llm] Generating HTML for ${scene.sceneId} (${scene.sceneType})...`);
   const responseText = await generateContent({ prompt });

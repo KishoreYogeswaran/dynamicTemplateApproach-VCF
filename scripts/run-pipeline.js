@@ -39,8 +39,10 @@ Options:
   --skip-avatar      Skip avatar video generation
   --skip-record      Skip Puppeteer recording (HTML only)
   --skip-stitch      Skip FFmpeg stitching (individual scene MP4s only)
+  --stitch-only      Only stitch existing scene MP4s (skip TTS, avatar, HTML, recording)
   --fps <n>          Recording frames per second (default: 24)
-  --crossfade <ms>   Crossfade between scenes in ms (default: 500, 0 = hard cut)
+  --crossfade <ms>   Crossfade between scenes in ms (default: 0, i.e. hard cut)
+  --gap <ms>         Black gap between scenes in ms (default: 700)
   --theme <name>     Override theme (e.g., "dark_blue")
   --output <dir>     Output directory (default: output/pipeline)
   --open             Open final video after completion
@@ -50,16 +52,20 @@ Options:
 
 const startTime = Date.now();
 
+const stitchOnly = getFlag('--stitch-only');
+
 const result = await runPipeline(storyboardPath, {
   outputDir: resolve(getFlagValue('--output') || 'output/pipeline'),
   concurrency: parseInt(getFlagValue('--concurrency') || '3', 10),
   sceneFilter: getFlagValue('--scene') || null,
-  skipTTS: getFlag('--skip-tts'),
-  skipAvatar: getFlag('--skip-avatar'),
-  skipRecord: getFlag('--skip-record'),
+  skipTTS: stitchOnly || getFlag('--skip-tts'),
+  skipAvatar: stitchOnly || getFlag('--skip-avatar'),
+  skipRecord: stitchOnly || getFlag('--skip-record'),
   skipStitch: getFlag('--skip-stitch'),
+  stitchOnly,
   fps: parseInt(getFlagValue('--fps') || '24', 10),
-  crossfadeMs: parseInt(getFlagValue('--crossfade') ?? '500', 10),
+  crossfadeMs: parseInt(getFlagValue('--crossfade') ?? '0', 10),
+  gapMs: parseInt(getFlagValue('--gap') ?? '700', 10),
   themeOverride: getFlagValue('--theme') || null,
 });
 

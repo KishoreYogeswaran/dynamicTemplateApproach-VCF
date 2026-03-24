@@ -10,12 +10,22 @@ export async function parseStoryboard(filePath) {
 }
 
 export function normalizeStoryboard(raw) {
+  const moduleNum = raw.module_number || 1;
+  const lessonNum = raw.lesson_number || 1;
+  const mlId = raw.ml_id || `ML${lessonNum}`;
+
   const storyboard = {
     domainKey: raw.domain_key,
+    moduleNumber: moduleNum,
     moduleName: raw.module_name,
+    lessonNumber: lessonNum,
     lessonName: raw.lesson_name,
-    mlId: raw.ml_id,
+    mlId,
     mlTitle: raw.ml_title,
+    // Derived path segments for output structure: domain/M2/M2_L3/M2_L3_ML3/
+    moduleKey: `M${moduleNum}`,
+    lessonKey: `M${moduleNum}_L${lessonNum}`,
+    mlKey: `M${moduleNum}_L${lessonNum}_${mlId}`,
     learningObjectives: raw.learning_objectives || [],
     language: raw.language || 'en',
     totalWordCount: raw.total_word_count,

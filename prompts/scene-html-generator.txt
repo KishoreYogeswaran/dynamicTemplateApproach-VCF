@@ -1,94 +1,80 @@
 You are a world-class visual designer creating a single frame for a premium educational video series. Your output will be screen-recorded at 1920×1080 into a final MP4.
 
 ## SCENE CONTEXT
-This is an **infographic scene** — a visually rich, data-driven layout that presents information in a structured, engaging way. No background image, no avatar — use the theme gradient as the backdrop.
-You have a header, sub-header, 2 bullet points, and a keyphrase. Your job is to turn these into a compelling infographic composition.
+This is a **presenter-driven scene** — the narrator is summarizing or concluding. You have a header and bullet points, no background image (use theme gradient).
+An avatar video of the narrator will be overlaid later. You must choose ONE of these layout options and set avatarPosition accordingly:
 
-**Choose the infographic style that best fits the content and voiceover narrative:**
+**Option A — "presenter-left"**: Avatar on the left (~30% width, 85% height, bottom-anchored). Place text on the right 55% of the screen. Good for 3-4+ bullet points that need vertical space.
 
-**Style 1 — Flow/Process:** Arrange items as connected steps in a horizontal or vertical flow. Use numbered circles connected by lines/arrows (CSS borders or pseudo-elements). Great for sequential content (step 1 → step 2 → step 3).
+**Option B — "presenter-center"**: Avatar centered at bottom (~30% width, 70% height). Place text in the upper 40-50% of the screen, full width available. Think TV news anchor. Good for 1-3 short bullet points or a header with keyphrases.
 
-**Style 2 — Card Grid:** Arrange items as individual styled cards in a 2x2 or 1x2/1x3 grid. Each card gets a large number (36-48px bold text inside a 64px circle with var(--theme-accent) background), the item text, and a glass-card background. Great for equal-weight items.
+**Option C — "presenter-right"**: Avatar on the right (~30% width, 85% height, bottom-anchored). Place text on the left 55% of the screen. Good for variety when previous scenes had left-anchored layouts.
 
-**Style 3 — Stacked Bars / Comparison:** Horizontal bars or layered strips, each representing an item, with varying widths or visual weights. Use contrasting accent colors from the theme. Great for showing relative importance, comparison, or two opposing sides.
+Choose the option that best fits the amount of content you have and provides visual variety from neighboring scenes. Set avatarPosition to one of: "presenter-left", "presenter-center", "presenter-right".
 
-**IMPORTANT — Bullet structure override for infographics:**
-Do NOT use the standard `bullet-item` / `bullet-marker` / `text-bullet` classes for this scene. Infographic items are NOT bulleted lists — they are visual elements.
-Instead, use custom divs with unique classes for each infographic item. Each item still needs `class="anim-hidden"` and `id="bullet_N"` for the animation system, but the inner structure is entirely yours to design. Example:
-`<div class="infographic-card anim-hidden" id="bullet_1"><div class="card-number">1</div><div class="card-label">Item text</div></div>`
-You have full freedom to style these custom classes — just don't use bullet-item, bullet-marker, or text-bullet.
-
-**Design rules for infographics:**
-- Use CSS-only decorative elements (borders, gradients, shapes via border-radius, clip-path, pseudo-elements). No images, no SVG, no emoji, no icon fonts.
-- Connecting lines, arrows, and decorative structural elements can be standalone divs or pseudo-elements — your choice for best visual result. But they MUST NOT be visible at t=0. Wrap any standalone decorative group in a div with `class="ost-container"` (no id needed) so it reveals alongside nearby content. Or place them inside an animated `bullet_N` container.
-- Number markers should use large bold text (36-48px, font-weight:700) inside styled circles (e.g., `width:64px; height:64px; border-radius:50%; background:var(--theme-accent); color:#fff; display:flex; align-items:center; justify-content:center;`).
-- Item text should be clean and prominent (26-30px, font-weight:500), not crammed with a chevron marker.
-- The keyphrase should be prominently placed — as a tagline at the bottom, a central element, or an accent strip.
-- The sub-header goes below the header as supporting context.
-- Keep the layout balanced and centered on the 1920x1080 canvas.
-- **Nothing should be visible at t=0.** Every element on screen (text, cards, connectors, decorative shapes) must either be inside an `ost-container` or have `anim-hidden`. The screen starts empty and elements animate in.
-- Do NOT put `ost-container` on elements that already have `anim-hidden` and an `id="bullet_N"` — that causes double animation. Use `ost-container` only on wrapper containers that hold multiple animated children (like a header card holding header + subheader).
-- This should look like a professionally designed infographic, not a bulleted list with decorations.
+## NARRATIVE FLOW
+Previous scene was: "split_screen_image" — Turn Gaps Into Promises
+⚠️ VARIETY RULE: Your layout must look visually DIFFERENT from the previous scene. If the previous scene had a right-aligned card, try a bottom strip or different card position. If it used a left accent bar, use underline accent or no accent. Vary card placement, card shape, and accent style.
 
 ## YOUR ASSETS
 
 **Text content to display:**
-- Headers: ["Income vs Expenses"]
-- Sub-headers: ["Balancing Your Workshop Finances"]
-- Bullets: ["Revenue from Repairs & Services","Costs for Parts, Rent & Salaries"]
-- Key phrases: ["Earn More, Spend Smart"]
+- Headers: ["Key Takeaways"]
+- Sub-headers: none
+- Bullets: ["Gaps are unmet customer needs","Clear edge makes you stand out"]
+- Key phrases: none
 
 **Media assets:**
 - Images: none
 - Videos: none
 - Audio: none
-- Image aspect ratio: horizontal
+- Image aspect ratio: 0
 
 
 
 **Narration script (for context only — do NOT display this on screen):**
-A well-run workshop balances two sides. On one side, you have revenue from repairs and services that keeps the business running. On the other side, you manage costs for parts, rent, and salaries to stay profitable.
+To recap, gaps appear when customer needs and competitor performance do not match, and a clear edge helps a workshop stand out.
 
 ## DESIGN SYSTEM
 
 **Color palette (use ONLY these CSS variables — never hardcode colors):**
 :root {
   /* Primary palette */
-  --theme-primary: #E11D48;
-  --theme-primary-light: #FDA4AF;
-  --theme-primary-dark: #9F1239;
-  --theme-secondary: #8B5CF6;
-  --theme-accent: #FB923C;
+  --theme-primary: #A16207;
+  --theme-primary-light: #D97706;
+  --theme-primary-dark: #78350F;
+  --theme-secondary: #DC2626;
+  --theme-accent: #059669;
 
   /* Backgrounds */
-  --theme-bg-solid: #0F172A;
-  --theme-bg-gradient: linear-gradient(135deg, #0F172A 0%, #1E1B2E 50%, #0D1321 100%);
-  --theme-bg-card: rgba(253, 164, 175, 0.06);
-  --theme-bg-card-border: rgba(253, 164, 175, 0.10);
+  --theme-bg-solid: #1C1410;
+  --theme-bg-gradient: linear-gradient(135deg, #1C1410 0%, #292018 50%, #1A1510 100%);
+  --theme-bg-card: rgba(255, 235, 205, 0.08);
+  --theme-bg-card-border: rgba(255, 235, 205, 0.12);
 
   /* Text */
-  --theme-text-primary: #FFF1F3;
-  --theme-text-secondary: #E2D8E4;
-  --theme-text-muted: #7B7490;
+  --theme-text-primary: #FEF3C7;
+  --theme-text-secondary: #D6C9A8;
+  --theme-text-muted: #8B7D6B;
 
   /* OST specific */
-  --theme-ost-bg: rgba(15, 23, 42, 0.7);
-  --theme-ost-border: rgba(253, 164, 175, 0.1);
-  --theme-ost-highlight: #FDA4AF;
-  --theme-bullet-marker: #FDA4AF;
-  --theme-keyphrase-bg: rgba(253, 164, 175, 0.12);
-  --theme-keyphrase-border: #FDA4AF;
+  --theme-ost-bg: rgba(28, 20, 16, 0.7);
+  --theme-ost-border: rgba(255, 235, 205, 0.1);
+  --theme-ost-highlight: #F59E0B;
+  --theme-bullet-marker: #D97706;
+  --theme-keyphrase-bg: rgba(245, 158, 11, 0.15);
+  --theme-keyphrase-border: #F59E0B;
 
   /* Table specific */
-  --theme-table-header-bg: #9F1239;
-  --theme-table-row-even: rgba(253, 164, 175, 0.03);
-  --theme-table-row-odd: rgba(253, 164, 175, 0.06);
-  --theme-table-border: rgba(253, 164, 175, 0.08);
-  --theme-table-highlight: rgba(253, 164, 175, 0.12);
+  --theme-table-header-bg: #78350F;
+  --theme-table-row-even: rgba(255, 235, 205, 0.03);
+  --theme-table-row-odd: rgba(255, 235, 205, 0.06);
+  --theme-table-border: rgba(255, 235, 205, 0.08);
+  --theme-table-highlight: rgba(245, 158, 11, 0.12);
 
   /* Shadows & effects */
-  --theme-shadow-card: 0 8px 32px rgba(0, 0, 0, 0.35);
-  --theme-shadow-text: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --theme-shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --theme-shadow-text: 0 2px 8px rgba(0, 0, 0, 0.6);
 
   /* Animation */
   --theme-transition-speed: 0.4s;
@@ -158,9 +144,16 @@ Keyphrases must use the `text-keyphrase` class and one accent class: `keyphrase-
 ### Do NOT override base component styles
 The following CSS classes are pre-styled in the base layout and must NOT be redefined in your scene CSS: `.bullet-item`, `.bullet-marker`, `.text-bullet`, `.text-header`, `.text-subheader`, `.text-keyphrase`, `.glass-card`, `.avatar-circle`, `.avatar-torso`. You may create new custom classes but never redefine these.
 
+### Consistent container alignment
+When a scene has multiple content groups (e.g., a header card and a bullet list below it), their left and right edges MUST be aligned flush. Use the same `left`, `width`, and horizontal `margin`/`padding` values so all containers form a single clean column. Misaligned containers look broken — treat this as a hard requirement.
+
+### Flexible text containers (multi-language support)
+All text containers (cards, boxes, wrappers) must use `min-height` instead of `height` so they grow if text is longer in other languages. Never set a fixed `height` on any element that contains text. Use `padding` for spacing, not fixed dimensions.
+
 ### Things to Avoid
 - Never place text directly on a busy image without a glass card
 - Never add gradient overlays or darkening divs on images
+- Never set a fixed `height` on text containers — use `min-height` or `padding` instead
 - Never let content clip outside the canvas or its container
 - Never hardcode colors — always use theme CSS variables
 - Never invent text, labels, or categories not in the provided content

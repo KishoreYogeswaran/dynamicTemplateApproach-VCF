@@ -225,9 +225,10 @@ function wordsMatch(a, b) {
 
 /**
  * Normalize a word for comparison: lowercase, strip punctuation.
+ * Keeps Unicode letters and digits (supports Hindi, Tamil, etc.)
  */
 function normalize(word) {
-  return word.toLowerCase().replace(/[^a-z0-9]/gi, '');
+  return word.toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
 }
 
 // ─── Fallback stagger timings ─────────────────────────────────────────────────

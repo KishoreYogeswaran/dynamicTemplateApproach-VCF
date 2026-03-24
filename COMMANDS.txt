@@ -1,0 +1,31 @@
+# ═══════════════════════════════════════════════════════════════
+# Pipeline Commands — Quick Reference
+# ═══════════════════════════════════════════════════════════════
+
+# ─── Full ML pipeline (TTS → Avatar → HTML → Record → Stitch) ─
+node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3
+node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3 --language hi
+
+# ─── Single scene 
+node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3 --scene SC3 --skip-tts --skip-avatar
+node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3 --scene SC12
+
+# ─── HTML only (skip TTS, avatar, recording) 
+node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3 --skip-tts --skip-avatar --skip-record
+node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3 --scene SC3 --skip-tts --skip-avatar --skip-record
+
+# ─── Skip avatar only (TTS + HTML + Record + Stitch) 
+node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3 --skip-avatar
+
+# ─── Skip TTS only (reuse existing audio) 
+node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3 --skip-tts
+
+# ─── Skip recording (TTS + Avatar + HTML only) 
+node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3 --skip-record
+
+# ─── Stitch only (re-stitch existing scene MP4s) 
+node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3 --stitch-only
+
+# ─── Theme override 
+node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3 --theme dark_blue
+

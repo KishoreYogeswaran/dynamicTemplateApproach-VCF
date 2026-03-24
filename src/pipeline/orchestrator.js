@@ -581,7 +581,7 @@ async function processScene(scene, sceneIdx, allScenes, storyboard, ctx) {
  */
 export async function runPipeline(storyboardPath, opts = {}) {
   const {
-    outputDir = resolve('output/pipeline'),
+    outputDir = resolve('outputs'),
     concurrency = 3,
     sceneFilter = null,
     skipTTS = false,
@@ -598,17 +598,6 @@ export async function runPipeline(storyboardPath, opts = {}) {
   // Reset uploader for this run (domain-scoped)
   _uploader = null;
 
-  // Directories
-  const audioDir = join(outputDir, 'audio');
-  const avatarDir = join(outputDir, 'avatars');
-  const htmlDir = join(outputDir, 'html');
-  const videoDir = join(outputDir, 'video');
-
-  await mkdir(audioDir, { recursive: true });
-  await mkdir(avatarDir, { recursive: true });
-  await mkdir(htmlDir, { recursive: true });
-  await mkdir(videoDir, { recursive: true });
-
   // 1. Parse storyboard
   console.log('═══════════════════════════════════════════════');
   console.log('  PIPELINE ORCHESTRATOR');
@@ -619,6 +608,21 @@ export async function runPipeline(storyboardPath, opts = {}) {
   console.log(`Domain: ${storyboard.domainKey} | Language: ${storyboard.language}`);
   console.log(`Total scenes: ${storyboard.numberOfScenes}`);
   console.log(`Concurrency: ${concurrency} parallel scenes\n`);
+
+  // Output structure: outputs/{domain}/{M2}/{M2_L3}/{M2_L3_ML3}/{lang}/{component}/
+  const mlBaseDir = join(outputDir, storyboard.domainKey, storyboard.moduleKey, storyboard.lessonKey, storyboard.mlKey);
+  const langDir = join(mlBaseDir, storyboard.language);
+  const audioDir = join(langDir, 'audio');
+  const avatarDir = join(langDir, 'avatars');
+  const htmlDir = join(langDir, 'html');
+  const videoDir = join(langDir, 'video');
+
+  await mkdir(audioDir, { recursive: true });
+  await mkdir(avatarDir, { recursive: true });
+  await mkdir(htmlDir, { recursive: true });
+  await mkdir(videoDir, { recursive: true });
+
+  console.log(`Output: ${langDir}\n`);
 
   // Expand slideshow scenes into individual slides
   let scenes = expandSlideshowScenes(storyboard.scenes);
@@ -679,7 +683,7 @@ export async function runPipeline(storyboardPath, opts = {}) {
   if (!skipStitch && successfulRecordings.length > 0) {
     console.log('\n── Stitching final video (FFmpeg) ──────────────\n');
 
-    const finalPath = join(outputDir, `${storyboard.mlId || 'final'}_video.mp4`);
+    const finalPath = join(langDir, `${storyboard.mlKey}_Complete_${storyboard.language}.mp4`);
     finalVideoResult = await stitchScenes({
       inputPaths: successfulRecordings.map(r => r.videoPath),
       outputPath: finalPath,

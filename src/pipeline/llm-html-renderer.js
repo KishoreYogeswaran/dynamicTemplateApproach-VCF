@@ -11,6 +11,7 @@ import { dirname, join } from 'path';
 import { getThemeCSS } from '../utils/theme-loader.js';
 import { generateFontLinkTag, generateFontCSSVars } from '../utils/font-loader.js';
 import { generateContent } from '../clients/gemini-client.js';
+import { validateSceneHTML, buildCorrectionPrompt, buildSceneContext, closeValidator } from './html-validator.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -104,9 +105,9 @@ This scene features a **composite image** — a single image file containing 4 s
 You have the composite image, a header, and 4 bullet points (one label per panel).
 
 **Layout spec for this 2x2 grid split screen:**
-- **HEADER** at the top, centered. Use a compact glassmorphism card or strip.
+- **HEADER** at the top, centered. Use a compact glassmorphism card or strip with border-left: 4px solid var(--theme-accent).
 - **IMAGE CONTAINER** below the header: a rounded container (border-radius: 16px; overflow: hidden) that is ${containerWidth}px wide, centered horizontally (left: 50%; transform: translateX(-50%)). The image inside: width: 100%, height: auto, object-fit: cover, max-height: 720px.
-- **BULLET LABELS** below the image in a 2x2 grid matching the image layout. Use a CSS grid or two flex rows, container ${containerWidth}px wide, centered. Each label box: width ~${colWidth}px, text-align: center, no bullet markers or dots, font-size: 28px. Row 1 labels = top-left and top-right panels, Row 2 labels = bottom-left and bottom-right panels.
+- **BULLET LABELS** below the image in a 2x2 grid matching the image layout. Use a CSS grid or two flex rows, container ${containerWidth}px wide, centered. Each label box: width ~${colWidth}px, text-align: center, no bullet markers or dots, font-size: 28px, border-left: 3px solid var(--theme-accent), padding-left: 12px. Row 1 labels = top-left and top-right panels, Row 2 labels = bottom-left and bottom-right panels.
 - The image must be an <img> element, NOT a background.
 - The image must remain completely static — no animation. Only text elements animate.`;
   }
@@ -120,9 +121,9 @@ This scene features a **composite image** — a single image file containing ${n
 You have the composite image, a header, and ${n} bullet points (one label per panel).
 
 **Layout spec for this ${n}-panel split screen:**
-- **HEADER** at the top, centered. Use a compact glassmorphism card or strip.
+- **HEADER** at the top, centered. Use a compact glassmorphism card or strip with border-left: 4px solid var(--theme-accent).
 - **IMAGE CONTAINER** below the header: a rounded container (border-radius: 16px; overflow: hidden) that is ${containerWidth}px wide, centered horizontally (left: 50%; transform: translateX(-50%)). The image inside: width: 100%, height: auto, object-fit: cover, max-height: 720px.
-- **BULLET LABELS** directly below the image, in a single flex row that is exactly ${containerWidth}px wide, centered the same way. Use ${n} equal-width boxes (each ~${panelWidth}px) with ${gap}px gap between them. Each label box: text-align: center, no bullet markers or dots, font-size: 28px. This ensures each label sits perfectly centered under its corresponding image panel.
+- **BULLET LABELS** directly below the image, in a single flex row that is exactly ${containerWidth}px wide, centered the same way. Use ${n} equal-width boxes (each ~${panelWidth}px) with ${gap}px gap between them. Each label box: text-align: center, no bullet markers or dots, font-size: 28px, border-left: 3px solid var(--theme-accent), padding-left: 12px. This ensures each label sits perfectly centered under its corresponding image panel.
 - The image must be an <img> element, NOT a background.
 - The image must remain completely static — no animation. Only text elements animate.`;
 }
@@ -284,9 +285,16 @@ Keyphrases must use the \`text-keyphrase\` class and one accent class: \`keyphra
 ### Do NOT override base component styles
 The following CSS classes are pre-styled in the base layout and must NOT be redefined in your scene CSS: \`.bullet-item\`, \`.bullet-marker\`, \`.text-bullet\`, \`.text-header\`, \`.text-subheader\`, \`.text-keyphrase\`, \`.glass-card\`, \`.avatar-circle\`, \`.avatar-torso\`. You may create new custom classes but never redefine these.
 
+### Consistent container alignment
+When a scene has multiple content groups (e.g., a header card and a bullet list below it), their left and right edges MUST be aligned flush. Use the same \`left\`, \`width\`, and horizontal \`margin\`/\`padding\` values so all containers form a single clean column. Misaligned containers look broken — treat this as a hard requirement.
+
+### Flexible text containers (multi-language support)
+All text containers (cards, boxes, wrappers) must use \`min-height\` instead of \`height\` so they grow if text is longer in other languages. Never set a fixed \`height\` on any element that contains text. Use \`padding\` for spacing, not fixed dimensions.
+
 ### Things to Avoid
 - Never place text directly on a busy image without a glass card
 - Never add gradient overlays or darkening divs on images
+- Never set a fixed \`height\` on text containers — use \`min-height\` or \`padding\` instead
 - Never let content clip outside the canvas or its container
 - Never hardcode colors — always use theme CSS variables
 - Never invent text, labels, or categories not in the provided content
@@ -391,7 +399,28 @@ function buildAvatarOverlay(avatarVideoUrl, sceneType, avatarPosition = 'bottom-
     </div>`;
 }
 
+// ─── HTML assembly helper ────────────────────────────────────────────────────
+
+function assembleHTML(baseLayout, llmResult, { language, fontLinkTag, themeCSS, fontCSSVars, sceneDuration, audioSrc, timings, avatarVideoUrl, sceneType }) {
+  const avatarHtml = buildAvatarOverlay(avatarVideoUrl, sceneType, llmResult.avatarPosition);
+  const finalTimings = timings || { ost_timings: [] };
+
+  return baseLayout
+    .replace('{{language}}', language)
+    .replace('{{fontLinkTag}}', fontLinkTag)
+    .replace('{{themeCSS}}', themeCSS)
+    .replace('{{fontCSSVars}}', `${fontCSSVars}\n  --scene-duration: ${sceneDuration}s;`)
+    .replace('{{sceneCSS}}', llmResult.css || '')
+    .replace('{{audioPath}}', audioSrc)
+    .replace('{{timingsJSON}}', JSON.stringify(finalTimings))
+    .replace('{{sceneScript}}', llmResult.script || '')
+    .replace('{{sceneContent}}', llmResult.html || '')
+    .replace('{{avatarOverlay}}', avatarHtml);
+}
+
 // ─── Single scene render ────────────────────────────────────────────────────
+
+const MAX_VALIDATION_RETRIES = 2;
 
 /**
  * @param {object} scene
@@ -404,6 +433,7 @@ function buildAvatarOverlay(avatarVideoUrl, sceneType, avatarPosition = 'bottom-
  * @param {string} [options.outputDir]       — write HTML file to this directory
  * @param {object} [options.neighbors]       — prev/next scenes for flow context
  * @param {string} [options.themeOverride]
+ * @param {boolean} [options.validate=true]  — run visual validation
  */
 export async function renderSceneHTMLWithLLM(scene, storyboard, options = {}) {
   const {
@@ -414,6 +444,7 @@ export async function renderSceneHTMLWithLLM(scene, storyboard, options = {}) {
     timings = null,
     outputDir = null,
     neighbors = {},
+    validate = true,
   } = options;
 
   const baseLayout = await readFile(join(TEMPLATES_DIR, 'base-layout.html'), 'utf-8');
@@ -429,29 +460,54 @@ export async function renderSceneHTMLWithLLM(scene, storyboard, options = {}) {
   await mkdir(promptsDir, { recursive: true });
   await writeFile(join(promptsDir, 'scene-html-generator.txt'), prompt, 'utf-8');
 
-  console.log(`  [llm] Generating HTML for ${scene.sceneId} (${scene.sceneType})...`);
-  const responseText = await generateContent({ prompt });
-  const result = parseLLMResponse(responseText);
+  const assemblyArgs = {
+    language: storyboard.language,
+    fontLinkTag, themeCSS, fontCSSVars, sceneDuration,
+    audioSrc: audioUrl || audioPath,
+    timings, avatarVideoUrl, sceneType: scene.sceneType,
+  };
 
-  const finalTimings = timings || { ost_timings: [] };
+  // ── Generate + validate loop ──────────────────────────────────
+  let result = null;
+  let html = null;
+  let currentPrompt = prompt;
 
-  // Build avatar overlay HTML
-  const avatarHtml = buildAvatarOverlay(avatarVideoUrl, scene.sceneType, result.avatarPosition);
+  for (let attempt = 0; attempt <= (validate ? MAX_VALIDATION_RETRIES : 0); attempt++) {
+    if (attempt === 0) {
+      console.log(`  [llm] Generating HTML for ${scene.sceneId} (${scene.sceneType})...`);
+    } else {
+      console.log(`  [llm] Retrying ${scene.sceneId} (attempt ${attempt + 1}/${MAX_VALIDATION_RETRIES + 1})...`);
+    }
 
-  // Avatar video has audio (Mode 1) — but keep <audio> element as fallback
-  const finalAudioSrc = audioUrl || audioPath;
+    const responseText = await generateContent({ prompt: currentPrompt });
+    result = parseLLMResponse(responseText);
+    html = assembleHTML(baseLayout, result, assemblyArgs);
 
-  let html = baseLayout
-    .replace('{{language}}', storyboard.language)
-    .replace('{{fontLinkTag}}', fontLinkTag)
-    .replace('{{themeCSS}}', themeCSS)
-    .replace('{{fontCSSVars}}', `${fontCSSVars}\n  --scene-duration: ${sceneDuration}s;`)
-    .replace('{{sceneCSS}}', result.css || '')
-    .replace('{{audioPath}}', finalAudioSrc)
-    .replace('{{timingsJSON}}', JSON.stringify(finalTimings))
-    .replace('{{sceneScript}}', result.script || '')
-    .replace('{{sceneContent}}', result.html || '')
-    .replace('{{avatarOverlay}}', avatarHtml);
+    if (!validate) break;
+
+    // Run visual validation
+    const sceneContext = buildSceneContext(scene, result.avatarPosition);
+    const validation = await validateSceneHTML(html, sceneContext);
+
+    if (validation.pass) {
+      if (attempt > 0) console.log(`  [validate] ✓ ${scene.sceneId} passed on retry ${attempt}`);
+      else console.log(`  [validate] ✓ ${scene.sceneId} — ${validation.summary}`);
+      break;
+    }
+
+    console.warn(`  [validate] ✗ ${scene.sceneId} — ${validation.summary}`);
+    validation.issues.forEach(issue => console.warn(`    → [${issue.check}] ${issue.message}`));
+
+    if (attempt < MAX_VALIDATION_RETRIES) {
+      // Re-prompt with specific errors
+      currentPrompt = buildCorrectionPrompt(prompt, result, validation.issues);
+    } else {
+      console.warn(`  [validate] Proceeding with best effort for ${scene.sceneId}`);
+    }
+  }
+
+  // Clean up validator browser
+  if (validate) await closeValidator();
 
   if (outputDir) {
     await mkdir(outputDir, { recursive: true });
@@ -466,7 +522,7 @@ export async function renderSceneHTMLWithLLM(scene, storyboard, options = {}) {
 // ─── Batch render with concurrency ──────────────────────────────────────────
 
 export async function renderAllScenesWithLLM(storyboard, options = {}) {
-  const { outputDir, themeOverride = null, concurrency = 5 } = options;
+  const { outputDir, themeOverride = null, concurrency = 5, validate = true } = options;
 
   // Pre-load shared resources once
   const themeCSS = await getThemeCSS(storyboard.domainKey, themeOverride);
@@ -487,24 +543,47 @@ export async function renderAllScenesWithLLM(storyboard, options = {}) {
           next: sceneIdx < scenes.length - 1 ? scenes[sceneIdx + 1] : null,
         };
 
-        const prompt = buildPrompt(scene, storyboard, themeCSS, neighbors);
         const sceneDuration = scene.approxDurationSeconds || 10;
+        const assemblyArgs = {
+          language: storyboard.language,
+          fontLinkTag, themeCSS, fontCSSVars, sceneDuration,
+          audioSrc: '', timings: null, avatarVideoUrl: '', sceneType: scene.sceneType,
+        };
 
-        console.log(`  [llm] Generating ${scene.sceneId} (${scene.sceneType})...`);
-        const responseText = await generateContent({ prompt });
-        const result = parseLLMResponse(responseText);
+        let result = null;
+        let html = null;
+        let currentPrompt = buildPrompt(scene, storyboard, themeCSS, neighbors);
+        const originalPrompt = currentPrompt;
 
-        let html = baseLayout
-          .replace('{{language}}', storyboard.language)
-          .replace('{{fontLinkTag}}', fontLinkTag)
-          .replace('{{themeCSS}}', themeCSS)
-          .replace('{{fontCSSVars}}', `${fontCSSVars}\n  --scene-duration: ${sceneDuration}s;`)
-          .replace('{{sceneCSS}}', result.css || '')
-          .replace('{{audioPath}}', '')
-          .replace('{{timingsJSON}}', JSON.stringify({ ost_timings: [] }))
-          .replace('{{sceneScript}}', result.script || '')
-          .replace('{{sceneContent}}', result.html || '')
-          .replace('{{avatarOverlay}}', '');
+        for (let attempt = 0; attempt <= (validate ? MAX_VALIDATION_RETRIES : 0); attempt++) {
+          if (attempt === 0) {
+            console.log(`  [llm] Generating ${scene.sceneId} (${scene.sceneType})...`);
+          } else {
+            console.log(`  [llm] Retrying ${scene.sceneId} (attempt ${attempt + 1})...`);
+          }
+
+          const responseText = await generateContent({ prompt: currentPrompt });
+          result = parseLLMResponse(responseText);
+          html = assembleHTML(baseLayout, result, assemblyArgs);
+
+          if (!validate) break;
+
+          const sceneContext = buildSceneContext(scene, result.avatarPosition);
+          const validation = await validateSceneHTML(html, sceneContext);
+
+          if (validation.pass) {
+            if (attempt > 0) console.log(`  [validate] ✓ ${scene.sceneId} passed on retry ${attempt}`);
+            else console.log(`  [validate] ✓ ${scene.sceneId} — ${validation.summary}`);
+            break;
+          }
+
+          console.warn(`  [validate] ✗ ${scene.sceneId} — ${validation.summary}`);
+          if (attempt < MAX_VALIDATION_RETRIES) {
+            currentPrompt = buildCorrectionPrompt(originalPrompt, result, validation.issues);
+          } else {
+            console.warn(`  [validate] Proceeding with best effort for ${scene.sceneId}`);
+          }
+        }
 
         if (outputDir) {
           await mkdir(outputDir, { recursive: true });
@@ -517,6 +596,9 @@ export async function renderAllScenesWithLLM(storyboard, options = {}) {
     );
     results.push(...batchResults);
   }
+
+  // Clean up validator browser
+  await closeValidator();
 
   return results;
 }

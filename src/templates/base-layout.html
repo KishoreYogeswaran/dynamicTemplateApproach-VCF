@@ -293,9 +293,16 @@
     function triggerAnimations() {
       if (!timings || !timings.ost_timings) return;
 
+      // Collect all animated element IDs for quick lookup
+      const animatedIds = new Set(timings.ost_timings.map(t => t.element));
+
       // Reveal each .ost-container when its first child OST element appears
       const containers = document.querySelectorAll('.ost-container');
       containers.forEach(c => {
+        // Skip containers that ARE themselves animated elements —
+        // their own GSAP animation already handles the reveal
+        if (c.id && animatedIds.has(c.id)) return;
+
         // Find the earliest OST timing for any element inside this container
         let earliestMs = Infinity;
         timings.ost_timings.forEach(t => {

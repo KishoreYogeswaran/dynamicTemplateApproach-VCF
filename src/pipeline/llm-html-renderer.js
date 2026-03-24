@@ -79,6 +79,9 @@ The speaker is already in the video — do NOT add an avatar. Keep any text mini
   table_image: `## SCENE CONTEXT
 This scene shows a **data table or chart** as a pre-rendered image. The image IS the content.
 Display it centered and fully visible (object-fit: contain) so every cell is readable. Give it a clean frame — no text overlays needed.`,
+
+  // infographics_scene is built dynamically in buildInfographicsContext() below
+  infographics_scene: null,
 };
 
 // ─── Split screen context builder ───────────────────────────────────────────
@@ -124,6 +127,52 @@ You have the composite image, a header, and ${n} bullet points (one label per pa
 - The image must remain completely static — no animation. Only text elements animate.`;
 }
 
+// ─── Infographics context builder ────────────────────────────────────────────
+
+const INFOGRAPHIC_STYLES = [
+  { id: 'flow', name: 'Flow/Process', bullets: '2-5', desc: 'Arrange items as connected steps in a horizontal or vertical flow. Use numbered circles connected by lines/arrows (CSS borders or pseudo-elements). Great for sequential content (step 1 → step 2 → step 3).' },
+  { id: 'hub-spoke', name: 'Hub & Spoke', bullets: '3-5', desc: 'Place the header or keyphrase in a central circle/hexagon, with items radiating outward as connected nodes. Use CSS borders/pseudo-elements for connecting lines. Great for showing how parts relate to a central concept.' },
+  { id: 'card-grid', name: 'Card Grid', bullets: '2-4', desc: 'Arrange items as individual styled cards in a 2x2 or 1x2/1x3 grid. Each card gets a large number (36-48px bold text inside a 64px circle with var(--theme-accent) background), the item text, and a glass-card background. Great for equal-weight items.' },
+  { id: 'timeline', name: 'Vertical Timeline', bullets: '3-5', desc: 'Items arranged along a vertical line with alternating left/right placement. Each node has a circle marker on the timeline and a glass-card with the content. Great for chronological or phased content.' },
+  { id: 'comparison', name: 'Stacked Bars / Comparison', bullets: '2-3', desc: 'Horizontal bars or layered strips, each representing an item, with varying widths or visual weights. Use contrasting accent colors from the theme. Great for showing relative importance, comparison, or two opposing sides.' },
+];
+
+function buildInfographicsContext(numBullets) {
+  // Filter styles that work for this bullet count
+  const available = INFOGRAPHIC_STYLES.filter(s => {
+    const [min, max] = s.bullets.split('-').map(Number);
+    return numBullets >= min && numBullets <= max;
+  });
+
+  const styleList = available.map((s, i) => `**Style ${i + 1} — ${s.name}:** ${s.desc}`).join('\n\n');
+
+  return `## SCENE CONTEXT
+This is an **infographic scene** — a visually rich, data-driven layout that presents information in a structured, engaging way. No background image, no avatar — use the theme gradient as the backdrop.
+You have a header, sub-header, ${numBullets} bullet points, and a keyphrase. Your job is to turn these into a compelling infographic composition.
+
+**Choose the infographic style that best fits the content and voiceover narrative:**
+
+${styleList}
+
+**IMPORTANT — Bullet structure override for infographics:**
+Do NOT use the standard \`bullet-item\` / \`bullet-marker\` / \`text-bullet\` classes for this scene. Infographic items are NOT bulleted lists — they are visual elements.
+Instead, use custom divs with unique classes for each infographic item. Each item still needs \`class="anim-hidden"\` and \`id="bullet_N"\` for the animation system, but the inner structure is entirely yours to design. Example:
+\`<div class="infographic-card anim-hidden" id="bullet_1"><div class="card-number">1</div><div class="card-label">Item text</div></div>\`
+You have full freedom to style these custom classes — just don't use bullet-item, bullet-marker, or text-bullet.
+
+**Design rules for infographics:**
+- Use CSS-only decorative elements (borders, gradients, shapes via border-radius, clip-path, pseudo-elements). No images, no SVG, no emoji, no icon fonts.
+- Connecting lines, arrows, and decorative structural elements can be standalone divs or pseudo-elements — your choice for best visual result. But they MUST NOT be visible at t=0. Wrap any standalone decorative group in a div with \`class="ost-container"\` (no id needed) so it reveals alongside nearby content. Or place them inside an animated \`bullet_N\` container.
+- Number markers should use large bold text (36-48px, font-weight:700) inside styled circles (e.g., \`width:64px; height:64px; border-radius:50%; background:var(--theme-accent); color:#fff; display:flex; align-items:center; justify-content:center;\`).
+- Item text should be clean and prominent (26-30px, font-weight:500), not crammed with a chevron marker.
+- The keyphrase should be prominently placed — as a tagline at the bottom, a central element, or an accent strip.
+- The sub-header goes below the header as supporting context.
+- Keep the layout balanced and centered on the 1920x1080 canvas.
+- **Nothing should be visible at t=0.** Every element on screen (text, cards, connectors, decorative shapes) must either be inside an \`ost-container\` or have \`anim-hidden\`. The screen starts empty and elements animate in.
+- Do NOT put \`ost-container\` on elements that already have \`anim-hidden\` and an \`id="bullet_N"\` — that causes double animation. Use \`ost-container\` only on wrapper containers that hold multiple animated children (like a header card holding header + subheader).
+- This should look like a professionally designed infographic, not a bulleted list with decorations.`;
+}
+
 // ─── Prompt builder ─────────────────────────────────────────────────────────
 
 function buildPrompt(scene, _storyboard, themeCSS, neighbors = {}) {
@@ -136,6 +185,9 @@ function buildPrompt(scene, _storyboard, themeCSS, neighbors = {}) {
   let sceneContext;
   if (scene.sceneType === 'split_screen_image') {
     sceneContext = buildSplitScreenContext(media.numberOfSubImages, media.subimageAspectRatio || '');
+  } else if (scene.sceneType === 'infographics_scene') {
+    const numBullets = scene.content.bulletPoints?.length || 3;
+    sceneContext = buildInfographicsContext(numBullets);
   } else {
     sceneContext = SCENE_CONTEXT[scene.sceneType] || '## SCENE CONTEXT\nDesign an appropriate layout for the given content and media.';
   }

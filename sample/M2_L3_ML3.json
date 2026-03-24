@@ -16,7 +16,7 @@
   "recommended_video_type": "Concept Explainer",
   "total_word_count": 205,
   "approximate_duration_seconds": 131,
-  "number_of_scenes": 9,
+  "number_of_scenes": 14,
   "scenes": [
     {
       "scene_id": "M2_L3_ML3_SC1",
@@ -454,6 +454,126 @@
       },
       "selected_template_id": "b5c3fa96e1e24da8bcaea194d5117774",
       "selected_template_name": "ME_imagePanAI_template_4"
+    },
+    {
+      "scene_id": "M2_L3_ML3_SC12",
+      "character": "Anil",
+      "word_count": 38,
+      "approx_duration_seconds": 18,
+      "vo_scripts": {
+        "infographics_template_1_voScript_1": "Let us look at how a well-structured business plan comes together. From understanding customer needs to managing daily operations, each part plays a role in building a successful workshop."
+      },
+      "recommended_video_type": "Concept Explainer",
+      "scene_purpose": "Summarizing the key components of a business plan using an infographic layout — showing how customer needs, services, finances, and daily operations connect together.",
+      "scene_typology_name": "infographics_scene",
+      "visualization_notes": "Infographic scene displaying the key components of a business plan for a motor vehicle workshop.",
+      "selected_family_id": "infographics_scene_fam_1",
+      "selected_family_name": "infographics_scene_family_1_1hdr_4bullet_1keyphrase",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "infographics_template_1_header_1": "Building a Business Plan"
+        },
+        "subHeaders": {
+          "infographics_template_1_subHeader_1": "Key Components of a Workshop Plan"
+        },
+        "bulletPoints": {
+          "infographics_template_1_bulletpoint_1": "Customer Needs Analysis",
+          "infographics_template_1_bulletpoint_2": "Service Offerings & Pricing",
+          "infographics_template_1_bulletpoint_3": "Financial Planning & Budget",
+          "infographics_template_1_bulletpoint_4": "Daily Operations & Workflow"
+        },
+        "keyPhrases": {
+          "infographics_template_1_keyPhrase_1": "Plan. Build. Grow."
+        },
+        "media": {
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 0
+        }
+      },
+      "selected_template_id": "infographics_scene_001",
+      "selected_template_name": "ME_infographics_template_1"
+    },
+    {
+      "scene_id": "M2_L3_ML3_SC13",
+      "character": "Anil",
+      "word_count": 40,
+      "approx_duration_seconds": 16,
+      "vo_scripts": {
+        "infographics_template_2_voScript_1": "Every successful workshop follows a growth cycle. First, you understand customer needs by listening to their concerns. Then, you deliver quality service that exceeds expectations. And finally, you grow through trust and referrals from satisfied customers."
+      },
+      "recommended_video_type": "Concept Explainer",
+      "scene_purpose": "Showing the growth cycle of a workshop — from understanding needs to delivering service to growing through trust.",
+      "scene_typology_name": "infographics_scene",
+      "visualization_notes": "Infographic scene showing a 3-step growth cycle for a workshop.",
+      "selected_family_id": "infographics_scene_fam_2",
+      "selected_family_name": "infographics_scene_family_2_1hdr_3bullet_1keyphrase",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "infographics_template_2_header_1": "The Workshop Growth Cycle"
+        },
+        "subHeaders": {
+          "infographics_template_2_subHeader_1": "Three Phases of Sustainable Growth"
+        },
+        "bulletPoints": {
+          "infographics_template_2_bulletpoint_1": "Understand Customer Needs",
+          "infographics_template_2_bulletpoint_2": "Deliver Quality Service",
+          "infographics_template_2_bulletpoint_3": "Grow Through Trust & Referrals"
+        },
+        "keyPhrases": {
+          "infographics_template_2_keyPhrase_1": "Listen. Serve. Grow."
+        },
+        "media": {
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 0
+        }
+      },
+      "selected_template_id": "infographics_scene_002",
+      "selected_template_name": "ME_infographics_template_2"
+    },
+    {
+      "scene_id": "M2_L3_ML3_SC14",
+      "character": "Anil",
+      "word_count": 38,
+      "approx_duration_seconds": 14,
+      "vo_scripts": {
+        "infographics_template_3_voScript_1": "A well-run workshop balances two sides. On one side, you have revenue from repairs and services that keeps the business running. On the other side, you manage costs for parts, rent, and salaries to stay profitable."
+      },
+      "recommended_video_type": "Concept Explainer",
+      "scene_purpose": "Comparing income vs expenses in a workshop business using a visual infographic.",
+      "scene_typology_name": "infographics_scene",
+      "visualization_notes": "Infographic scene comparing income streams vs expense categories for a workshop.",
+      "selected_family_id": "infographics_scene_fam_3",
+      "selected_family_name": "infographics_scene_family_3_1hdr_2bullet_1keyphrase",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "infographics_template_3_header_1": "Income vs Expenses"
+        },
+        "subHeaders": {
+          "infographics_template_3_subHeader_1": "Balancing Your Workshop Finances"
+        },
+        "bulletPoints": {
+          "infographics_template_3_bulletpoint_1": "Revenue from Repairs & Services",
+          "infographics_template_3_bulletpoint_2": "Costs for Parts, Rent & Salaries"
+        },
+        "keyPhrases": {
+          "infographics_template_3_keyPhrase_1": "Earn More, Spend Smart"
+        },
+        "media": {
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 0
+        }
+      },
+      "selected_template_id": "infographics_scene_003",
+      "selected_template_name": "ME_infographics_template_3"
     }
   ],
   "template_selection_timestamp": "20251222_202520",

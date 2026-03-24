@@ -299,6 +299,7 @@ All text containers (cards, boxes, wrappers) must use \`min-height\` instead of 
 - Never hardcode colors — always use theme CSS variables
 - Never invent text, labels, or categories not in the provided content
 - Never apply continuous/looping animation (zoom, pulse, float) to images — images must be static
+- Never add ambient glow divs, blurred circles, radial gradients, or soft light effects on the background. These cause severe color banding artifacts in video encoding. Keep backgrounds flat and clean — the theme solid color is the background.
 - Never make a keyphrase larger than the header
 - Never create random or extra bullet points not in the provided content
 

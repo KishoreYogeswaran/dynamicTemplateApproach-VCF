@@ -373,7 +373,7 @@ async function runWithConcurrency(tasks, limit) {
  * Each scene is self-contained — dependencies are resolved internally.
  */
 async function processScene(scene, sceneIdx, allScenes, storyboard, ctx) {
-  const { audioDir, avatarDir, htmlDir, videoDir, skipTTS, skipAvatar, skipRecord, fps, themeOverride } = ctx;
+  const { audioDir, avatarDir, htmlDir, videoDir, skipTTS, skipAvatar, skipHTML, skipRecord, fps, themeOverride } = ctx;
   const sceneId = scene.sceneId;
   const needs = await analyzeScene(scene, storyboard);
 
@@ -501,33 +501,54 @@ async function processScene(scene, sceneIdx, allScenes, storyboard, ctx) {
   }
 
   // Step 4: Calculate timings + render HTML via LLM
-  // Duration comes from the audio file (WAN-extracted for avatar scenes, TTS/media for others)
-  const durationSource = result.audioPath;
-  if (durationSource) {
-    result.audioDurationMs = await getAudioDurationMs(durationSource);
-  }
-  const timings = calculateTimings(scene, result.audioDurationMs, wordAlignment);
-  if (wordAlignment) {
-    console.log(`  [timing] ${sceneId}: alignment=${wordAlignment.length} words, duration=${result.audioDurationMs}ms`);
-  }
-  if (timings.ost_timings.length > 0) {
-    const ostSummary = timings.ost_timings.map(t => `${t.element}@${t.appear_ms}ms`).join(', ');
-    console.log(`  [timing] ${sceneId}: OST timings: ${ostSummary}`);
-  }
+  if (skipHTML) {
+    // Use existing HTML and audio files
+    const existingHtml = join(htmlDir, `${sceneId}.html`);
+    const { existsSync } = await import('fs');
+    if (existsSync(existingHtml)) {
+      result.htmlPath = existingHtml;
+      console.log(`[${sceneId}] Using existing HTML → ${existingHtml}`);
+    } else {
+      console.error(`[${sceneId}] ✗ --skip-html: HTML file not found → ${existingHtml}`);
+    }
+    // Resolve audio duration from existing audio files
+    const { readdir } = await import('fs/promises');
+    const audioFiles = (await readdir(audioDir).catch(() => []))
+      .filter(f => f.startsWith(sceneId) && f.endsWith('.mp3'));
+    if (audioFiles.length > 0) {
+      result.audioPath = join(audioDir, audioFiles[0]);
+      result.audioDurationMs = await getAudioDurationMs(result.audioPath);
+      console.log(`  [audio] ${sceneId}: reusing ${result.audioPath} (${result.audioDurationMs}ms)`);
+    }
+  } else {
+    // Duration comes from the audio file (WAN-extracted for avatar scenes, TTS/media for others)
+    const durationSource = result.audioPath;
+    if (durationSource) {
+      result.audioDurationMs = await getAudioDurationMs(durationSource);
+    }
+    const timings = calculateTimings(scene, result.audioDurationMs, wordAlignment);
+    if (wordAlignment) {
+      console.log(`  [timing] ${sceneId}: alignment=${wordAlignment.length} words, duration=${result.audioDurationMs}ms`);
+    }
+    if (timings.ost_timings.length > 0) {
+      const ostSummary = timings.ost_timings.map(t => `${t.element}@${t.appear_ms}ms`).join(', ');
+      console.log(`  [timing] ${sceneId}: OST timings: ${ostSummary}`);
+    }
 
-  const neighbors = {
-    prev: sceneIdx > 0 ? allScenes[sceneIdx - 1] : null,
-    next: sceneIdx < allScenes.length - 1 ? allScenes[sceneIdx + 1] : null,
-  };
+    const neighbors = {
+      prev: sceneIdx > 0 ? allScenes[sceneIdx - 1] : null,
+      next: sceneIdx < allScenes.length - 1 ? allScenes[sceneIdx + 1] : null,
+    };
 
-  result.htmlPath = await renderSceneHTMLWithLLM(scene, storyboard, {
-    themeOverride,
-    audioUrl: result.audioUrl,
-    avatarVideoUrl: result.avatarVideoUrl,
-    timings,
-    outputDir: htmlDir,
-    neighbors,
-  });
+    result.htmlPath = await renderSceneHTMLWithLLM(scene, storyboard, {
+      themeOverride,
+      audioUrl: result.audioUrl,
+      avatarVideoUrl: result.avatarVideoUrl,
+      timings,
+      outputDir: htmlDir,
+      neighbors,
+    });
+  }
 
   // Step 5: Record HTML → MP4 via Puppeteer
   if (!skipRecord && result.htmlPath) {
@@ -572,6 +593,7 @@ async function processScene(scene, sceneIdx, allScenes, storyboard, ctx) {
  * @param {string}  [opts.sceneFilter]  — only process scenes matching this ID substring
  * @param {boolean} [opts.skipTTS]      — skip TTS generation
  * @param {boolean} [opts.skipAvatar]   — skip avatar generation
+ * @param {boolean} [opts.skipHTML]     — skip LLM HTML generation (use existing HTML files)
  * @param {boolean} [opts.skipRecord]   — skip Puppeteer recording
  * @param {boolean} [opts.skipStitch]   — skip FFmpeg stitching
  * @param {boolean} [opts.stitchOnly]  — only stitch existing MP4s, skip all generation
@@ -586,6 +608,7 @@ export async function runPipeline(storyboardPath, opts = {}) {
     sceneFilter = null,
     skipTTS = false,
     skipAvatar = false,
+    skipHTML = false,
     skipRecord = false,
     skipStitch = false,
     stitchOnly = false,
@@ -670,7 +693,7 @@ export async function runPipeline(storyboardPath, opts = {}) {
     // Normal mode: process all scenes
     console.log(`── Processing ${scenes.length} scenes ─────────────────────\n`);
 
-    const ctx = { audioDir, avatarDir, htmlDir, videoDir, skipTTS, skipAvatar, skipRecord, fps, themeOverride };
+    const ctx = { audioDir, avatarDir, htmlDir, videoDir, skipTTS, skipAvatar, skipHTML, skipRecord, fps, themeOverride };
 
     const tasks = scenes.map((scene, idx) => () => processScene(scene, idx, scenes, storyboard, ctx));
     results = await runWithConcurrency(tasks, concurrency);

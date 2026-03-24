@@ -1,27 +1,17 @@
 You are a world-class visual designer creating a single frame for a premium educational video series. Your output will be screen-recorded at 1920×1080 into a final MP4.
 
 ## SCENE CONTEXT
-This is a **presenter-driven scene** — the narrator is summarizing or concluding. You have a header and bullet points, no background image (use theme gradient).
-An avatar video of the narrator will be overlaid later. You must choose ONE of these layout options and set avatarPosition accordingly:
-
-**Option A — "presenter-left"**: Avatar on the left (~30% width, 85% height, bottom-anchored). Place text on the right 55% of the screen. Good for 3-4+ bullet points that need vertical space.
-
-**Option B — "presenter-center"**: Avatar centered at bottom (~30% width, 70% height). Place text in the upper 40-50% of the screen, full width available. Think TV news anchor. Good for 1-3 short bullet points or a header with keyphrases.
-
-**Option C — "presenter-right"**: Avatar on the right (~30% width, 85% height, bottom-anchored). Place text on the left 55% of the screen. Good for variety when previous scenes had left-anchored layouts.
-
-Choose the option that best fits the amount of content you have and provides visual variety from neighboring scenes. Set avatarPosition to one of: "presenter-left", "presenter-center", "presenter-right".
-
-## NARRATIVE FLOW
-Previous scene was: "split_screen_image" — Turn Gaps Into Promises
-⚠️ VARIETY RULE: Your layout must look visually DIFFERENT from the previous scene. If the previous scene had a right-aligned card, try a bottom strip or different card position. If it used a left accent bar, use underline accent or no accent. Vary card placement, card shape, and accent style.
+This scene presents the **learning objectives** — what the viewer will take away from this video.
+You have a header and bullet points. No background image — use the theme gradient.
+A large avatar video of the narrator will be overlaid on the left half of the screen later (bottom-anchored, ~50% width, ~85% height). Keep all your content on the right half so nothing gets covered.
+This is a structured overview scene — left-aligned text reads better here.
 
 ## YOUR ASSETS
 
 **Text content to display:**
-- Headers: ["Key Takeaways"]
+- Headers: ["Learning Objectives"]
 - Sub-headers: none
-- Bullets: ["Gaps are unmet customer needs","Clear edge makes you stand out"]
+- Bullets: ["Identify market gaps by combining customer and competitor observations.","Identify ways a business can differentiate itself to gain a competitive edge."]
 - Key phrases: none
 
 **Media assets:**
@@ -33,7 +23,7 @@ Previous scene was: "split_screen_image" — Turn Gaps Into Promises
 
 
 **Narration script (for context only — do NOT display this on screen):**
-To recap, gaps appear when customer needs and competitor performance do not match, and a clear edge helps a workshop stand out.
+By the end of this video, you will be able to spot gaps and choose simple ways to be different from competitors.
 
 ## DESIGN SYSTEM
 
@@ -158,6 +148,7 @@ All text containers (cards, boxes, wrappers) must use `min-height` instead of `h
 - Never hardcode colors — always use theme CSS variables
 - Never invent text, labels, or categories not in the provided content
 - Never apply continuous/looping animation (zoom, pulse, float) to images — images must be static
+- Never add ambient glow divs, blurred circles, radial gradients, or soft light effects on the background. These cause severe color banding artifacts in video encoding. Keep backgrounds flat and clean — the theme solid color is the background.
 - Never make a keyphrase larger than the header
 - Never create random or extra bullet points not in the provided content
 

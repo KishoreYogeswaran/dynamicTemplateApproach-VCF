@@ -65,8 +65,10 @@ Options:
   --concurrency <n>  Max concurrent LLM calls (default: 3)
   --skip-tts         Skip TTS audio generation
   --skip-avatar      Skip avatar video generation
+  --skip-html        Skip LLM HTML generation (use existing HTML files)
   --skip-record      Skip Puppeteer recording (HTML only)
   --skip-stitch      Skip FFmpeg stitching (individual scene MP4s only)
+  --record-only      Re-record + stitch from existing HTML & audio (skip TTS, avatar, HTML)
   --stitch-only      Only stitch existing scene MP4s (skip TTS, avatar, HTML, recording)
   --fps <n>          Recording frames per second (default: 24)
   --crossfade <ms>   Crossfade between scenes in ms (default: 0, i.e. hard cut)
@@ -81,13 +83,15 @@ Options:
 const startTime = Date.now();
 
 const stitchOnly = getFlag('--stitch-only');
+const recordOnly = getFlag('--record-only');
 
 const result = await runPipeline(storyboardPath, {
   outputDir: resolve(getFlagValue('--output') || 'outputs'),
   concurrency: parseInt(getFlagValue('--concurrency') || '3', 10),
   sceneFilter: getFlagValue('--scene') || null,
-  skipTTS: stitchOnly || getFlag('--skip-tts'),
-  skipAvatar: stitchOnly || getFlag('--skip-avatar'),
+  skipTTS: stitchOnly || recordOnly || getFlag('--skip-tts'),
+  skipAvatar: stitchOnly || recordOnly || getFlag('--skip-avatar'),
+  skipHTML: recordOnly || getFlag('--skip-html'),
   skipRecord: stitchOnly || getFlag('--skip-record'),
   skipStitch: getFlag('--skip-stitch'),
   stitchOnly,

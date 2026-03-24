@@ -23,7 +23,11 @@ node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3 --skip-tts
 # ─── Skip recording (TTS + Avatar + HTML only) 
 node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3 --skip-record
 
-# ─── Stitch only (re-stitch existing scene MP4s) 
+# ─── Record only (re-record from existing HTML + audio, then stitch)
+node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3 --record-only
+node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3 --record-only --scene SC3
+
+# ─── Stitch only (re-stitch existing scene MP4s)
 node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3 --stitch-only
 
 # ─── Theme override 

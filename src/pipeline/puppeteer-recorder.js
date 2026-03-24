@@ -1,22 +1,23 @@
 /**
- * Playwright Scene Recorder
+ * Playwright Scene Recorder — Screenshot-based
  *
- * Simple approach (same as colleague's proven Playwright script):
- * 1. Create context with video recording
- * 2. Navigate — page auto-plays (avatar video has audio, drives lip sync)
- * 3. Wait for duration
- * 4. Close context → video file finalized
- * 5. Trim startup, convert to MP4
- * 6. Mux with audio file
+ * Captures individual frames via page.screenshot() and compiles with FFmpeg.
+ * This completely bypasses Playwright's VP8 video encoder, eliminating
+ * color banding artifacts on dark backgrounds.
  *
- * Lip sync works because avatar video HAS audio baked in (Mode 1).
- * The avatar plays with its own audio track — lip sync is inherent.
+ * Flow:
+ * 1. Launch browser, navigate to HTML
+ * 2. Release playback (avatar + audio + animations)
+ * 3. Capture screenshots in real-time at target FPS
+ * 4. Map captured frames to exact output timeline
+ * 5. Compile to H.264 MP4 with FFmpeg
+ * 6. Mux with audio
  */
 
 import { chromium } from 'playwright';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
-import { mkdir, stat, unlink, rename, readdir, rmdir } from 'fs/promises';
+import { mkdir, stat, unlink, rename, readdir, rmdir, copyFile } from 'fs/promises';
 import { dirname, join } from 'path';
 
 const execFileAsync = promisify(execFile);
@@ -39,13 +40,14 @@ async function getDurationSeconds(filePath) {
 }
 
 /**
- * Record a single scene HTML to MP4.
+ * Record a single scene HTML to MP4 using screenshot-based capture.
  */
 export async function recordScene({
   htmlPath,
   outputPath,
   audioPath = '',
   durationMs = 0,
+  fps = 24,
 }) {
   let duration = durationMs;
   if (!duration && audioPath) {
@@ -54,13 +56,10 @@ export async function recordScene({
   }
   if (!duration) duration = 10000;
 
-  // Extra time for page load + animation buffer
-  const recordDurationMs = duration + 1500;
-
   await mkdir(dirname(outputPath), { recursive: true });
 
-  const recordDir = join(dirname(outputPath), '_recordings');
-  await mkdir(recordDir, { recursive: true });
+  const framesDir = join(dirname(outputPath), `_frames_${Date.now()}`);
+  await mkdir(framesDir, { recursive: true });
   const silentMp4Path = outputPath.replace('.mp4', '_silent.mp4');
 
   const browser = await chromium.launch({
@@ -75,27 +74,19 @@ export async function recordScene({
     ],
   });
 
-  let recordedVideoPath = null;
-
   try {
+    // No recordVideo — we capture frames ourselves
     const context = await browser.newContext({
       viewport: { width: 1920, height: 1080 },
-      recordVideo: {
-        dir: recordDir,
-        size: { width: 1920, height: 1080 },
-      },
     });
 
     const page = await context.newPage();
-    const recordingStartMs = Date.now();
 
     // Block auto-play during page load so we control when playback starts.
-    // This ensures all images/resources are loaded before the avatar begins.
     await page.addInitScript(() => {
       window.__playbackBlocked = true;
       window.__pendingPlays = [];
 
-      // 1. Block play() calls
       const origPlay = HTMLMediaElement.prototype.play;
       HTMLMediaElement.prototype.play = function () {
         if (window.__playbackBlocked) {
@@ -106,8 +97,6 @@ export async function recordScene({
         return origPlay.call(this);
       };
 
-      // 2. Fake readyState as 0 so Mode 1's synchronous check fails
-      //    (forces it to use the event listener path instead)
       const origReadyState = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'readyState');
       Object.defineProperty(HTMLMediaElement.prototype, 'readyState', {
         get() {
@@ -117,7 +106,6 @@ export async function recordScene({
         configurable: true,
       });
 
-      // 3. Block media events in capture phase so Mode 1/2 canplay listeners never fire
       ['canplay', 'canplaythrough', 'playing', 'play', 'loadeddata', 'loadedmetadata'].forEach(evtName => {
         document.addEventListener(evtName, (e) => {
           if (window.__playbackBlocked) {
@@ -128,58 +116,93 @@ export async function recordScene({
       });
     });
 
-    // Navigate — auto-play is blocked, page loads silently
+    // Navigate — auto-play is blocked
     await page.goto(`file://${htmlPath}`, {
       waitUntil: 'networkidle',
       timeout: 60000,
     });
     await page.waitForLoadState('networkidle');
-
-    // Brief settle for layout/paint (images are loaded, nothing is playing)
     await page.waitForTimeout(300);
 
-    // Release playback — everything starts from t=0 together
-    const playStartMs = Date.now();
+    // Release playback
     await page.evaluate(() => {
       window.__playbackBlocked = false;
 
-      // Reset all media to t=0
       const allMedia = [...document.querySelectorAll('video'), document.getElementById('scene-audio')].filter(Boolean);
       allMedia.forEach(el => { el.currentTime = 0; });
 
-      // Trigger animations fresh (Mode 1/2 never fired due to event blocking)
       if (typeof triggerAnimations === 'function') {
         triggerAnimations();
       }
 
-      // Play all pending media from t=0
       window.__pendingPlays.forEach(el => {
         el.currentTime = 0;
         HTMLMediaElement.prototype.play.call(el);
       });
     });
 
-    const trimSec = Math.max(0, (playStartMs - recordingStartMs) / 1000);
-    console.log(`    [rec] Resources loaded, playback started at ${(trimSec * 1000).toFixed(0)}ms, recording ${(recordDurationMs / 1000).toFixed(1)}s...`);
+    // Let avatar video decode first frames + audio buffer before capturing
+    await page.waitForTimeout(150);
 
-    // Wait for scene to play out
-    await page.waitForTimeout(recordDurationMs);
-
-    // Finalize recording
-    recordedVideoPath = await page.video().path();
-    await context.close();
-
-    console.log(`    [rec] Recording done, converting to MP4...`);
-
-    // Trim startup + convert to MP4 (no audio — will mux separately)
+    // ── Screenshot-based frame capture ──────────────────────────
     const audioDur = audioPath ? await getDurationSeconds(audioPath) : 0;
     const videoDuration = audioDur > 0 ? audioDur : (duration / 1000);
+    const captureDurationMs = videoDuration * 1000 + 500; // small buffer
 
+    console.log(`    [rec] Capturing frames for ${videoDuration.toFixed(1)}s at ${fps}fps...`);
+
+    const capturedFrames = []; // { timeMs, index }
+    const captureStart = Date.now();
+    let frameIndex = 0;
+
+    // Capture as fast as possible for the scene duration
+    while (Date.now() - captureStart < captureDurationMs) {
+      const timeMs = Date.now() - captureStart;
+      const frameName = `cap_${String(frameIndex).padStart(5, '0')}.jpeg`;
+
+      await page.screenshot({
+        path: join(framesDir, frameName),
+        type: 'jpeg',
+        quality: 95,
+      });
+
+      capturedFrames.push({ timeMs, file: frameName });
+      frameIndex++;
+    }
+
+    console.log(`    [rec] Captured ${capturedFrames.length} frames in ${((Date.now() - captureStart) / 1000).toFixed(1)}s`);
+
+    await context.close();
+
+    // ── Assemble output frame sequence ──────────────────────────
+    // Map each target frame to the nearest captured frame
+    const totalOutputFrames = Math.ceil(videoDuration * fps);
+
+    for (let i = 0; i < totalOutputFrames; i++) {
+      const targetMs = (i / fps) * 1000;
+
+      // Find nearest captured frame
+      let best = capturedFrames[0];
+      let bestDist = Math.abs(best.timeMs - targetMs);
+      for (const f of capturedFrames) {
+        const dist = Math.abs(f.timeMs - targetMs);
+        if (dist < bestDist) {
+          best = f;
+          bestDist = dist;
+        }
+      }
+
+      const outputName = `frame_${String(i).padStart(5, '0')}.jpeg`;
+      await copyFile(join(framesDir, best.file), join(framesDir, outputName));
+    }
+
+    console.log(`    [rec] Assembled ${totalOutputFrames} output frames, compiling to MP4...`);
+
+    // ── Compile to H.264 ────────────────────────────────────────
     await execFileAsync('ffmpeg', [
       '-y',
-      '-ss', String(trimSec),
-      '-i', recordedVideoPath,
-      '-t', String(videoDuration),
+      '-framerate', String(fps),
+      '-i', join(framesDir, 'frame_%05d.jpeg'),
       '-c:v', 'libx264',
       '-preset', 'fast',
       '-crf', '21',
@@ -188,7 +211,10 @@ export async function recordScene({
       silentMp4Path,
     ], { timeout: 120000 });
 
-    await unlink(recordedVideoPath).catch(() => {});
+    // Clean up frames
+    const allFiles = await readdir(framesDir);
+    for (const f of allFiles) await unlink(join(framesDir, f));
+    await rmdir(framesDir).catch(() => {});
 
     // Mux with audio
     if (audioPath) {
@@ -208,10 +234,6 @@ export async function recordScene({
       await rename(silentMp4Path, outputPath);
     }
 
-    // Clean up
-    const remaining = await readdir(recordDir).catch(() => []);
-    if (remaining.length === 0) await rmdir(recordDir).catch(() => {});
-
     const finalSize = (await stat(outputPath)).size;
     console.log(`    [rec] Done ${(finalSize / 1024 / 1024).toFixed(1)}MB`);
 
@@ -219,7 +241,10 @@ export async function recordScene({
 
   } catch (err) {
     console.error(`    [rec] Error:`, err);
-    if (recordedVideoPath) await unlink(recordedVideoPath).catch(() => {});
+    // Clean up frames on error
+    const allFiles = await readdir(framesDir).catch(() => []);
+    for (const f of allFiles) await unlink(join(framesDir, f)).catch(() => {});
+    await rmdir(framesDir).catch(() => {});
     return { success: false, error: String(err) };
   } finally {
     await browser.close();

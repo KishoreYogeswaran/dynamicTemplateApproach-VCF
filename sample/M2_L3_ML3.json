@@ -375,6 +375,85 @@
       },
       "selected_template_id": "dfb0986540bf464cbd8da7eaba19e5d0",
       "selected_template_name": "ME_avatarPresenter_template_13"
+    },
+    {
+      "scene_id": "M2_L3_ML3_SC10",
+      "character": "Anil",
+      "word_count": 28,
+      "approx_duration_seconds": 18,
+      "vo_scripts": {
+        "firstPerson_template_4_voScript_1": "With that plan on paper, my decisions became easier. I checked it before buying stock, fixing prices, or spending on promotion, and I avoided costly confusion with customers."
+      },
+      "recommended_video_type": "Case Studies / Examples",
+      "scene_purpose": "Result and insight scene where Anil reflects on how having a simple written plan made daily decisions about stock, pricing, and promotion easier and helped him avoid confusion with customers.",
+      "scene_typology_name": "first_person_video_staticBg",
+      "visualization_notes": "Design a static background of the inside of Anil's small motor workshop where Anil can speak directly to the viewer. The garage should have one main work bay with a motorcycle on a basic stand, a compact workbench with a few frequently used tools laid out neatly, and a small metal shelf with a modest, organised collection of spare parts boxes. In one corner, show a simple table with an open notebook or a couple of sheets of paper placed on it, representing Anil's written plan; the pages are angled so any marks or writing are not readable and remain clearly secondary to the overall scene. Near the entrance, the open shutter reveals a hint of the lane outside, and a simple board or painted area near the doorway suggests a basic signboard used for promotion, but its surface is either partially in shadow or out of focus so no text is legible. Overall, the workshop feels busy yet manageable, conveying that Anil's operations are now smoother because of planning. All text-bearing objects such as papers, boxes, or boards are present only as background context with no readable content. All text, symbols, numbers illegible through positioning/light blur/camera angle",
+      "selected_family_id": "first_person_video_staticBg_fam_3",
+      "selected_family_name": "first_person_video_staticBg_family_3_1vid_1hdr_2bullet_1keyphrase",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "firstPerson_template_4_header_1": "Plan Guides Decisions"
+        },
+        "subHeaders": {},
+        "bulletPoints": {
+          "firstPerson_template_4_bulletpoint_1": "Check plan before spending",
+          "firstPerson_template_4_bulletpoint_2": "Avoid confusion with customers"
+        },
+        "keyPhrases": {
+          "firstPerson_template_4_keyPhrase_1": "Benefits of Plan"
+        },
+        "media": {
+          "firstPerson_template_4_video_1_prompt": "The character stands completely still with body and hands motionless and narrates the provided speech in a calm and professional way. The background must remain completely static. All background elements should stay perfectly still and unchanged throughout the video.",
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 0,
+          "firstPerson_template_4_video_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/02/05/M2_L1_ML2_SC7/first_person_video_muted.mp4?st=2026-02-05T07%3A33%3A00Z&se=2036-02-03T07%3A33%3A00Z&sp=r&sv=2025-07-05&sr=b&sig=lbXzFthi1rmKGesKKbf2jB/2427fSw7%2Bn8YJyPOFpcs%3D",
+          "firstPerson_template_4_audio_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/02/05/M2_L1_ML2_SC7/voiceover.mp3?st=2026-02-05T07%3A33%3A02Z&se=2036-02-03T07%3A33%3A02Z&sp=r&sv=2025-07-05&sr=b&sig=yZXaz4iccJsauaxqeNXDijF1VWv9xvmNFJPVQl3z33o%3D"
+        }
+      },
+      "selected_template_id": "30c030c5f02640088ef387e70f5db83b",
+      "selected_template_name": "ME_firstPerson_template_4"
+    },
+    {
+      "scene_id": "M2_L3_ML3_SC11",
+      "character": "Anil",
+      "word_count": 22,
+      "approx_duration_seconds": 14,
+      "vo_scripts": {
+        "imagePanAI_template_4_voScript_1": "It can also describe daily working style, such as opening time, closing time, number of vehicles handled together and rules for helpers."
+      },
+      "recommended_video_type": "Concept Explainer",
+      "scene_purpose": "Showing that a business plan can describe the workshop's daily working style, including timings, workload capacity, and simple rules for helpers.",
+      "scene_typology_name": "panning_video",
+      "visualization_notes": "Generate a single high-resolution 16:9 landscape image of the inside of a small motorbike repair workshop during working hours, designed for a gentle panning movement from the entrance inward. Near the open shutter, Anil, an Indian motor mechanic with brown skin tone, stands beside two motorbikes parked close together, checking one of them, which subtly suggests the number of vehicles handled at the same time. Deeper inside, a simple wall clock and a basic notice board with hand-drawn lines and writing are visible on the wall, hinting at opening and closing times and simple rules, but positioned so the details cannot be read. In one corner, an Indian helper with brown skin tone in simple work clothes tidies tools near a small rack, indicating that helpers follow set routines. The overall setup is modest, with bare walls, minimal equipment, and natural daylight filtering in, clearly representing an achievable micro-entrepreneur garage. All text, symbols, numbers illegible through positioning/light blur/camera_angle",
+      "selected_family_id": "panning_video_fam_3",
+      "selected_family_name": "panning_video_family_3_1vid_1hdr_2bullet_1keyphrase",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "imagePanAI_template_4_header_1": "Daily Working Style"
+        },
+        "subHeaders": {},
+        "bulletPoints": {
+          "imagePanAI_template_4_bulletpoint_1": "Opening and closing time",
+          "imagePanAI_template_4_bulletpoint_2": "Vehicles and helpers limit"
+        },
+        "keyPhrases": {
+          "imagePanAI_template_4_keyPhrase_1": "Simple Workshop Rules"
+        },
+        "media": {
+          "imagePanAI_template_4_video_1_prompt": "High-resolution horizontal 16:9 view inside a small motorbike repair workshop in a semi-urban Indian neighborhood during working hours, composed so the camera can gently pan from the open shutter inward to the back of the garage. Near the entrance, USE CHARACTER REFERENCE - Anil (KEY NARRATOR OF THIS SCENE) wearing simple work clothes and safety gloves stands beside two motorbikes parked close together, concentrating on checking one motorcycle with a basic hand tool to suggest the number of vehicles handled at the same time. Anil must match the reference image exactly. Deeper inside, a plain wall shows a round wall clock and a basic notice board with hand-drawn lines and writing, both positioned and slightly defocused so their details cannot be read, hinting at opening and closing times and simple workshop rules. In one corner, a younger Indian male helper with brown skin tone in his early 20s with slim build and clean-shaven face, wearing a worn t-shirt and trousers, tidies tools on a small rack, indicating that helpers follow set routines. Bare walls, minimal equipment, a concrete floor with light oil stains, and natural daylight streaming in from the shutter create an achievable micro-entrepreneur garage environment, photorealistic, natural lighting. All text, symbols, numbers illegible through positioning/defocus.",
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 0,
+          "imagePanAI_template_4_video_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/02/16/M2_L1_ML1_SC8/scene_video.mp4?st=2026-02-16T04%3A56%3A44Z&se=2036-02-14T04%3A56%3A44Z&sp=r&sv=2025-07-05&sr=b&sig=SIQ5tJUf%2BomHwhDKByaDUQWfXdCECrcmnuOxr94CtFY%3D"
+        }
+      },
+      "selected_template_id": "b5c3fa96e1e24da8bcaea194d5117774",
+      "selected_template_name": "ME_imagePanAI_template_4"
     }
   ],
   "template_selection_timestamp": "20251222_202520",

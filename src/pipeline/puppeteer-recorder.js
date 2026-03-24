@@ -1,22 +1,23 @@
 /**
- * Puppeteer Scene Recorder
+ * Playwright Scene Recorder
  *
- * Uses page.screencast() for video capture during browser playback,
- * then muxes with the original audio file via FFmpeg.
+ * Simple approach (same as colleague's proven Playwright script):
+ * 1. Create context with video recording
+ * 2. Navigate — page auto-plays (avatar video has audio, drives lip sync)
+ * 3. Wait for duration
+ * 4. Close context → video file finalized
+ * 5. Trim startup, convert to MP4
+ * 6. Mux with audio file
  *
- * Key sync strategy:
- * 1. Start screencast (captures VFR frames from t=0)
- * 2. Start playback (media begins at t=offset)
- * 3. Detect actual 'playing' event to measure true offset
- * 4. FFmpeg muxes with -itsoffset to delay audio by that amount
- * 5. VFR timestamps are preserved (no CFR conversion) to avoid frame redistribution drift
+ * Lip sync works because avatar video HAS audio baked in (Mode 1).
+ * The avatar plays with its own audio track — lip sync is inherent.
  */
 
-import puppeteer from 'puppeteer';
+import { chromium } from 'playwright';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
-import { mkdir, stat, unlink } from 'fs/promises';
-import { dirname } from 'path';
+import { mkdir, stat, unlink, rename, readdir, rmdir } from 'fs/promises';
+import { dirname, join } from 'path';
 
 const execFileAsync = promisify(execFile);
 
@@ -45,7 +46,6 @@ export async function recordScene({
   outputPath,
   audioPath = '',
   durationMs = 0,
-  fps = 24,
 }) {
   let duration = durationMs;
   if (!duration && audioPath) {
@@ -54,210 +54,172 @@ export async function recordScene({
   }
   if (!duration) duration = 10000;
 
-  // Small buffer so late-appearing animations finish before recording stops
-  const totalDuration = duration + 1000;
+  // Extra time for page load + animation buffer
+  const recordDurationMs = duration + 1500;
 
   await mkdir(dirname(outputPath), { recursive: true });
 
-  const webmPath = outputPath.replace('.mp4', '_screencast.webm');
+  const recordDir = join(dirname(outputPath), '_recordings');
+  await mkdir(recordDir, { recursive: true });
+  const silentMp4Path = outputPath.replace('.mp4', '_silent.mp4');
 
-  console.log(`    [rec] Recording ${(totalDuration / 1000).toFixed(1)}s at ${fps}fps...`);
-
-  const browser = await puppeteer.launch({
+  const browser = await chromium.launch({
     headless: true,
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
       '--disable-dev-shm-usage',
-      '--window-size=1920,1080',
       '--autoplay-policy=no-user-gesture-required',
       '--disable-background-timer-throttling',
       '--disable-renderer-backgrounding',
     ],
   });
 
-  try {
-    const page = await browser.newPage();
-    await page.setViewport({ width: 1920, height: 1080 });
+  let recordedVideoPath = null;
 
-    // Expose function for the page to report when media actually starts playing
-    let playingResolve;
-    const playingPromise = new Promise(r => { playingResolve = r; });
-    await page.exposeFunction('_onPlaybackStarted', () => {
-      playingResolve(Date.now());
+  try {
+    const context = await browser.newContext({
+      viewport: { width: 1920, height: 1080 },
+      recordVideo: {
+        dir: recordDir,
+        size: { width: 1920, height: 1080 },
+      },
     });
 
+    const page = await context.newPage();
+    const recordingStartMs = Date.now();
+
+    // Block auto-play during page load so we control when playback starts.
+    // This ensures all images/resources are loaded before the avatar begins.
+    await page.addInitScript(() => {
+      window.__playbackBlocked = true;
+      window.__pendingPlays = [];
+
+      // 1. Block play() calls
+      const origPlay = HTMLMediaElement.prototype.play;
+      HTMLMediaElement.prototype.play = function () {
+        if (window.__playbackBlocked) {
+          this.pause();
+          window.__pendingPlays.push(this);
+          return Promise.resolve();
+        }
+        return origPlay.call(this);
+      };
+
+      // 2. Fake readyState as 0 so Mode 1's synchronous check fails
+      //    (forces it to use the event listener path instead)
+      const origReadyState = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'readyState');
+      Object.defineProperty(HTMLMediaElement.prototype, 'readyState', {
+        get() {
+          if (window.__playbackBlocked) return 0;
+          return origReadyState.get.call(this);
+        },
+        configurable: true,
+      });
+
+      // 3. Block media events in capture phase so Mode 1/2 canplay listeners never fire
+      ['canplay', 'canplaythrough', 'playing', 'play', 'loadeddata', 'loadedmetadata'].forEach(evtName => {
+        document.addEventListener(evtName, (e) => {
+          if (window.__playbackBlocked) {
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+          }
+        }, true);
+      });
+    });
+
+    // Navigate — auto-play is blocked, page loads silently
     await page.goto(`file://${htmlPath}`, {
-      waitUntil: 'networkidle0',
+      waitUntil: 'networkidle',
       timeout: 60000,
     });
+    await page.waitForLoadState('networkidle');
 
-    // Pause all media and wait for ready
+    // Brief settle for layout/paint (images are loaded, nothing is playing)
+    await page.waitForTimeout(300);
+
+    // Release playback — everything starts from t=0 together
+    const playStartMs = Date.now();
     await page.evaluate(() => {
-      const audio = document.getElementById('scene-audio');
-      const allVideos = document.querySelectorAll('video');
-      if (audio) { audio.pause(); audio.currentTime = 0; }
-      allVideos.forEach(v => { v.pause(); v.currentTime = 0; });
-    });
+      window.__playbackBlocked = false;
 
-    await page.evaluate(() => {
-      return new Promise((resolve) => {
-        const audio = document.getElementById('scene-audio');
-        const allVideos = [...document.querySelectorAll('video')];
-        const hasAudio = audio && audio.src && audio.src !== window.location.href;
+      // Reset all media to t=0
+      const allMedia = [...document.querySelectorAll('video'), document.getElementById('scene-audio')].filter(Boolean);
+      allMedia.forEach(el => { el.currentTime = 0; });
 
-        let pending = 0;
-        function done() { if (--pending <= 0) resolve(); }
-
-        if (hasAudio) {
-          pending++;
-          if (audio.readyState >= 3) done();
-          else audio.addEventListener('canplaythrough', done, { once: true });
-        }
-
-        allVideos.forEach(v => {
-          if (v.src || v.querySelector('source')) {
-            pending++;
-            if (v.readyState >= 3) done();
-            else {
-              v.addEventListener('canplaythrough', done, { once: true });
-              v.addEventListener('error', done, { once: true });
-            }
-          }
-        });
-
-        if (pending === 0) resolve();
-        setTimeout(() => resolve(), 10000);
-      });
-    });
-
-    console.log(`    [rec] Media ready, starting recording...`);
-
-    // Reset to time zero and disable looping so videos freeze on last frame
-    await page.evaluate(() => {
-      const audio = document.getElementById('scene-audio');
-      const allVideos = document.querySelectorAll('video');
-      if (audio) { audio.pause(); audio.currentTime = 0; }
-      allVideos.forEach(v => { v.pause(); v.currentTime = 0; v.loop = false; });
-      if (typeof gsap !== 'undefined') { gsap.globalTimeline.clear(); }
-      document.querySelectorAll('[id^="header_"], [id^="bullet_"], [id^="keyphrase_"], [id^="subheader_"]').forEach(el => {
-        el.style.opacity = '0';
-      });
-    });
-
-    // 1. Start screencast — captures frames from this moment
-    const screencastStartMs = Date.now();
-    const recorder = await page.screencast({
-      path: webmPath,
-      speed: 1,
-      crop: { x: 0, y: 0, width: 1920, height: 1080 },
-    });
-
-    // 2. Start playback and listen for actual 'playing' event
-    await page.evaluate(() => {
-      const audio = document.getElementById('scene-audio');
-      const avatarVideo = document.getElementById('avatar-video');
-      const allVideos = [...document.querySelectorAll('video')];
-      const hasAudio = audio && audio.src && audio.src !== window.location.href;
-
-      // Listen for the actual 'playing' event on whichever media drives audio
-      // This fires when the media pipeline has actually started decoding
-      if (avatarVideo && !avatarVideo.muted) {
-        avatarVideo.addEventListener('playing', () => window._onPlaybackStarted(), { once: true });
-      } else if (hasAudio) {
-        audio.addEventListener('playing', () => window._onPlaybackStarted(), { once: true });
-      } else {
-        // No audio source — signal immediately
-        window._onPlaybackStarted();
-      }
-
+      // Trigger animations fresh (Mode 1/2 never fired due to event blocking)
       if (typeof triggerAnimations === 'function') {
         triggerAnimations();
       }
 
-      // Play all non-avatar videos (background videos etc.)
-      allVideos.forEach(v => {
-        if (v.id !== 'avatar-video') {
-          v.currentTime = 0;
-          v.play().catch(() => {});
-        }
+      // Play all pending media from t=0
+      window.__pendingPlays.forEach(el => {
+        el.currentTime = 0;
+        HTMLMediaElement.prototype.play.call(el);
       });
-
-      // Start audio first, then sync avatar to it
-      if (hasAudio) {
-        audio.currentTime = 0;
-        audio.play().catch(() => {});
-      }
-
-      if (avatarVideo) {
-        avatarVideo.currentTime = hasAudio ? audio.currentTime : 0;
-        avatarVideo.play().catch(() => {});
-      }
     });
 
-    // Wait for actual playback to start (with timeout fallback)
-    const actualPlayMs = await Promise.race([
-      playingPromise,
-      sleep(3000).then(() => Date.now()),
-    ]);
+    const trimSec = Math.max(0, (playStartMs - recordingStartMs) / 1000);
+    console.log(`    [rec] Resources loaded, playback started at ${(trimSec * 1000).toFixed(0)}ms, recording ${(recordDurationMs / 1000).toFixed(1)}s...`);
 
-    const offsetSec = (actualPlayMs - screencastStartMs) / 1000;
-    console.log(`    [rec] Screencast-to-play offset: ${(offsetSec * 1000).toFixed(0)}ms`);
+    // Wait for scene to play out
+    await page.waitForTimeout(recordDurationMs);
 
-    // 3. Wait for scene to play out
-    await sleep(totalDuration);
+    // Finalize recording
+    recordedVideoPath = await page.video().path();
+    await context.close();
 
-    // 4. Stop screencast
-    await recorder.stop();
+    console.log(`    [rec] Recording done, converting to MP4...`);
 
-    console.log(`    [rec] Screencast done, encoding to MP4...`);
+    // Trim startup + convert to MP4 (no audio — will mux separately)
+    const audioDur = audioPath ? await getDurationSeconds(audioPath) : 0;
+    const videoDuration = audioDur > 0 ? audioDur : (duration / 1000);
 
-    // 5. Mux video + audio
-    // IMPORTANT: No -vsync cfr or -r flag — preserve original VFR timestamps.
-    // CFR conversion redistributes frames and causes cumulative drift.
+    await execFileAsync('ffmpeg', [
+      '-y',
+      '-ss', String(trimSec),
+      '-i', recordedVideoPath,
+      '-t', String(videoDuration),
+      '-c:v', 'libx264',
+      '-preset', 'fast',
+      '-crf', '21',
+      '-pix_fmt', 'yuv420p',
+      '-an',
+      silentMp4Path,
+    ], { timeout: 120000 });
+
+    await unlink(recordedVideoPath).catch(() => {});
+
+    // Mux with audio
     if (audioPath) {
-      const audioDur = await getDurationSeconds(audioPath);
+      console.log(`    [rec] Muxing audio (${audioDur.toFixed(1)}s)...`);
       await execFileAsync('ffmpeg', [
         '-y',
-        '-fflags', '+genpts',
-        '-i', webmPath,
-        // Delay audio to align with when playback actually started in the screencast
-        '-itsoffset', String(offsetSec),
+        '-i', silentMp4Path,
         '-i', audioPath,
-        '-c:v', 'libx264',
-        '-preset', 'fast',
-        '-crf', '21',
-        '-pix_fmt', 'yuv420p',
+        '-c:v', 'copy',
         '-c:a', 'aac',
         '-b:a', '192k',
-        '-t', String(audioDur > 0 ? audioDur : totalDuration / 1000),
+        '-shortest',
         outputPath,
       ], { timeout: 120000 });
+      await unlink(silentMp4Path).catch(() => {});
     } else {
-      // No audio
-      await execFileAsync('ffmpeg', [
-        '-y',
-        '-fflags', '+genpts',
-        '-i', webmPath,
-        '-c:v', 'libx264',
-        '-preset', 'fast',
-        '-crf', '21',
-        '-pix_fmt', 'yuv420p',
-        '-an',
-        outputPath,
-      ], { timeout: 120000 });
+      await rename(silentMp4Path, outputPath);
     }
 
     // Clean up
-    await unlink(webmPath).catch(() => {});
+    const remaining = await readdir(recordDir).catch(() => []);
+    if (remaining.length === 0) await rmdir(recordDir).catch(() => {});
 
     const finalSize = (await stat(outputPath)).size;
     console.log(`    [rec] Done ${(finalSize / 1024 / 1024).toFixed(1)}MB`);
 
-    return { success: true, outputPath, durationMs: totalDuration };
+    return { success: true, outputPath, durationMs: duration };
 
   } catch (err) {
     console.error(`    [rec] Error:`, err);
+    if (recordedVideoPath) await unlink(recordedVideoPath).catch(() => {});
     return { success: false, error: String(err) };
   } finally {
     await browser.close();
@@ -267,8 +229,7 @@ export async function recordScene({
 /**
  * Record multiple scenes in sequence.
  */
-export async function recordAllScenes(scenes, opts = {}) {
-  const { fps = 24 } = opts;
+export async function recordAllScenes(scenes) {
   const results = [];
 
   for (const scene of scenes) {
@@ -278,14 +239,9 @@ export async function recordAllScenes(scenes, opts = {}) {
       outputPath: scene.outputPath,
       audioPath: scene.audioPath || '',
       durationMs: scene.durationMs || 0,
-      fps,
     });
     results.push({ sceneId: scene.sceneId, ...result });
   }
 
   return results;
-}
-
-function sleep(ms) {
-  return new Promise(r => setTimeout(r, ms));
 }

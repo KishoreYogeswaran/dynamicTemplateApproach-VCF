@@ -268,7 +268,7 @@ async function generateAvatar(scene, storyboard, audioPath, outputDir) {
       '-pix_fmt', 'yuva420p',
       '-b:v', '1M',
       '-auto-alt-ref', '0',
-      '-an',
+      '-c:a', 'libopus', '-b:a', '128k',
       '-y', compressedPath,
     ], { timeout: 300_000 });
 

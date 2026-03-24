@@ -158,7 +158,7 @@ export class TransparentVideoClient {
       body: JSON.stringify({
         background_color: 'Transparent',
         output_container_and_codec: 'mov_proresks',
-        preserve_audio: false,
+        preserve_audio: true,
         video: videoUrl,
       }),
       signal: AbortSignal.timeout(120_000),

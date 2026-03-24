@@ -81,8 +81,17 @@ function syncTimingsToVoiceover(elements, alignment, totalDurationMs) {
     normalized: normalize(w.word),
   }));
 
+  // Track the last matched position to avoid duplicate elements matching
+  // to the same voiceover region (e.g., when bullet text has duplicate content)
+  let lastMatchedIdx = -1;
+
   const rawTimings = elements.map(el => {
-    const matchMs = findBestMatch(el.text, alignWords);
+    const matchMs = findBestMatch(el.text, alignWords, lastMatchedIdx + 1);
+    if (matchMs !== null) {
+      // Update lastMatchedIdx to the word index that produced this match
+      const matchIdx = alignWords.findIndex(w => w.start_ms === matchMs);
+      if (matchIdx >= 0) lastMatchedIdx = matchIdx;
+    }
     return {
       element: el.id,
       animation: el.animation,
@@ -140,14 +149,18 @@ function syncTimingsToVoiceover(elements, alignment, totalDurationMs) {
  * Uses a sliding window approach: extract significant words from the OST text,
  * then find the window in the alignment that contains the most matches.
  */
-function findBestMatch(ostText, alignWords) {
-  const ostWords = extractSignificantWords(ostText);
+function findBestMatch(ostText, alignWords, startFrom = 0) {
+  let ostWords = extractSignificantWords(ostText);
   if (ostWords.length === 0) return null;
+
+  // Use only the first 4 unique significant words to avoid
+  // duplicate/trailing text skewing the match to wrong positions
+  ostWords = [...new Set(ostWords)].slice(0, 4);
 
   let bestIdx = -1;
   let bestScore = 0;
 
-  for (let i = 0; i < alignWords.length; i++) {
+  for (let i = startFrom; i < alignWords.length; i++) {
     const aw = alignWords[i].normalized;
 
     // Check if this alignment word matches any OST word

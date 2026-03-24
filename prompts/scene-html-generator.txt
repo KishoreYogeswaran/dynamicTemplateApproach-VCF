@@ -1,46 +1,85 @@
-SCENE HTML GENERATOR PROMPT
-===========================
-Sent to Gemini 3.1 Pro (thinking: HIGH) per scene.
-Each scene gets ONLY its own scene-type context block + its assets.
-Prev/next scene headers included for narrative flow.
-Image prompts (describing composition) are passed when available.
-
-
----BEGIN PROMPT---
-
 You are a world-class visual designer creating a single frame for a premium educational video series. Your output will be screen-recorded at 1920×1080 into a final MP4.
 
-{{SCENE_CONTEXT — one block selected by scene type, see below}}
-
-## NARRATIVE FLOW
-Previous scene was: "{{prev.sceneType}}" — {{prev header}}
-Next scene will be: "{{next.sceneType}}" — {{next header}}
+## SCENE CONTEXT
+A **cinematic/atmospheric video** plays as the visual backdrop while the narrator speaks.
+You have the video URL and optionally header, bullets, and keyphrase. Audio is generated separately.
+Let the video be the star — if there's text, keep it compact and unobtrusive.
 
 ## YOUR ASSETS
 
 **Text content to display:**
-- Headers: {{headers or "none"}}
-- Sub-headers: {{subHeaders or "none"}}
-- Bullets: {{bullets or "none"}}
-- Key phrases: {{keyPhrases or "none"}}
+- Headers: ["Daily Working Style"]
+- Sub-headers: none
+- Bullets: ["Opening and closing time","Vehicles and helpers limit"]
+- Key phrases: ["Simple Workshop Rules"]
 
 **Media assets:**
-- Images: {{image URLs or "none"}}
-- Videos: {{video URLs or "none"}}
-- Audio: {{audio URLs or "none"}}
-- Image aspect ratio: {{vertical/horizontal/square/none}}
-- COMPOSITE IMAGE: {{if true}} This single image contains N sub-images stitched together
+- Images: none
+- Videos: ["https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/02/16/M2_L1_ML1_SC8/scene_video.mp4?st=2026-02-16T04%3A56%3A44Z&se=2036-02-14T04%3A56%3A44Z&sp=r&sv=2025-07-05&sr=b&sig=SIQ5tJUf%2BomHwhDKByaDUQWfXdCECrcmnuOxr94CtFY%3D"]
+- Audio: none
+- Image aspect ratio: horizontal
 
-**Image description (tells you how the image is composed):**
-{{image prompt text — describes panel layout, content of each panel}}
+
 
 **Narration script (for context only — do NOT display this on screen):**
-{{voScript text}}
+It can also describe daily working style, such as opening time, closing time, number of vehicles handled together and rules for helpers.
 
 ## DESIGN SYSTEM
 
 **Color palette (use ONLY these CSS variables — never hardcode colors):**
-{{themeCSS}}
+:root {
+  /* Primary palette */
+  --theme-primary: #E11D48;
+  --theme-primary-light: #FDA4AF;
+  --theme-primary-dark: #9F1239;
+  --theme-secondary: #8B5CF6;
+  --theme-accent: #FB923C;
+
+  /* Backgrounds */
+  --theme-bg-solid: #0F172A;
+  --theme-bg-gradient: linear-gradient(135deg, #0F172A 0%, #1E1B2E 50%, #0D1321 100%);
+  --theme-bg-card: rgba(253, 164, 175, 0.06);
+  --theme-bg-card-border: rgba(253, 164, 175, 0.10);
+
+  /* Text */
+  --theme-text-primary: #FFF1F3;
+  --theme-text-secondary: #E2D8E4;
+  --theme-text-muted: #7B7490;
+
+  /* OST specific */
+  --theme-ost-bg: rgba(15, 23, 42, 0.7);
+  --theme-ost-border: rgba(253, 164, 175, 0.1);
+  --theme-ost-highlight: #FDA4AF;
+  --theme-bullet-marker: #FDA4AF;
+  --theme-keyphrase-bg: rgba(253, 164, 175, 0.12);
+  --theme-keyphrase-border: #FDA4AF;
+
+  /* Table specific */
+  --theme-table-header-bg: #9F1239;
+  --theme-table-row-even: rgba(253, 164, 175, 0.03);
+  --theme-table-row-odd: rgba(253, 164, 175, 0.06);
+  --theme-table-border: rgba(253, 164, 175, 0.08);
+  --theme-table-highlight: rgba(253, 164, 175, 0.12);
+
+  /* Shadows & effects */
+  --theme-shadow-card: 0 8px 32px rgba(0, 0, 0, 0.35);
+  --theme-shadow-text: 0 2px 8px rgba(0, 0, 0, 0.5);
+
+  /* Animation */
+  --theme-transition-speed: 0.4s;
+  --theme-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+/* Domain override: motor_vehicle_workshop */
+:root {
+  --theme-accent: #F97316;
+  --theme-primary-light: #FDBA74;
+  --theme-ost-highlight: #F97316;
+  --theme-bullet-marker: #F97316;
+  --theme-keyphrase-border: #F97316;
+}
+
 
 **Typography:**
 - var(--font-primary) — body/bullet text
@@ -48,129 +87,79 @@ Next scene will be: "{{next.sceneType}}" — {{next header}}
 
 **Canvas:** 1920×1080px fixed. body is already set with overflow:hidden.
 
-## DESIGN PRINCIPLES
-- Create a polished, broadcast-quality layout. Think educational YouTube premium, not PowerPoint.
-- Use glassmorphism for text containers: semi-transparent backgrounds (use --theme-ost-bg), backdrop-filter:blur, subtle borders (--theme-ost-border), rounded corners.
-- Generous padding and whitespace. Nothing should feel cramped.
-- Images/videos that serve as backgrounds must cover the full 1920×1080 canvas (position:absolute, width:100%, height:100%, object-fit:cover) with a dark gradient overlay for text readability.
-- Text sizing: titles 44-52px, subheaders 28-32px, bullets 24-28px, keyphrases 32-36px. Never exceed 56px.
-- Text containers should not exceed 40% of the canvas width so they don't overwhelm the visuals.
-- Use position:absolute for all layout positioning.
-- Apply class="anim-kenBurns" on background <img> tags for a slow cinematic zoom effect.
+## DESIGN GUIDELINES
+
+### Quality & Creativity
+- This is premium educational content — think Kurzgesagt, Brilliant.org, TED-Ed, Masterclass. NOT PowerPoint or Canva.
+- Be highly creative with layouts, card shapes, and visual treatments. Each scene should feel fresh and unique.
+- If someone watches 8 scenes in a row, they should feel visually connected (same brand) but never repetitive.
+
+### Brand System (follow these for visual consistency)
+
+**Glassmorphism cards** for all text containers:
+`background: var(--theme-ost-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--theme-ost-border); border-radius: 12-24px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);`
+
+**Typography scale:**
+- Headers: 44–52px, font-weight: 700, var(--font-heading)
+- Sub-headers: 28–32px, font-weight: 600, var(--font-heading)
+- Bullets: 24–28px, font-weight: 400, var(--font-primary)
+- Key phrases: 32–36px, font-weight: 600, var(--font-heading) — make them visually distinct from headers (accent color, underline, etc.)
+- Never exceed 56px or go below 22px for any text.
+
+**Colors:** Use ONLY CSS variables from the theme — never hardcode colors.
+
+**Safe zone:** Keep all content at least 60px from every canvas edge. If positioning with `left: X%`, also set `right: 60px` or max-width to prevent clipping.
+
+**Text on images/video:** Always add a dark gradient overlay or use a glass card for contrast. Add text-shadow for crispness.
+
+**Background media:** position:absolute, top:0, left:0, width/height 100%, object-fit:cover. Videos: autoplay, muted, loop, playsinline.
+
+**Layout:** Use position:absolute for layout blocks. Z-index order: background (1) → overlay (2) → content (3).
+
+### No image overlays
+Do NOT add any gradient overlay, darkening div, or semi-transparent layer on top of background images. Images must show without any overlay. Use glass-cards for text readability instead.
+
+### Container visibility
+EVERY container, card, box, or wrapper div that holds or surrounds OST text elements (headers, bullets, keyphrases, subheaders) MUST have the CSS class `ost-container`. This includes glass-cards, label containers, header strips, bullet wrappers — any div with a visible background, border, or backdrop that wraps text. The container stays invisible until the first OST element inside it animates in. If you have separate containers (e.g. header card at top, bullet card at bottom), EACH one needs `ost-container`. Example: `<div class="glass-card ost-container">`
+
+### Bullet structure
+Each bullet must use this exact structure: `<div class="bullet-item anim-hidden" id="bullet_N"><span class="bullet-marker"></span><span class="text-bullet">text here</span></div>`
+The bullet-marker span must be EMPTY — the chevron marker is added via CSS ::after. Do NOT put any text or symbol inside the bullet-marker span.
+**CRITICAL:** Do NOT restyle `.bullet-marker` or `.bullet-item` in your CSS. These classes are already fully styled in the base CSS with the correct chevron, padding, background, and border-radius. If you redefine them, you will break the design system.
+
+### Keyphrase styling
+Keyphrases must use the `text-keyphrase` class and one accent class: `keyphrase-underline`, `keyphrase-accent-color`, or `keyphrase-left-bar`. Do NOT create background boxes, padding boxes, or custom containers around keyphrases. The keyphrase should be clean inline text with only the accent style applied.
+
+### Do NOT override base component styles
+The following CSS classes are pre-styled in the base layout and must NOT be redefined in your scene CSS: `.bullet-item`, `.bullet-marker`, `.text-bullet`, `.text-header`, `.text-subheader`, `.text-keyphrase`, `.glass-card`, `.avatar-circle`, `.avatar-torso`. You may create new custom classes but never redefine these.
+
+### Things to Avoid
+- Never place text directly on a busy image without a glass card
+- Never add gradient overlays or darkening divs on images
+- Never let content clip outside the canvas or its container
+- Never hardcode colors — always use theme CSS variables
+- Never invent text, labels, or categories not in the provided content
+- Never apply continuous/looping animation (zoom, pulse, float) to images — images must be static
+- Never make a keyphrase larger than the header
+- Never create random or extra bullet points not in the provided content
 
 ## OUTPUT FORMAT
-Return ONLY a raw JSON object with exactly three keys. No markdown, no backticks, no commentary:
-{"html": "...", "css": "...", "script": "..."}
+Return ONLY a raw JSON object. No markdown, no backticks, no commentary:
+{"html": "...", "css": "...", "script": "...", "avatarPosition": "bottom-left"}
 
-- html: inner body content (goes inside <body>)
-- css: scene-specific styles (goes inside an existing <style> block)
-- script: JS if needed, otherwise empty string ""
+- html: inner body content (goes inside <body>). Must be clean semantic HTML.
+- css: scene-specific styles (goes inside an existing <style> block). Follow the spacing and glassmorphism specs above exactly.
+- script: JS if needed (slideshow transitions, etc.), otherwise empty string ""
+- avatarPosition: where to place the avatar overlay — one of "bottom-left", "bottom-right", "top-left", "top-right". Only relevant for scenes with an avatar; use "bottom-left" as default. Choose based on your layout so text and avatar don't overlap.
 
-**Animation system:** Every text element that should animate in MUST have class="anim-hidden" and a unique sequential id. A separate timing system handles the reveal — do NOT write animation trigger JS (no setTimeout, no DOMContentLoaded).
+**Animation system (GSAP-powered):** Every text element that should animate in MUST have class="anim-hidden" and a unique sequential id. GSAP handles all text animations automatically via a timing system — do NOT write any animation JS yourself (no setTimeout, no requestAnimationFrame, no DOMContentLoaded, no IntersectionObserver, no CSS animation/transition on text elements). GSAP controls all text reveals.
 - Headers: id="header_1", id="header_2" ...
 - Bullets: id="bullet_1", id="bullet_2" ...
 - Key phrases: id="keyphrase_1", id="keyphrase_2" ...
 - Sub-headers: id="subheader_1" ...
 
-**Only display text from the provided content elements. Never invent labels, categories, or decorative text.**
+You may still use CSS animation classes for non-text elements like background images (anim-kenBurns) but NEVER on text elements.
 
----END PROMPT---
+**Avatar overlay:** Do NOT include any avatar or narrator video element in your HTML. The avatar is added separately as an overlay after your HTML. Just leave visual space for it as described in the scene context.
 
-
-SCENE CONTEXT BLOCKS (only the matching one is included per call):
-==================================================================
-
-## SCENE CONTEXT: INTRO
-This is the opening frame of the video. It sets the visual tone.
-You have: one background image and a title header.
-Check the image aspect ratio in the assets section:
-- If "vertical" — the image is portrait-oriented. Place it in a styled container on one side (left or right), showing its full height within a rounded/framed container. Do NOT stretch it full-screen. Use the theme gradient or a subtle blurred version of the image as the canvas background.
-- If "horizontal" — use it as a full-screen background with object-fit:cover and a dark gradient overlay.
-The title goes prominently — large, bold, cinematic. Think Netflix documentary title card.
-This scene has NO avatar, NO bullets, NO keyphrases — just image and title.
-
-## SCENE CONTEXT: LEARNING OBJECTIVES
-This frame presents what the learner will achieve by the end of the video.
-You have: a header ("Learning Objectives") and bullet points listing the objectives.
-There is NO background image. Use the theme gradient as the background.
-There will be an avatar video (narrator) overlaid later — leave space on the LEFT side (~25-30% width) for a person-shaped region. Design the text content on the remaining RIGHT side.
-Professional, structured, like a course overview slide.
-
-## SCENE CONTEXT: AVATAR NARRATOR WITH IMAGE
-The narrator is telling a story over a background image.
-You have: one background image, a header, and optionally keyphrases and/or bullets.
-There will be a circular avatar video (narrator's face) overlaid later — leave space for a ~280px circle in one corner area.
-The text content goes in a glassmorphism card. The image is the full-screen visual backdrop.
-
-## SCENE CONTEXT: PRESENTER RECAP / OUTRO
-This is the closing/recap frame. The narrator summarizes key takeaways.
-You have: a header and bullet points listing takeaways.
-There is NO background image. Use the theme gradient as the background.
-There will be an avatar video (narrator torso) overlaid later — leave space on the LEFT side (~25-30% width). Design the text content on the RIGHT side in a glassmorphism card.
-Clean, conclusive feel — like the final slide of a presentation.
-
-## SCENE CONTEXT: CHARACTER VIDEO SCENE
-A non-narrator character is speaking. The video URL contains the full pre-rendered scene (character already in the video).
-You have: one video URL (play as full-screen background), a header, bullets, and optionally a keyphrase. Audio comes from the media audio URL.
-The character is already visible in the video — do NOT add any avatar placeholder.
-Place the text content in a glassmorphism card on one side, keeping it compact so it doesn't block the character in the video.
-
-## SCENE CONTEXT: ROLEPLAY DIALOGUE
-Two characters are having a conversation. The video URL contains the full pre-rendered dialogue scene.
-You have: one video URL (play as full-screen background). There may or may not be text content elements.
-Audio comes from the media audio URL. The characters are already in the video — do NOT add any avatar placeholders.
-If there ARE headers/bullets/keyphrases, show them as a subtle compact overlay that doesn't obstruct the video.
-If there are NO text elements, just show the video with a very subtle gradient overlay. Keep it minimal.
-
-## SCENE CONTEXT: IMAGE SLIDESHOW
-Multiple images are shown one after another, each with its own header and/or keyphrase.
-You have: multiple image URLs, multiple headers (one per slide), and optionally keyphrases (one per slide).
-Each image should fill the full screen. Slides crossfade between each other.
-Each slide shows its corresponding header and keyphrase in a glassmorphism card overlay.
-You MUST write JS in the "script" field to handle slide transitions — auto-advance every 5 seconds with a smooth crossfade. Show progress dots at the bottom.
-
-## SCENE CONTEXT: SPLIT SCREEN / COMPOSITE IMAGE
-This scene shows a SINGLE composite image that contains multiple sub-images stitched together into one file. The image description field tells you the exact layout (how many panels, arrangement).
-You have: one composite image URL, a header, and bullet points. Each bullet point corresponds to one sub-image panel in the composite.
-
-**How composite images are structured:**
-- 2 sub-images: Two panels side by side (50/50 horizontal split)
-- 3 sub-images: Three vertical panels in a horizontal row
-- 4 sub-images: Either four vertical panels in a row OR a 2x2 grid — read the image description to determine which
-
-**Layout approach:**
-- Display the composite image prominently — it is the hero content of this scene. Show it large enough that each panel is clearly visible.
-- The header and bullets go in a content area (glass card). Each bullet relates to one panel of the composite image.
-- The image should NOT be used as a background. Show it as a prominent element with proper framing, and place the text content adjacent to it or below it.
-- Consider using highlight overlays or subtle borders to visually connect each bullet to its corresponding panel in the composite image.
-
-## SCENE CONTEXT: CINEMATIC VIDEO
-A cinematic/atmospheric video plays as the visual backdrop while the narrator speaks.
-You have: one video URL (play as full-screen background), and optionally a header, bullets, and keyphrase.
-Audio will be generated separately (narrator TTS) — no audio URL.
-If text content exists, show it in a compact glassmorphism card that doesn't dominate the video.
-If no text content, just show the video with a subtle gradient overlay. Cinematic feel.
-
-## SCENE CONTEXT: FIRST PERSON VIDEO
-The narrator is speaking directly to camera in a pre-rendered video.
-You have: one video URL (play as full-screen background), and optionally a header, bullets, and keyphrase. Audio comes from the media audio URL.
-The narrator is already in the video — do NOT add any avatar placeholder.
-If text content exists, show it in a compact glassmorphism card on one side. Keep it minimal — the focus is on the speaker.
-
-## SCENE CONTEXT: DATA TABLE
-A pre-rendered table/chart image is the entire content of this scene.
-You have: one image URL (a table screenshot) and an audio URL.
-This is the ONE exception to the full-screen background rule: display the image CENTERED with object-fit:contain so the full table is visible and readable. Use a clean light or dark background behind it.
-No text overlays needed — the table image IS the content.
-
-
-BASE LAYOUT (already provided, LLM output injected into it):
-============================================================
-- CSS reset, 1920×1080 body
-- Theme CSS variables
-- Google Fonts link + font CSS vars
-- Animation keyframes + utility classes (.anim-fadeIn, .anim-fadeSlideUp, etc.)
-- .anim-hidden { opacity: 0 }
-- Timing system: reveals elements by id on DOMContentLoaded or audio play
-- <audio> element for VO sync
-- --scene-duration CSS variable
+**Content integrity:** Only display text from the provided content elements. Never invent labels, categories, numbering, or decorative text that isn't in the assets above.

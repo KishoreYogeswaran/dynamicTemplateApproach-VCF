@@ -308,7 +308,7 @@ function buildAvatarOverlay(avatarVideoUrl, sceneType, avatarPosition = 'bottom-
     <!-- Avatar overlay (circle) — audio comes from this video -->
     <div id="avatar" style="position:absolute; ${pos} z-index:10;">
       <div class="avatar-circle">
-        <video id="avatar-video" src="${avatarVideoUrl}" muted playsinline preload="auto"></video>
+        <video id="avatar-video" src="${avatarVideoUrl}" playsinline preload="auto"></video>
       </div>
     </div>`;
   }
@@ -316,25 +316,25 @@ function buildAvatarOverlay(avatarVideoUrl, sceneType, avatarPosition = 'bottom-
   // Learning objective scenes: avatar takes left half, 80%+ height, bottom-anchored
   if (sceneType === 'learning_objective_scene') {
     return `
-    <!-- Avatar overlay (muted video) — audio comes from separate <audio> element -->
+    <!-- Avatar overlay — avatar video drives audio (Mode 1) -->
     <div id="avatar" style="position:absolute; bottom:0; left:0; width:50%; height:85%; z-index:10; overflow:hidden;">
-      <video id="avatar-video" src="${avatarVideoUrl}" muted playsinline preload="auto"
+      <video id="avatar-video" src="${avatarVideoUrl}" playsinline preload="auto"
         style="width:100%; height:100%; object-fit:cover; object-position:center top;"></video>
     </div>`;
   }
 
   // Presenter torso — position based on LLM choice
   const torsoPositions = {
-    'presenter-left': 'bottom:0; left:40px; width:30%; height:85%;',
-    'presenter-center': 'bottom:0; left:50%; transform:translateX(-50%); width:30%; height:70%;',
-    'presenter-right': 'bottom:0; right:40px; width:30%; height:85%;',
+    'presenter-left': 'bottom:0; left:20px; width:40%; height:90%;',
+    'presenter-center': 'bottom:0; left:50%; transform:translateX(-50%); width:40%; height:80%;',
+    'presenter-right': 'bottom:0; right:20px; width:40%; height:90%;',
   };
   const torsoStyle = torsoPositions[avatarPosition] || torsoPositions['presenter-left'];
 
   return `
-    <!-- Avatar overlay (muted torso) — audio comes from separate <audio> element -->
+    <!-- Avatar overlay — avatar video drives audio (Mode 1) -->
     <div id="avatar" style="position:absolute; ${torsoStyle} z-index:10; overflow:hidden;">
-      <video id="avatar-video" src="${avatarVideoUrl}" muted playsinline preload="auto"
+      <video id="avatar-video" src="${avatarVideoUrl}" playsinline preload="auto"
         style="width:100%; height:100%; object-fit:cover; object-position:center top;"></video>
     </div>`;
 }
@@ -386,7 +386,7 @@ export async function renderSceneHTMLWithLLM(scene, storyboard, options = {}) {
   // Build avatar overlay HTML
   const avatarHtml = buildAvatarOverlay(avatarVideoUrl, scene.sceneType, result.avatarPosition);
 
-  // Avatar video is muted — audio always comes from the <audio> element
+  // Avatar video has audio (Mode 1) — but keep <audio> element as fallback
   const finalAudioSrc = audioUrl || audioPath;
 
   let html = baseLayout

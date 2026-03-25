@@ -13,7 +13,7 @@ import { dirname } from 'path';
 const execFileAsync = promisify(execFile);
 
 /**
- * Stitch scene videos into a final MP4.
+ * Stitch scene videos into a final MP4, then downscale to 720p.
  *
  * @param {object} opts
  * @param {string[]} opts.inputPaths     — ordered array of scene MP4 paths
@@ -28,28 +28,78 @@ export async function stitchScenes({ inputPaths, outputPath, gapMs = 700 }) {
 
   await mkdir(dirname(outputPath), { recursive: true });
 
+  // Stitch to a 1080p intermediate, then downscale to 720p
+  const fullResPath = outputPath.replace('.mp4', '_1080p.mp4');
+
+  let stitchResult;
+
   // Single scene — just copy
   if (inputPaths.length === 1) {
-    console.log('  [stitch] Single scene — copying as final video.');
+    console.log('  [stitch] Single scene — copying as intermediate.');
     await execFileAsync('ffmpeg', [
       '-y', '-i', inputPaths[0],
       '-c', 'copy',
-      outputPath,
+      fullResPath,
     ], { timeout: 60000 });
 
+    const info = await stat(fullResPath);
+    stitchResult = {
+      success: true,
+      outputPath: fullResPath,
+      fileSizeMB: (info.size / 1024 / 1024).toFixed(1),
+    };
+  } else if (gapMs > 0) {
+    stitchResult = await stitchWithFreezeGap({ inputPaths, outputPath: fullResPath, gapMs });
+  } else {
+    stitchResult = await stitchHardCut({ inputPaths, outputPath: fullResPath });
+  }
+
+  if (!stitchResult.success) {
+    return stitchResult;
+  }
+
+  // Downscale to 720p
+  const finalResult = await downscaleTo720p(fullResPath, outputPath);
+  await unlink(fullResPath).catch(() => {});
+  return finalResult;
+}
+
+/**
+ * Downscale a video to 1280x720 (720p) with proper aspect ratio handling.
+ * Uses the same approach as the Python pipeline's FFmpeg command.
+ */
+async function downscaleTo720p(inputPath, outputPath) {
+  console.log(`  [stitch] Downscaling to 720p...`);
+
+  try {
+    await execFileAsync('ffmpeg', [
+      '-y',
+      '-i', inputPath,
+      '-vf', 'scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1',
+      '-c:v', 'libx264',
+      '-preset', 'medium',
+      '-crf', '23',
+      '-c:a', 'aac',
+      '-b:a', '192k',
+      '-pix_fmt', 'yuv420p',
+      outputPath,
+    ], { timeout: 600000 });
+
     const info = await stat(outputPath);
+    const duration = await getDuration(outputPath);
+
+    console.log(`  [stitch] ✓ Final video (720p): ${duration.toFixed(1)}s, ${(info.size / 1024 / 1024).toFixed(1)}MB`);
+
     return {
       success: true,
       outputPath,
+      durationSeconds: duration,
       fileSizeMB: (info.size / 1024 / 1024).toFixed(1),
     };
+  } catch (err) {
+    console.error(`  [stitch] Downscale failed: ${err.message}`);
+    return { success: false, error: `Downscale failed: ${err.message}` };
   }
-
-  if (gapMs > 0) {
-    return stitchWithFreezeGap({ inputPaths, outputPath, gapMs });
-  }
-
-  return stitchHardCut({ inputPaths, outputPath });
 }
 
 /**

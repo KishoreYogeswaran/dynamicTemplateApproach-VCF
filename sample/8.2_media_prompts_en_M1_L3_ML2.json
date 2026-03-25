@@ -1,0 +1,384 @@
+{
+  "timestamp": "2026-01-13T09:01:42Z",
+  "step": "8.2_media_prompts_en",
+  "domain_key": "domestic_electric_works",
+  "dominant_gender": "male",
+  "module_number": 1,
+  "module_name": "Introduction to Micro-Entrepreneurship",
+  "lesson_number": 3,
+  "lesson_name": "Success Stories of Micro Entrepreneurs",
+  "ml_id": "ML2",
+  "ml_title": "Turning Challenges into Opportunities",
+  "learning_objectives": [
+    "Explain how common problems can be turned into opportunities.",
+    "Describe a simple method to explain a problem and create an opportunity-focused response."
+  ],
+  "recommended_video_type": "Character Conversation",
+  "total_word_count": 202,
+  "approximate_duration_seconds": 128,
+  "number_of_scenes": 10,
+  "scenes": [
+    {
+      "scene_id": "M1_L3_ML2_SC1",
+      "character": "Suresh",
+      "word_count": 9,
+      "approx_duration_seconds": 6,
+      "narrative_arc_step": "Opening / Introduction to Video",
+      "vo_scripts": {
+        "intro_template_1_voScript_1": "Hi, welcome to the video, 'Turning Challenges into Opportunities'."
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Welcoming learners: This scene greets the learner and introduces the video topic of turning challenges into opportunities in the context of a small domestic electrical services business.",
+      "scene_typology_name": "intro_scene",
+      "visualization_notes": "Create a clean, inviting background showing a modest but functional street-facing electrical workshop that a micro-entrepreneur like Suresh would run. The space should be small, with an open shutter or doorway revealing a simple concrete floor, a sturdy wooden or metal workbench with neatly arranged basic tools (screwdrivers, pliers, wire strippers, tester), a few coils of insulated electrical wire, and a couple of ceiling fans or table fans kept for repair on a side rack. Walls can show natural wear but should look reasonably tidy, with a few electrical switchboards and sockets mounted for testing. Lighting should feel like soft daylight entering from the open front, creating a welcoming atmosphere and clearly suggesting a micro-scale, affordable setup rather than a large commercial showroom. No people should be visible in this background; it is a pure environmental shot that sets the domain of domestic electrical micro-entrepreneurship. Avoid close-ups of any brand labels, posters, or calendars so that any text or numbers present in the environment remain secondary and unreadable. All text, symbols, numbers illegible through positioning/light blur/camera angle",
+      "selected_family_id": "intro_scene_fam_1",
+      "selected_family_name": "intro_scene_family_1_1avatar_1img_1hdr",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "intro_template_1_header_1": "Turning Challenges into Opportunities"
+        },
+        "subHeaders": {},
+        "bulletPoints": {},
+        "keyPhrases": {},
+        "media": {
+          "intro_template_1_image_1_prompt": "Vertical portrait view of a modest street-facing electrical workshop in a semi-urban Indian neighbourhood, seen from outside through a partially open rolling shutter. Inside, a simple concrete floor leads to a sturdy wooden or metal workbench where basic electrician tools such as screwdrivers, pliers, wire strippers, and a tester are neatly arranged, with a few coils of insulated electrical wire hanging on the wall above and two ceiling or table fans kept for repair on a side rack. Painted walls show light natural wear yet remain tidy, with a few electrical switchboards and sockets mounted for testing visible in the background, and small boxes, calendars, or posters present only as soft, unfocused shapes. The compact space clearly feels like a small, affordable micro-entrepreneur's domestic electrical workshop, functional but not crowded, lit by soft daylight streaming in from the open front, with no people anywhere in the scene. Photorealistic, natural lighting. All text, lettering, numbers illegible through positioning/distance. Symbols and icons naturally integrated and recognizable.",
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "vertical",
+          "numberOf_subImages": 0,
+          "intro_template_1_image_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/01/13/M1_L3_ML2_SC1/background_image.png?st=2026-01-13T03%3A23%3A58Z&se=2036-01-11T03%3A23%3A58Z&sp=r&sv=2025-07-05&sr=b&sig=Rr%2BpgheJ5876EBsvhdJdgLkpDikm1UNLaFEGLZwJxSg%3D"
+        }
+      },
+      "selected_template_id": "90ed1b8b093147dd9cc70922e49daa34",
+      "selected_template_name": "ME_intro_template_1"
+    },
+    {
+      "scene_id": "M1_L3_ML2_SC2",
+      "character": "Suresh",
+      "word_count": 22,
+      "approx_duration_seconds": 14,
+      "narrative_arc_step": "LO Presentation",
+      "vo_scripts": {
+        "learning_objective_template_1_voScript_1": "By the end of this video, you will be able to turn problems into opportunities and explain a method for opportunity thinking."
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Presenting learning objectives: This scene clearly tells learners that they will learn how to turn problems into opportunities and use a simple method for opportunity-focused thinking.",
+      "scene_typology_name": "learning_objective_scene",
+      "visualization_notes": "Not applicable. This scene uses the standard learning_objective_scene template with predefined background and on-screen text handled separately; no additional AI-generated background image is required.",
+      "selected_family_id": "learning_objective_scene_fam_1",
+      "selected_family_name": "learning_objective_scene_family_1_1avatar_1hdr_2bullet",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "learning_objective_template_1_header_1": "Learning Objectives"
+        },
+        "subHeaders": {},
+        "bulletPoints": {
+          "learning_objective_template_1_bulletpoint_1": "Explain how common problems can be turned into opportunities.",
+          "learning_objective_template_1_bulletpoint_2": "Describe a simple method to explain a problem and create an opportunity-focused response."
+        },
+        "keyPhrases": {},
+        "media": {
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "0",
+          "numberOf_subImages": 0
+        }
+      },
+      "selected_template_id": "e55bc07b3eae43519cca1ae895f8cb23",
+      "selected_template_name": "ME_learning_objective_template_1"
+    },
+    {
+      "scene_id": "M1_L3_ML2_SC3",
+      "character": "Suresh",
+      "word_count": 22,
+      "approx_duration_seconds": 14,
+      "narrative_arc_step": "Hook with Conflict",
+      "vo_scripts": {
+        "firstPerson_template_5_voScript_1": "In my early days fixing house wiring, low calls and material delays scared me, and I treated them only as big losses."
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Hook scenario and challenge statement: This scene shows Suresh describing his early struggle with low customer calls and material delays, framing common business problems as sources of fear and loss to emotionally engage learners.",
+      "scene_typology_name": "first_person_video_staticBg",
+      "visualization_notes": "Show Suresh, an Indian electrician micro-entrepreneur with brown skin tone, standing inside his small electrical workshop talking directly to the camera, with a thoughtful and slightly worried expression to match the memory of his early days. The workshop should be a compact room attached to a house or at ground floor level in a residential lane, with a simple concrete floor and plain painted walls showing normal age but kept reasonably tidy. Behind Suresh, show a modest workbench with a few open toolboxes, neatly placed pliers, screwdrivers, insulation tape, and a couple of ceiling fan casings or switchboards waiting for repair. A wall-mounted board can hold coiled electrical wires and extension cords. To suggest low work flow, leave some empty space on the bench and only a small number of items, giving a subtle sense of underutilisation without looking bare. Light enters from a side window or open door, giving natural brightness without looking glamorous. Any calendars, boxes, or packaging in the background should be turned or blurred so that any text, labels, or numbers are not readable and remain as minor details. All text, symbols, numbers illegible through positioning/light blur/camera angle",
+      "selected_family_id": "first_person_video_staticBg_fam_3",
+      "selected_family_name": "first_person_video_staticBg_family_3_1vid_1hdr_2bullet_1keyphrase",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "firstPerson_template_5_header_1": "Early Business Fears"
+        },
+        "subHeaders": {},
+        "bulletPoints": {
+          "firstPerson_template_5_bulletpoint_1": "Low customer calls",
+          "firstPerson_template_5_bulletpoint_2": "Material supply delays"
+        },
+        "keyPhrases": {
+          "firstPerson_template_5_keyPhrase_1": "Early Challenges"
+        },
+        "media": {
+          "firstPerson_template_5_video_1_prompt": "The character stands completely still with body and hands motionless and narrates the provided speech in a calm and professional way. The background must remain completely static. All background elements should stay perfectly still and unchanged throughout the video.",
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 0,
+          "firstPerson_template_5_video_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/01/13/M1_L3_ML2_SC3/first_person_video_muted.mp4?st=2026-01-13T03%3A24%3A00Z&se=2036-01-11T03%3A24%3A00Z&sp=r&sv=2025-07-05&sr=b&sig=VLNmEhsi6ntpSeAguVqcF19pmt7KQToJh4ly25TQH50%3D",
+          "firstPerson_template_5_audio_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/01/13/M1_L3_ML2_SC3/voiceover.mp3?st=2026-01-13T03%3A24%3A02Z&se=2036-01-11T03%3A24%3A02Z&sp=r&sv=2025-07-05&sr=b&sig=JEzjgtEPPUOLp92x5SXjbyrJAegb7sOnsxpnSNwbhew%3D"
+        }
+      },
+      "selected_template_id": "f98095e9c7ec4d318e8a49189b4a353f",
+      "selected_template_name": "ME_firstPerson_template_5"
+    },
+    {
+      "scene_id": "M1_L3_ML2_SC4",
+      "character": "Suresh",
+      "word_count": 27,
+      "approx_duration_seconds": 17,
+      "narrative_arc_step": "Avatar's Guidance",
+      "vo_scripts": {
+        "SplitScreenImage_template_3_voScript_1": "A better mindset treats each problem as a question. I use a four step method explain it, see who is affected, find opportunity, then choose one action."
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Avatar guiding and process/tool demonstration: This scene introduces Suresh's four-step method for turning problems into opportunities-explain the problem, see who is affected, find the opportunity, and choose one action.",
+      "scene_typology_name": "split_screen_image",
+      "visualization_notes": "Use a 4-way split-screen layout where each image represents one step of Suresh's four-step method in a realistic domestic electrical services context.\nImage 1 (Explain the problem): Show Suresh, an Indian electrician with brown skin tone, standing in a modest Indian living room with simple furniture, facing Meena, an Indian woman with brown skin tone, near a ceiling point where a fan is supposed to be fitted. Suresh gestures calmly toward the empty ceiling hook and a small unopened fan box on the floor, indicating that there is a delay or issue to explain.\nImage 2 (See who is affected): Show Suresh listening attentively to Meena in the same type of home environment; Meena points toward a bed with thin bedding or to a small wall clock, clearly showing concern about family comfort and time. Suresh's body language should show active listening rather than talking, emphasising understanding the impact on people rather than only the technical problem.\nImage 3 (Find opportunity): Show Suresh near the room's switchboard and wiring, thoughtfully examining an open socket or junction box with a small torch or tester in hand, highlighting the idea of discovering an opportunity for safety improvement or extra value while he is already at the customer's home.\nImage 4 (Choose one action): Show Suresh back at his small workshop workbench or at a small table in the room, noting something in a small notebook or on a simple clipboard while a fan motor or electrical parts lie nearby, symbolising that he has chosen a specific next action to carry out. Writing should not be readable; the focus is on the decision-making gesture and the modest tools.\nAll four images must share similar lighting and colour tone to feel part of one story, using modest, achievable environments that match a small domestic electrician's reality. Any papers, product boxes, or wall items must be positioned so that text, logos, or numbers are not readable. All text, symbols, numbers illegible through positioning/light blur/camera angle",
+      "selected_family_id": "split_screen_image_fam_2",
+      "selected_family_name": "split_screen_image_family_2_1img_1hdr_4bullet_composite_4subimg_subaspect_square",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "SplitScreenImage_template_3_header_1": "Four-Step Opportunity Method"
+        },
+        "subHeaders": {},
+        "bulletPoints": {
+          "SplitScreenImage_template_3_bulletpoint_1": "Explain the problem clearly",
+          "SplitScreenImage_template_3_bulletpoint_2": "See who is affected",
+          "SplitScreenImage_template_3_bulletpoint_3": "Find the opportunity",
+          "SplitScreenImage_template_3_bulletpoint_4": "Choose one action"
+        },
+        "keyPhrases": {},
+        "media": {
+          "SplitScreenImage_template_3_image_1_prompt": "4-panel square grid layout with panels arranged in 2x2 format (two rows, two columns) filling the full width and height of the frame, NO GAPS OR BORDERS BETWEEN PANELS - panels directly touch edge-to-edge with zero space, forming a seamless composite. Top-left panel shows USE CHARACTER REFERENCE - Suresh (KEY NARRATOR OF THIS SCENE) in a modest Indian living room with simple sofa or chairs and minimal decor, standing beside USE CHARACTER REFERENCE - Meena (Indian woman with brown skin tone in a plain salwar kameez) near a ceiling point; Suresh calmly gestures with one hand toward an empty ceiling hook above and a small unopened ceiling fan box placed on the floor, clearly explaining that there is a delay or issue with fitting the fan. Top-right panel shows the same room from a similar angle as Meena points with one hand toward a bed with thin bedding or toward a small wall clock, speaking with a concerned expression about her family's comfort and time, while Suresh stands nearby with relaxed arms and attentive posture, listening carefully to understand who is affected by the problem; the clock face is present but any numbers are soft and indistinct. Bottom-left panel moves closer to the wall area where USE CHARACTER REFERENCE - Suresh (KEY NARRATOR OF THIS SCENE) stands near a wall-mounted switchboard or an open wall socket, leaning slightly forward and examining the household wiring with a small tester held in one hand, with the power switched off, his focused expression showing he is looking for an opportunity to improve safety or add value during this visit; switches and sockets look realistic but any markings are not readable. Bottom-right panel shows Suresh either at a small table in the same room or back at his modest workshop workbench, standing or sitting while writing in a small notebook or on a simple clipboard with a pen in one hand, a fan motor or a few electrical parts resting nearby on the surface, capturing the moment he chooses one clear next action; the written page faces away from the camera so no text is visible. All four panels share similar soft daylight and colour tone, depicting modest, achievable home and workshop environments typical of a small domestic electrician's work. Photorealistic, natural lighting. All text, lettering, numbers illegible through positioning/distance. Symbols and icons naturally integrated and recognizable.",
+          "compositeImage": "TRUE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 4,
+          "SplitScreenImage_template_3_image_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/01/13/M1_L3_ML2_SC4/split_screen.png?st=2026-01-13T03%3A24%3A04Z&se=2036-01-11T03%3A24%3A04Z&sp=r&sv=2025-07-05&sr=b&sig=iJmLEl58cuPPRtfZy4D8cWcxYzDNLU6xilHnOSEoiIU%3D"
+        }
+      },
+      "selected_template_id": "f7ca3e906e6f47e9996aa1609bcd293e",
+      "selected_template_name": "ME_SplitScreenImage_template_3"
+    },
+    {
+      "scene_id": "M1_L3_ML2_SC5",
+      "character": "Meena",
+      "word_count": 18,
+      "approx_duration_seconds": 11,
+      "narrative_arc_step": "Roleplay of Scenario",
+      "vo_scripts": {
+        "characterConversation_template_1_voScript_1": "Suresh, you promised to fix the new fan today, but supplier delay means my family sleeps uncomfortably tonight."
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Roleplay of scenario: This first dialogue line presents the customer's complaint and highlights the immediate impact of a supplier delay on the customer's family comfort.",
+      "scene_typology_name": "character_based_roleplay",
+      "visualization_notes": "Design a complete, empty background of a modest Indian bedroom or guest room where a new ceiling fan is supposed to be installed. Use a human eye-level viewpoint that shows the floor area where two people could naturally stand and talk, plus enough depth to include walls and ceiling. The room should have simple, practical furniture: a double bed or two single beds with plain bedsheets, a small side table, and a basic wall-mounted switchboard near the bed. On the ceiling, show an electrical hook or junction box with exposed mounting point for a fan, and perhaps some wiring emerging neatly, indicating pending installation. A closed or partially opened cardboard box that could contain a fan can be placed on the floor or against a wall, with any branding or printed information turned away or defocused. A ceiling or pedestal fan should NOT already be installed in this central location so the missing fan is obvious, but a small table fan or open window can be present to subtly hint at temporary, less comfortable cooling. The room should appear modest but reasonably tidy, with painted walls showing normal wear and a simple curtain or window letting in warm daylight that suggests heat outside. There must be no people in this background image; it is prepared for overlaying Suresh and Meena during their conversation. Any items that might carry text, such as calendars, boxes, or electronic devices, should be angled or soft-focused so that no words or numbers are readable. All text, symbols, numbers illegible through positioning/light blur/camera_angle",
+      "selected_family_id": "character_conversation_fam_1",
+      "selected_family_name": "character_conversation_family_1_1vid",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {},
+        "subHeaders": {},
+        "bulletPoints": {},
+        "keyPhrases": {},
+        "media": {
+          "characterConversation_template_1_video_1_prompt": "External API video generation - no prompt needed",
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 0,
+          "characterConversation_template_1_audio_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/domestic_electric_works/2026/03/19/M1_L3_ML2_SC5/character_roleplay_audio.mp3?st=2026-03-19T11%3A37%3A02Z&se=2036-03-16T11%3A37%3A02Z&sp=r&sv=2025-07-05&sr=b&sig=lViG%2BQMJ%2B7GoCxQTvirkiuUhIBmNhkWbXZK91EZQ02Q%3D",
+          "characterConversation_template_1_video_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/domestic_electric_works/2026/03/19/M1_L3_ML2_SC5/character_roleplay_video.mp4?st=2026-03-19T11%3A40%3A11Z&se=2036-03-16T11%3A40%3A11Z&sp=r&sv=2025-07-05&sr=b&sig=lFb0NbS7FRnVdAngjRQDqZnE2AT1YlKJA8A5OjvcTog%3D"
+        }
+      },
+      "selected_template_id": "53f7947ac47a4d888f14b7f86f6e72c4",
+      "selected_template_name": "ME_characterConversation_template_1"
+    },
+    {
+      "scene_id": "M1_L3_ML2_SC6",
+      "character": "Suresh",
+      "word_count": 19,
+      "approx_duration_seconds": 12,
+      "narrative_arc_step": "Roleplay of Scenario",
+      "vo_scripts": {
+        "characterConversation_template_1_voScript_1": "Meena, the shop has no stock today. I should have informed earlier, because this delay directly affects your comfort."
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Roleplay of scenario: This dialogue models how Suresh explains the problem clearly and takes responsibility, while acknowledging how the delay affects Meena's comfort.",
+      "scene_typology_name": "character_based_roleplay",
+      "visualization_notes": "Design a complete, empty background of a modest Indian bedroom or guest room where a new ceiling fan is supposed to be installed. Use a human eye-level viewpoint that shows the floor area where two people could naturally stand and talk, plus enough depth to include walls and ceiling. The room should have simple, practical furniture: a double bed or two single beds with plain bedsheets, a small side table, and a basic wall-mounted switchboard near the bed. On the ceiling, show an electrical hook or junction box with exposed mounting point for a fan, and perhaps some wiring emerging neatly, indicating pending installation. A closed or partially opened cardboard box that could contain a fan can be placed on the floor or against a wall, with any branding or printed information turned away or defocused. A ceiling or pedestal fan should NOT already be installed in this central location so the missing fan is obvious, but a small table fan or open window can be present to subtly hint at temporary, less comfortable cooling. The room should appear modest but reasonably tidy, with painted walls showing normal wear and a simple curtain or window letting in warm daylight that suggests heat outside. There must be no people in this background image; it is prepared for overlaying Suresh and Meena during their conversation. Any items that might carry text, such as calendars, boxes, or electronic devices, should be angled or soft-focused so that no words or numbers are readable. All text, symbols, numbers illegible through positioning/light blur/camera_angle",
+      "selected_family_id": "character_conversation_fam_1",
+      "selected_family_name": "character_conversation_family_1_1vid",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {},
+        "subHeaders": {},
+        "bulletPoints": {},
+        "keyPhrases": {},
+        "media": {
+          "characterConversation_template_1_video_1_prompt": "External API video generation - no prompt needed",
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 0
+        }
+      },
+      "selected_template_id": "53f7947ac47a4d888f14b7f86f6e72c4",
+      "selected_template_name": "ME_characterConversation_template_1"
+    },
+    {
+      "scene_id": "M1_L3_ML2_SC7",
+      "character": "Meena",
+      "word_count": 19,
+      "approx_duration_seconds": 12,
+      "narrative_arc_step": "Roleplay of Scenario",
+      "vo_scripts": {
+        "characterConversation_template_1_voScript_1": "I understand shortages happen, but what do we do now. Guests are coming tomorrow and the room is hot."
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Roleplay of scenario: This dialogue shows Meena sharing empathy but also pressing for a solution, making the urgency and real-life impact of the problem clear.",
+      "scene_typology_name": "character_based_roleplay",
+      "visualization_notes": "Design a complete, empty background of a modest Indian bedroom or guest room where a new ceiling fan is supposed to be installed. Use a human eye-level viewpoint that shows the floor area where two people could naturally stand and talk, plus enough depth to include walls and ceiling. The room should have simple, practical furniture: a double bed or two single beds with plain bedsheets, a small side table, and a basic wall-mounted switchboard near the bed. On the ceiling, show an electrical hook or junction box with exposed mounting point for a fan, and perhaps some wiring emerging neatly, indicating pending installation. A closed or partially opened cardboard box that could contain a fan can be placed on the floor or against a wall, with any branding or printed information turned away or defocused. A ceiling or pedestal fan should NOT already be installed in this central location so the missing fan is obvious, but a small table fan or open window can be present to subtly hint at temporary, less comfortable cooling. The room should appear modest but reasonably tidy, with painted walls showing normal wear and a simple curtain or window letting in warm daylight that suggests heat outside. There must be no people in this background image; it is prepared for overlaying Suresh and Meena during their conversation. Any items that might carry text, such as calendars, boxes, or electronic devices, should be angled or soft-focused so that no words or numbers are readable. All text, symbols, numbers illegible through positioning/light_blur/camera_angle",
+      "selected_family_id": "character_conversation_fam_1",
+      "selected_family_name": "character_conversation_family_1_1vid",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {},
+        "subHeaders": {},
+        "bulletPoints": {},
+        "keyPhrases": {},
+        "media": {
+          "characterConversation_template_1_video_1_prompt": "External API video generation - no prompt needed",
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 0
+        }
+      },
+      "selected_template_id": "53f7947ac47a4d888f14b7f86f6e72c4",
+      "selected_template_name": "ME_characterConversation_template_1"
+    },
+    {
+      "scene_id": "M1_L3_ML2_SC8",
+      "character": "Suresh",
+      "word_count": 19,
+      "approx_duration_seconds": 12,
+      "narrative_arc_step": "Roleplay of Scenario",
+      "vo_scripts": {
+        "characterConversation_template_1_voScript_1": "Since I am here, I can check wiring and sockets today, then return tomorrow with the fan fitted properly."
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Roleplay of scenario: This dialogue models how Suresh turns the complaint into an opportunity by offering immediate value (checking wiring and sockets) and a clear next action.",
+      "scene_typology_name": "character_based_roleplay",
+      "visualization_notes": "Design a complete, empty background of a modest Indian bedroom or guest room where a new ceiling fan is supposed to be installed. Use a human eye-level viewpoint that shows the floor area where two people could naturally stand and talk, plus enough depth to include walls and ceiling. The room should have simple, practical furniture: a double bed or two single beds with plain bedsheets, a small side table, and a basic wall-mounted switchboard near the bed. On the ceiling, show an electrical hook or junction box with exposed mounting point for a fan, and perhaps some wiring emerging neatly, indicating pending installation. A closed or partially opened cardboard box that could contain a fan can be placed on the floor or against a wall, with any branding or printed information turned away or defocused. A ceiling or pedestal fan should NOT already be installed in this central location so the missing fan is obvious, but a small table fan or open window can be present to subtly hint at temporary, less comfortable cooling. The room should appear modest but reasonably tidy, with painted walls showing normal wear and a simple curtain or window letting in warm daylight that suggests heat outside. There must be no people in this background image; it is prepared for overlaying Suresh and Meena during their conversation. Any items that might carry text, such as calendars, boxes, or electronic devices, should be angled or soft-focused so that no words or numbers are readable. All text, symbols, numbers illegible through positioning/light blur/camera_angle",
+      "selected_family_id": "character_conversation_fam_1",
+      "selected_family_name": "character_conversation_family_1_1vid",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {},
+        "subHeaders": {},
+        "bulletPoints": {},
+        "keyPhrases": {},
+        "media": {
+          "characterConversation_template_1_video_1_prompt": "External API video generation - no prompt needed",
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 0
+        }
+      },
+      "selected_template_id": "53f7947ac47a4d888f14b7f86f6e72c4",
+      "selected_template_name": "ME_characterConversation_template_1"
+    },
+    {
+      "scene_id": "M1_L3_ML2_SC9",
+      "character": "Suresh",
+      "word_count": 25,
+      "approx_duration_seconds": 16,
+      "narrative_arc_step": "Avatar's Learning Reflection",
+      "vo_scripts": {
+        "SplitScreenImage_template_3_voScript_1": "In that conversation, I used the four steps. I explained the delay, understood Meena's worry, turned it into safety improvement, and chose one clear action."
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Avatar's learning reflection and process reinforcement: This scene helps learners see how Suresh applied each step of his four-step method in the fan conversation, connecting the abstract method to concrete behaviour.",
+      "scene_typology_name": "split_screen_image",
+      "visualization_notes": "Use a 4-panel split-screen that revisits the fan scenario, with each image illustrating one of the four steps Suresh mentions.\nImage 1 (Explained the delay): Show Suresh, an Indian electrician with brown skin tone, in Meena's modest bedroom from the roleplay background, gesturing respectfully with open hands toward the unopened fan box and empty ceiling hook, clearly explaining that the supplier has no stock today.\nImage 2 (Understood Meena's worry): Show Suresh standing slightly closer to Meena, an Indian woman with brown skin tone, listening carefully while Meena gestures toward the bed or points to a simple wall calendar indicating the next day, highlighting her concern about guests and the hot room. Suresh's posture should be attentive, with less hand movement, emphasising listening and empathy.\nImage 3 (Turned it into safety improvement): Show Suresh kneeling or bending near the room's switchboard or a wall socket, carefully checking wiring with a basic tester or screwdriver. Cables should be simple household wiring, and his expression focused and professional, reinforcing the idea that he is improving safety rather than just waiting for stock.\nImage 4 (Chose one clear action): Show Suresh near the doorway of the same room the next day, holding a packed ceiling fan box in one hand and a small toolkit in the other, ready to install. His body language should be confident, indicating a clear agreed action and follow-through on the promise.\nAll four images should use consistent lighting and colour to feel like snapshots from the same home, depicting realistic, small-scale domestic interiors rather than upscale apartments. Any product boxes, calendars, or wall items that might carry writing must be angled or softly defocused so that no text or numbers are readable. All text, symbols, numbers illegible through positioning/light blur/camera_angle",
+      "selected_family_id": "split_screen_image_fam_2",
+      "selected_family_name": "split_screen_image_family_2_1img_1hdr_4bullet_composite_4subimg_subaspect_square",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "SplitScreenImage_template_3_header_1": "Four Steps in Action"
+        },
+        "subHeaders": {},
+        "bulletPoints": {
+          "SplitScreenImage_template_3_bulletpoint_1": "Explain the delay clearly",
+          "SplitScreenImage_template_3_bulletpoint_2": "Understand customer worry",
+          "SplitScreenImage_template_3_bulletpoint_3": "Offer a safety check",
+          "SplitScreenImage_template_3_bulletpoint_4": "Decide one clear action"
+        },
+        "keyPhrases": {},
+        "media": {
+          "SplitScreenImage_template_3_image_1_prompt": "4-panel square grid layout with panels arranged in 2x2 format (two rows, two columns) filling the full width and height of the frame, NO GAPS OR BORDERS BETWEEN PANELS - panels directly touch edge-to-edge with zero space, forming a seamless composite. Top-left panel takes place inside Meena's modest bedroom, where USE CHARACTER REFERENCE - Suresh (KEY NARRATOR OF THIS SCENE) stands near the bed and respectfully gestures with open hands toward an unopened ceiling fan box on the floor and the empty ceiling hook above, his expression calm as he clearly explains that the supplier has no stock today; the room has plain bedsheets, simple furniture and light-coloured painted walls. Top-right panel, in the same bedroom and similar lighting, shows USE CHARACTER REFERENCE - Meena (Indian woman with brown skin tone in a simple salwar kameez) speaking while gesturing toward the bed or pointing at a basic wall calendar that indicates the next day, making her worry about guests and the hot room visible, while USE CHARACTER REFERENCE - Suresh (KEY NARRATOR OF THIS SCENE) stands slightly closer with attentive posture and gentle expression, listening with empathy; numbers on the calendar are present but out of focus. Bottom-left panel focuses on Suresh kneeling or bending beside the room's wall-mounted switchboard or a wall socket, carefully checking the wiring with a basic tester or insulated screwdriver held in one hand, with the circuit switched off, his face showing focused professionalism as he turns the delay into an opportunity for a safety improvement; household cables look neat and realistic, with any labels or markings not legible. Bottom-right panel represents the agreed follow-up action the next day, showing USE CHARACTER REFERENCE - Suresh (KEY NARRATOR OF THIS SCENE) standing confidently at the bedroom doorway or just inside the room, holding a packed ceiling fan box in one hand and a small toolkit in the other, ready to install the fan; his posture is upright and assured, indicating a clear, promised action being fulfilled, while the familiar modest bedroom interior appears behind him. All four panels share consistent warm daylight and colours that match a small, realistic Indian home, reinforcing the continuity of the fan-delay story. Photorealistic, natural lighting. All text, lettering, numbers illegible through positioning/distance. Symbols and icons naturally integrated and recognizable.",
+          "compositeImage": "TRUE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 4,
+          "SplitScreenImage_template_3_image_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/01/13/M1_L3_ML2_SC9/split_screen.png?st=2026-01-13T03%3A24%3A13Z&se=2036-01-11T03%3A24%3A13Z&sp=r&sv=2025-07-05&sr=b&sig=yUNpSFQtYphBY0OSOkrd2SuFerytSA%2BcbCpkojRoyi8%3D"
+        }
+      },
+      "selected_template_id": "f7ca3e906e6f47e9996aa1609bcd293e",
+      "selected_template_name": "ME_SplitScreenImage_template_3"
+    },
+    {
+      "scene_id": "M1_L3_ML2_SC10",
+      "character": "Suresh",
+      "word_count": 22,
+      "approx_duration_seconds": 14,
+      "narrative_arc_step": "Outro/Summary & Action Step/real life benefit",
+      "vo_scripts": {
+        "avatarPresenter_template_15_voScript_1": "To recap, common challenges like low demand or delays can hide opportunities when you explain problems clearly and choose thoughtful improvement actions."
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Recap: This scene summarises the key message that everyday business challenges such as low demand or delays can hide opportunities if problems are explained clearly and followed by thoughtful improvement actions.",
+      "scene_typology_name": "avatar_presenter_torso",
+      "visualization_notes": "Not applicable. This scene uses the standard avatar_presenter_torso outro template with predefined background and on-screen text handled separately; no additional AI-generated background image is required.",
+      "selected_family_id": "avatar_presenter_fam_3",
+      "selected_family_name": "avatar_presenter_family_3_1avatar_1hdr_3bullet",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "avatarPresenter_template_15_header_1": "Key Takeaways"
+        },
+        "subHeaders": {},
+        "bulletPoints": {
+          "avatarPresenter_template_15_bulletpoint_1": "Problems can hide opportunities",
+          "avatarPresenter_template_15_bulletpoint_2": "Clear problem explanation",
+          "avatarPresenter_template_15_bulletpoint_3": "Thoughtful improvement actions"
+        },
+        "keyPhrases": {},
+        "media": {
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "0",
+          "numberOf_subImages": 0
+        }
+      },
+      "selected_template_id": "f9938d8ab4f44d109ab6c34ba557f03f",
+      "selected_template_name": "ME_avatarPresenter_template_15"
+    }
+  ],
+  "template_selection_timestamp": "20260113_084558",
+  "random_seed_used": "none",
+  "language": "en"
+}

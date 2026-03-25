@@ -30,6 +30,39 @@ node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3 --record-only --scene 
 # ─── Stitch only (re-stitch existing scene MP4s)
 node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3 --stitch-only
 
-# ─── Theme override 
+# ─── Language adaptation (reuses English HTML, swaps text/audio/avatar/fonts)
+# Requires English HTML to exist first (run English pipeline first)
+node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3 --language hi
+node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3 --language ta
+node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3 --language hi --scene SC3
+
+# ─── Theme override
 node scripts/run-pipeline.js --module 2 --lesson 3 --ml 3 --theme dark_blue
+
+# ═══════════════════════════════════════════════════════════════
+# API Server
+# ═══════════════════════════════════════════════════════════════
+
+# ─── Start server (requires Redis running) ─
+npm run server
+npm run server:dev          # with auto-reload on file changes
+
+# ─── Health check ─
+curl http://localhost:3000/health
+
+# ─── Submit full pipeline job ─
+curl -X POST http://localhost:3000/api/jobs \
+  -H "Content-Type: application/json" \
+  -d '{"storyboard": {...}, "options": {"concurrency": 3}}'
+
+# ─── Regenerate specific scenes ─
+curl -X POST http://localhost:3000/api/jobs/regenerate-scene \
+  -H "Content-Type: application/json" \
+  -d '{"module": 2, "lesson": 3, "ml": 3, "scenes": ["SC3", "SC7"]}'
+
+# ─── Poll job status ─
+curl http://localhost:3000/api/jobs/<jobId>
+
+# ─── Download video ─
+curl -o video.mp4 http://localhost:3000/api/jobs/<jobId>/video
 

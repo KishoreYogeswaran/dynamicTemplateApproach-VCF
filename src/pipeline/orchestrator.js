@@ -25,6 +25,7 @@ import { WanS2VClient } from '../clients/wan-s2v-client.js';
 import { TransparentVideoClient } from '../clients/transparent-video-client.js';
 import { AzureMediaUploader } from '../clients/azure-uploader.js';
 import { renderSceneHTMLWithLLM } from './llm-html-renderer.js';
+import { adaptSceneHTML, checkEnglishHTMLExists } from './language-adapter.js';
 import { recordScene } from './puppeteer-recorder.js';
 import { stitchScenes } from './video-stitcher.js';
 
@@ -349,14 +350,19 @@ async function getAlignmentForMediaAudio(scene, storyboard, outputDir) {
  * Run async tasks with a concurrency limit.
  * Each task is a function returning a promise.
  */
-async function runWithConcurrency(tasks, limit) {
+async function runWithConcurrency(tasks, limit, { abortSignal } = {}) {
   const results = new Array(tasks.length);
   let nextIndex = 0;
 
   async function worker() {
     while (nextIndex < tasks.length) {
+      if (abortSignal?.aborted) break;
       const i = nextIndex++;
       results[i] = await tasks[i]();
+      // Check if this task failed and signal abort
+      if (abortSignal && results[i] && results[i].recordSuccess === false && results[i].error) {
+        abortSignal.abort(results[i].sceneId);
+      }
     }
   }
 
@@ -373,7 +379,7 @@ async function runWithConcurrency(tasks, limit) {
  * Each scene is self-contained — dependencies are resolved internally.
  */
 async function processScene(scene, sceneIdx, allScenes, storyboard, ctx) {
-  const { audioDir, avatarDir, htmlDir, videoDir, skipTTS, skipAvatar, skipHTML, skipRecord, fps, themeOverride } = ctx;
+  const { audioDir, avatarDir, htmlDir, videoDir, skipTTS, skipAvatar, skipHTML, skipRecord, fps, themeOverride, englishHtmlDir, language } = ctx;
   const sceneId = scene.sceneId;
   const needs = await analyzeScene(scene, storyboard);
 
@@ -500,7 +506,7 @@ async function processScene(scene, sceneIdx, allScenes, storyboard, ctx) {
     });
   }
 
-  // Step 4: Calculate timings + render HTML via LLM
+  // Step 4: Calculate timings + render HTML (LLM or language adapter)
   if (skipHTML) {
     // Use existing HTML and audio files
     const existingHtml = join(htmlDir, `${sceneId}.html`);
@@ -535,42 +541,87 @@ async function processScene(scene, sceneIdx, allScenes, storyboard, ctx) {
       console.log(`  [timing] ${sceneId}: OST timings: ${ostSummary}`);
     }
 
-    const neighbors = {
-      prev: sceneIdx > 0 ? allScenes[sceneIdx - 1] : null,
-      next: sceneIdx < allScenes.length - 1 ? allScenes[sceneIdx + 1] : null,
-    };
+    // Check if we can use the language adapter (non-English + English HTML exists)
+    const englishHtmlPath = englishHtmlDir ? join(englishHtmlDir, `${sceneId}.html`) : null;
+    let useAdapter = false;
+    if (englishHtmlPath && language !== 'en') {
+      try {
+        await stat(englishHtmlPath);
+        useAdapter = true;
+      } catch {
+        // English HTML not found for this scene — fall through to LLM
+      }
+    }
 
-    result.htmlPath = await renderSceneHTMLWithLLM(scene, storyboard, {
-      themeOverride,
-      audioUrl: result.audioUrl,
-      avatarVideoUrl: result.avatarVideoUrl,
-      timings,
-      outputDir: htmlDir,
-      neighbors,
-    });
+    if (useAdapter) {
+      // Language adapter: reuse English layout, swap text/audio/avatar/fonts/timings
+      console.log(`[${sceneId}] Adapting from English HTML...`);
+      result.htmlPath = await adaptSceneHTML({
+        englishHtmlPath,
+        outputPath: join(htmlDir, `${sceneId}.html`),
+        scene,
+        language,
+        audioUrl: result.audioUrl,
+        avatarVideoUrl: result.avatarVideoUrl,
+        timings,
+      });
+    } else {
+      // Full LLM generation (English or no English HTML available)
+      const neighbors = {
+        prev: sceneIdx > 0 ? allScenes[sceneIdx - 1] : null,
+        next: sceneIdx < allScenes.length - 1 ? allScenes[sceneIdx + 1] : null,
+      };
+
+      result.htmlPath = await renderSceneHTMLWithLLM(scene, storyboard, {
+        themeOverride,
+        audioUrl: result.audioUrl,
+        avatarVideoUrl: result.avatarVideoUrl,
+        timings,
+        outputDir: htmlDir,
+        neighbors,
+      });
+    }
   }
 
-  // Step 5: Record HTML → MP4 via Puppeteer
+  // Step 5: Record HTML → MP4 via Puppeteer (with retries)
   if (!skipRecord && result.htmlPath) {
     const videoPath = join(videoDir, `${sceneId}.mp4`);
-    console.log(`[${sceneId}] Recording...`);
-
-    // Audio always comes from the TTS MP3 (avatar video is muted)
     const recordAudioPath = result.audioPath;
+    const MAX_RECORD_RETRIES = 3;
 
-    const recResult = await recordScene({
-      htmlPath: result.htmlPath,
-      outputPath: videoPath,
-      audioPath: recordAudioPath,
-      durationMs: result.audioDurationMs,
-      fps,
-    });
-    if (recResult.success) {
-      result.videoPath = videoPath;
-      result.recordSuccess = true;
-      console.log(`[${sceneId}] ✓ Complete → ${videoPath}`);
-    } else {
-      console.error(`[${sceneId}] ✗ Recording failed: ${recResult.error}`);
+    for (let attempt = 1; attempt <= MAX_RECORD_RETRIES; attempt++) {
+      console.log(`[${sceneId}] Recording${attempt > 1 ? ` (attempt ${attempt}/${MAX_RECORD_RETRIES})` : ''}...`);
+
+      let recResult;
+      try {
+        recResult = await recordScene({
+          htmlPath: result.htmlPath,
+          outputPath: videoPath,
+          audioPath: recordAudioPath,
+          durationMs: result.audioDurationMs,
+          fps,
+        });
+      } catch (err) {
+        recResult = { success: false, error: String(err) };
+      }
+
+      if (recResult.success) {
+        result.videoPath = videoPath;
+        result.recordSuccess = true;
+        console.log(`[${sceneId}] ✓ Complete → ${videoPath}`);
+        break;
+      }
+
+      console.error(`[${sceneId}] ✗ Recording failed (attempt ${attempt}/${MAX_RECORD_RETRIES}): ${recResult.error}`);
+
+      if (attempt < MAX_RECORD_RETRIES) {
+        const backoffMs = attempt * 2000;
+        console.log(`[${sceneId}] Retrying in ${backoffMs / 1000}s...`);
+        await new Promise(r => setTimeout(r, backoffMs));
+      } else {
+        result.recordSuccess = false;
+        result.error = recResult.error;
+      }
     }
   } else {
     console.log(`[${sceneId}] ✓ HTML ready → ${result.htmlPath}`);
@@ -647,6 +698,21 @@ export async function runPipeline(storyboardPath, opts = {}) {
 
   console.log(`Output: ${langDir}\n`);
 
+  // Language adapter: resolve English HTML directory for non-English languages
+  const englishHtmlDir = storyboard.language !== 'en'
+    ? join(mlBaseDir, 'en', 'html')
+    : null;
+
+  if (englishHtmlDir) {
+    const sceneIds = storyboard.scenes.map(s => s.sceneId);
+    const check = await checkEnglishHTMLExists(englishHtmlDir, sceneIds);
+    if (check.exists) {
+      console.log(`Language adapter: English HTML found — will adapt for "${storyboard.language}"\n`);
+    } else {
+      console.warn(`Language adapter: Missing English HTML for ${check.missing.join(', ')} — those scenes will use full LLM generation\n`);
+    }
+  }
+
   // Expand slideshow scenes into individual slides
   let scenes = expandSlideshowScenes(storyboard.scenes);
 
@@ -693,11 +759,41 @@ export async function runPipeline(storyboardPath, opts = {}) {
     // Normal mode: process all scenes
     console.log(`── Processing ${scenes.length} scenes ─────────────────────\n`);
 
-    const ctx = { audioDir, avatarDir, htmlDir, videoDir, skipTTS, skipAvatar, skipHTML, skipRecord, fps, themeOverride };
+    const ctx = { audioDir, avatarDir, htmlDir, videoDir, skipTTS, skipAvatar, skipHTML, skipRecord, fps, themeOverride, englishHtmlDir, language: storyboard.language };
+
+    // Abort signal — stops new scenes from starting when one fails
+    const abortSignal = { aborted: false, failedScene: null, abort(sceneId) { this.aborted = true; this.failedScene = sceneId; } };
 
     const tasks = scenes.map((scene, idx) => () => processScene(scene, idx, scenes, storyboard, ctx));
-    results = await runWithConcurrency(tasks, concurrency);
-    successfulRecordings = results.filter(r => r.recordSuccess && r.videoPath);
+    results = await runWithConcurrency(tasks, concurrency, { abortSignal });
+    successfulRecordings = results.filter(r => r?.recordSuccess && r?.videoPath);
+
+    if (abortSignal.aborted) {
+      console.error(`\n✗ Pipeline aborted early — ${abortSignal.failedScene} failed after retries. Skipped remaining scenes.`);
+    }
+
+    // Clean up shared validator browser after all scenes are done
+    const { closeValidator } = await import('./html-validator.js');
+    await closeValidator();
+
+    // Check for failed scenes — abort pipeline if any scene failed
+    if (!skipRecord) {
+      const failedScenes = results.filter(r => !r.recordSuccess);
+      if (failedScenes.length > 0) {
+        console.error(`\n✗ PIPELINE ABORTED — ${failedScenes.length} scene(s) failed after retries:`);
+        for (const f of failedScenes) {
+          console.error(`  - ${f.sceneId}: ${f.error || 'recording failed'}`);
+        }
+        console.error(`\nFix the failed scenes and re-run. No partial video was produced.\n`);
+        return {
+          success: false,
+          scenes: results,
+          recordings: successfulRecordings,
+          failedScenes: failedScenes.map(f => f.sceneId),
+          finalVideo: null,
+        };
+      }
+    }
   }
 
   // 3. Stitch all scene videos into final MP4 (must be sequential — needs all scenes done)

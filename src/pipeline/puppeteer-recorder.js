@@ -119,9 +119,9 @@ export async function recordScene({
     // Navigate — auto-play is blocked
     await page.goto(`file://${htmlPath}`, {
       waitUntil: 'networkidle',
-      timeout: 60000,
+      timeout: 180000,
     });
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('networkidle', { timeout: 180000 });
     await page.waitForTimeout(300);
 
     // Release playback
@@ -174,6 +174,16 @@ export async function recordScene({
 
     await context.close();
 
+    // Verify captured frames actually exist on disk
+    const existingFiles = new Set(await readdir(framesDir));
+    const validFrames = capturedFrames.filter(f => existingFiles.has(f.file));
+    if (validFrames.length === 0) {
+      throw new Error(`No captured frames found on disk in ${framesDir} (expected ${capturedFrames.length})`);
+    }
+    if (validFrames.length < capturedFrames.length) {
+      console.log(`    [rec] Warning: ${capturedFrames.length - validFrames.length} frames missing on disk, using ${validFrames.length} valid frames`);
+    }
+
     // ── Assemble output frame sequence ──────────────────────────
     // Map each target frame to the nearest captured frame
     const totalOutputFrames = Math.ceil(videoDuration * fps);
@@ -182,9 +192,9 @@ export async function recordScene({
       const targetMs = (i / fps) * 1000;
 
       // Find nearest captured frame
-      let best = capturedFrames[0];
+      let best = validFrames[0];
       let bestDist = Math.abs(best.timeMs - targetMs);
-      for (const f of capturedFrames) {
+      for (const f of validFrames) {
         const dist = Math.abs(f.timeMs - targetMs);
         if (dist < bestDist) {
           best = f;

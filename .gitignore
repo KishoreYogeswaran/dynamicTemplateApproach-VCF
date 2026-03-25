@@ -7,4 +7,5 @@ outputs/
 *.webm
 *.mp3
 *.wav
+tmp/
 .DS_Store

@@ -3,8 +3,8 @@
     "narrator": "ANIL",
     "image": "ANIL_motor_vehicle_workshop.png"
   },
-  "electrician": {
-    "narrator": "",
-    "image": ""
+  "domestic_electric_works": {
+    "narrator": "SURESH",
+    "image": "SURESH_domestic_electric_works.png"
   }
 }

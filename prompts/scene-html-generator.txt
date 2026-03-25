@@ -11,7 +11,7 @@ This is a structured overview scene — left-aligned text reads better here.
 **Text content to display:**
 - Headers: ["Learning Objectives"]
 - Sub-headers: none
-- Bullets: ["Identify market gaps by combining customer and competitor observations.","Identify ways a business can differentiate itself to gain a competitive edge."]
+- Bullets: ["Explain how common problems can be turned into opportunities.","Describe a simple method to explain a problem and create an opportunity-focused response."]
 - Key phrases: none
 
 **Media assets:**
@@ -23,62 +23,52 @@ This is a structured overview scene — left-aligned text reads better here.
 
 
 **Narration script (for context only — do NOT display this on screen):**
-By the end of this video, you will be able to spot gaps and choose simple ways to be different from competitors.
+By the end of this video, you will be able to turn problems into opportunities and explain a method for opportunity thinking.
 
 ## DESIGN SYSTEM
 
 **Color palette (use ONLY these CSS variables — never hardcode colors):**
 :root {
   /* Primary palette */
-  --theme-primary: #A16207;
-  --theme-primary-light: #D97706;
-  --theme-primary-dark: #78350F;
-  --theme-secondary: #DC2626;
-  --theme-accent: #059669;
+  --theme-primary: #0D9488;
+  --theme-primary-light: #5EEAD4;
+  --theme-primary-dark: #115E59;
+  --theme-secondary: #F59E0B;
+  --theme-accent: #06B6D4;
 
   /* Backgrounds */
-  --theme-bg-solid: #1C1410;
-  --theme-bg-gradient: linear-gradient(135deg, #1C1410 0%, #292018 50%, #1A1510 100%);
-  --theme-bg-card: rgba(255, 235, 205, 0.08);
-  --theme-bg-card-border: rgba(255, 235, 205, 0.12);
+  --theme-bg-solid: #042F2E;
+  --theme-bg-gradient: linear-gradient(135deg, #042F2E 0%, #0A3D3B 50%, #031C1B 100%);
+  --theme-bg-card: rgba(94, 234, 212, 0.06);
+  --theme-bg-card-border: rgba(94, 234, 212, 0.10);
 
   /* Text */
-  --theme-text-primary: #FEF3C7;
-  --theme-text-secondary: #D6C9A8;
-  --theme-text-muted: #8B7D6B;
+  --theme-text-primary: #F0FDFA;
+  --theme-text-secondary: #99F6E4;
+  --theme-text-muted: #5E8A85;
 
   /* OST specific */
-  --theme-ost-bg: rgba(28, 20, 16, 0.7);
-  --theme-ost-border: rgba(255, 235, 205, 0.1);
-  --theme-ost-highlight: #F59E0B;
-  --theme-bullet-marker: #D97706;
-  --theme-keyphrase-bg: rgba(245, 158, 11, 0.15);
-  --theme-keyphrase-border: #F59E0B;
+  --theme-ost-bg: rgba(4, 47, 46, 0.7);
+  --theme-ost-border: rgba(94, 234, 212, 0.1);
+  --theme-ost-highlight: #5EEAD4;
+  --theme-bullet-marker: #5EEAD4;
+  --theme-keyphrase-bg: rgba(94, 234, 212, 0.12);
+  --theme-keyphrase-border: #5EEAD4;
 
   /* Table specific */
-  --theme-table-header-bg: #78350F;
-  --theme-table-row-even: rgba(255, 235, 205, 0.03);
-  --theme-table-row-odd: rgba(255, 235, 205, 0.06);
-  --theme-table-border: rgba(255, 235, 205, 0.08);
-  --theme-table-highlight: rgba(245, 158, 11, 0.12);
+  --theme-table-header-bg: #115E59;
+  --theme-table-row-even: rgba(94, 234, 212, 0.03);
+  --theme-table-row-odd: rgba(94, 234, 212, 0.06);
+  --theme-table-border: rgba(94, 234, 212, 0.08);
+  --theme-table-highlight: rgba(94, 234, 212, 0.12);
 
   /* Shadows & effects */
   --theme-shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --theme-shadow-text: 0 2px 8px rgba(0, 0, 0, 0.6);
+  --theme-shadow-text: 0 2px 8px rgba(0, 0, 0, 0.5);
 
   /* Animation */
   --theme-transition-speed: 0.4s;
   --theme-ease: cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-
-/* Domain override: motor_vehicle_workshop */
-:root {
-  --theme-accent: #F97316;
-  --theme-primary-light: #FDBA74;
-  --theme-ost-highlight: #F97316;
-  --theme-bullet-marker: #F97316;
-  --theme-keyphrase-border: #F97316;
 }
 
 
@@ -124,15 +114,25 @@ Do NOT add any gradient overlay, darkening div, or semi-transparent layer on top
 EVERY container, card, box, or wrapper div that holds or surrounds OST text elements (headers, bullets, keyphrases, subheaders) MUST have the CSS class `ost-container`. This includes glass-cards, label containers, header strips, bullet wrappers — any div with a visible background, border, or backdrop that wraps text. The container stays invisible until the first OST element inside it animates in. If you have separate containers (e.g. header card at top, bullet card at bottom), EACH one needs `ost-container`. Example: `<div class="glass-card ost-container">`
 
 ### Bullet structure
-Each bullet must use this exact structure: `<div class="bullet-item anim-hidden" id="bullet_N"><span class="bullet-marker"></span><span class="text-bullet">text here</span></div>`
+Each bullet must use this exact structure: `<div class="bullet-item anim-hidden" id="bullet_N"><span class="bullet-marker"></span><span class="text-bullet" data-translate="bullet_N">text here</span></div>`
 The bullet-marker span must be EMPTY — the chevron marker is added via CSS ::after. Do NOT put any text or symbol inside the bullet-marker span.
+**NEVER** place chevron characters (›, ▸, ►, >, », →, •) directly in the bullet text. The marker comes ONLY from `.bullet-marker::after`. If you inline a chevron in the text, it will appear doubled or misaligned.
 **CRITICAL:** Do NOT restyle `.bullet-marker` or `.bullet-item` in your CSS. These classes are already fully styled in the base CSS with the correct chevron, padding, background, and border-radius. If you redefine them, you will break the design system.
 
 ### Keyphrase styling
-Keyphrases must use the `text-keyphrase` class and one accent class: `keyphrase-underline`, `keyphrase-accent-color`, or `keyphrase-left-bar`. Do NOT create background boxes, padding boxes, or custom containers around keyphrases. The keyphrase should be clean inline text with only the accent style applied.
+Keyphrases must use the `text-keyphrase` class and one accent class: `keyphrase-underline` or `keyphrase-left-bar`. Do NOT use `keyphrase-accent-color` (it changes text color and breaks visual consistency). Do NOT create background boxes, padding boxes, or custom containers around keyphrases. The keyphrase should be clean inline text with only the accent style applied.
 
 ### Do NOT override base component styles
-The following CSS classes are pre-styled in the base layout and must NOT be redefined in your scene CSS: `.bullet-item`, `.bullet-marker`, `.text-bullet`, `.text-header`, `.text-subheader`, `.text-keyphrase`, `.glass-card`, `.avatar-circle`, `.avatar-torso`. You may create new custom classes but never redefine these.
+The following CSS classes are pre-styled in the base layout and must NOT be redefined in your scene CSS — not directly, not via parent selectors, not via scoped selectors like `.my-card .text-keyphrase`: `.bullet-item`, `.bullet-marker`, `.text-bullet`, `.text-header`, `.text-subheader`, `.text-keyphrase`, `.glass-card`, `.avatar-circle`, `.avatar-torso`. In particular, NEVER set `font-size` on any of these classes — sizes are controlled by CSS variables from the design system. You may create new custom classes but never restyle these in any way.
+
+### Card width — fit content, not full-width
+Glass cards should hug their content — use `width: fit-content` with comfortable padding (32-48px horizontal). The card should be wide enough that text doesn't wrap unnecessarily, but NOT stretch across the entire available zone when the content is short. A card with "Faster service" should NOT be 1300px wide — it should be just wide enough for the text plus padding. If you have a group of elements (header + bullets), the card width should fit the WIDEST element plus padding, not span the full layout zone. Short bullet text like "Safe repairs" or "Clear updates" does NOT need a card that spans half the screen.
+
+### Split-screen header sizing
+In split-screen scenes, the header card should use `width: fit-content` so it sizes to the text naturally — never force a narrow width that wraps short headers to 2 lines. The header should be centered and can be as wide as needed (up to the image container width). Do NOT set a percentage-based width that constrains the header text.
+
+### Container safe zone margins
+ALL `ost-container` elements (glass cards, content wrappers) MUST have at least 60px clearance from every canvas edge. When positioning containers, ensure the rendered box (including padding and border) never touches or exceeds the 60px safe zone. `left: 0` or `right: 0` or `width: 100%` will violate the safe zone.
 
 ### Consistent container alignment
 When a scene has multiple content groups (e.g., a header card and a bullet list below it), their left and right edges MUST be aligned flush. Use the same `left`, `width`, and horizontal `margin`/`padding` values so all containers form a single clean column. Misaligned containers look broken — treat this as a hard requirement.
@@ -166,6 +166,17 @@ Return ONLY a raw JSON object. No markdown, no backticks, no commentary:
 - Bullets: id="bullet_1", id="bullet_2" ...
 - Key phrases: id="keyphrase_1", id="keyphrase_2" ...
 - Sub-headers: id="subheader_1" ...
+
+**Translation markers (REQUIRED):** Every element that contains displayable text MUST have a `data-translate` attribute matching its element type and index. Place `data-translate` on the INNERMOST element that directly holds the text content — not on wrapper divs.
+
+Examples:
+- Headers: `<h1 class="text-header anim-hidden" id="header_1" data-translate="header_1">Header Text</h1>`
+- Bullets: `<span class="text-bullet" data-translate="bullet_1">Bullet text</span>` (NOT on the outer bullet-item div)
+- Key phrases: `<span class="text-keyphrase ..." id="keyphrase_1" data-translate="keyphrase_1">Phrase</span>`
+- Sub-headers: `<div class="text-subheader anim-hidden" id="subheader_1" data-translate="subheader_1">Sub text</div>`
+- Panel labels: `<span class="text-bullet" data-translate="bullet_1">Label text</span>` (inside panel-label divs)
+
+**CRITICAL:** If you skip `data-translate`, the scene CANNOT be translated to other languages. Every single text element MUST have it. This is a hard requirement — not optional.
 
 You may still use CSS animation classes for non-text elements like background images (anim-kenBurns) but NEVER on text elements.
 

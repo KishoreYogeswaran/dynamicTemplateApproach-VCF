@@ -12,5 +12,19 @@
     "gender": "male",
     "role": "narrator",
     "notes": "Main narrator for motor vehicle workshop domain"
+  },
+  "SURESH_DOMESTIC_ELECTRIC_WORKS": {
+    "voice_id_en": "tLA3KNfyQYB1aXOpXC17",
+    "voice_id_hi": "JTEaMrCgU5borhK7PRNS",
+    "voice_id_ta": "",
+    "voice_id_te": "",
+    "voice_id_kn": "",
+    "voice_id_ml": "",
+    "voice_id_bn": "",
+    "voice_id_mr": "",
+    "voice_id_gu": "",
+    "gender": "male",
+    "role": "narrator",
+    "notes": "Main narrator for domestic electric works domain"
   }
 }

@@ -44,11 +44,20 @@ export async function generateFontLinkTag(language) {
 }
 
 /**
- * Generates CSS custom property declarations for fonts.
+ * Generates CSS custom property declarations for fonts and sizes.
  */
 export async function generateFontCSSVars(language) {
   const font = await getFontConfig(language);
-  return `  --font-primary: '${font.primary}', sans-serif;\n  --font-heading: '${font.heading}', sans-serif;`;
+  const sizes = font.sizes || { header: 60, subheader: 40, keyphrase: 44, bullet: 36, bullet_marker: 30 };
+  return [
+    `  --font-primary: '${font.primary}', sans-serif;`,
+    `  --font-heading: '${font.heading}', sans-serif;`,
+    `  --size-header: ${sizes.header}px;`,
+    `  --size-subheader: ${sizes.subheader}px;`,
+    `  --size-keyphrase: ${sizes.keyphrase}px;`,
+    `  --size-bullet: ${sizes.bullet}px;`,
+    `  --size-bullet-marker: ${sizes.bullet_marker}px;`,
+  ].join('\n');
 }
 
 /**

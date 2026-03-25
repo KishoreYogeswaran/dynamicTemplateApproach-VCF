@@ -8,6 +8,9 @@
  * 4. Element-to-element overlap
  * 5. Missing / empty elements
  * 6. Font size readability (minimum 20px)
+ * 7. Broken bullet structure (missing bullet-marker span, inline chevrons)
+ * 8. Container safe zone (ost-container elements outside 60px margins)
+ * 9. Split-screen header width (headers too wide on split-screen scenes)
  *
  * Returns structured issues that can be fed back to the LLM for correction.
  */
@@ -118,7 +121,7 @@ export async function validateSceneHTML(html, sceneContext) {
     await page.waitForTimeout(200);
 
     // Run all checks in a single evaluate call for performance
-    const checkResults = await page.evaluate((expectedIds) => {
+    const checkResults = await page.evaluate(({ expectedIds, sceneType }) => {
       const results = [];
       const SAFE = { left: 60, top: 60, right: 1860, bottom: 1020 };
       const MIN_FONT_SIZE = 20;
@@ -203,6 +206,100 @@ export async function validateSceneHTML(html, sceneContext) {
         }
       }
 
+      // Check 7: Broken bullet structure
+      // Skip for split_screen_image — those use panel-label (no bullet-marker by design)
+      if (sceneType !== 'split_screen_image') {
+        for (const id of expectedIds) {
+          if (!id.startsWith('bullet_')) continue;
+          const el = document.getElementById(id);
+          if (!el) continue;
+
+          const marker = el.querySelector('.bullet-marker');
+          if (!marker) {
+            results.push({
+              check: 'bullet-structure', severity: 'error', elementId: id,
+              message: `"${id}" is missing a <span class="bullet-marker"> child — bullet structure is broken.`,
+              details: {},
+            });
+          }
+
+          // Check if chevron-like characters leaked into the text content
+          const textSpan = el.querySelector('.text-bullet');
+          const textContent = (textSpan || el).textContent || '';
+          if (/^[\s]*[›▸▹▶►➤❯⟩>»→‣•·■□☐✓✔☑]\s/.test(textContent)) {
+            results.push({
+              check: 'bullet-structure', severity: 'error', elementId: id,
+              message: `"${id}" has an inline marker character in the text ("${textContent.slice(0, 30).trim()}…") — the chevron should come from .bullet-marker::after, not from text content.`,
+              details: { textStart: textContent.slice(0, 40).trim() },
+            });
+          }
+        }
+      }
+
+      // Check 8: Container safe zone — .ost-container elements must respect 60px safe zone
+      const containers = document.querySelectorAll('.ost-container');
+      for (const container of containers) {
+        const rect = container.getBoundingClientRect();
+        // Skip invisible or zero-size containers
+        if (rect.width === 0 || rect.height === 0) continue;
+
+        const violations = [];
+        if (rect.left < SAFE.left - SAFE_ZONE_TOLERANCE) violations.push(`left edge at ${Math.round(rect.left)}px (min: ${SAFE.left}px)`);
+        if (rect.top < SAFE.top - SAFE_ZONE_TOLERANCE) violations.push(`top edge at ${Math.round(rect.top)}px (min: ${SAFE.top}px)`);
+        if (rect.right > SAFE.right + SAFE_ZONE_TOLERANCE) violations.push(`right edge at ${Math.round(rect.right)}px (max: ${SAFE.right}px)`);
+        if (rect.bottom > SAFE.bottom + SAFE_ZONE_TOLERANCE) violations.push(`bottom edge at ${Math.round(rect.bottom)}px (max: ${SAFE.bottom}px)`);
+
+        if (violations.length > 0) {
+          // Try to identify the container by id or class
+          const label = container.id || container.className.split(' ').slice(0, 2).join('.') || 'ost-container';
+          results.push({
+            check: 'container-safe-zone', severity: 'error', elementId: label,
+            message: `Container "${label}" extends beyond safe zone — ${violations.join(', ')}.`,
+            details: { rect: { left: Math.round(rect.left), top: Math.round(rect.top), right: Math.round(rect.right), bottom: Math.round(rect.bottom) } },
+          });
+        }
+      }
+
+      // Check 9: Split-screen header width — headers should not span full width on split-screen scenes
+      if (sceneType === 'split_screen_image') {
+        for (const el of elementData) {
+          if (!el.id.startsWith('header_')) continue;
+          // A header wider than 65% of canvas on a split-screen is likely spanning both halves
+          if (el.rect.width > 1920 * 0.65) {
+            results.push({
+              check: 'split-header-width', severity: 'error', elementId: el.id,
+              message: `"${el.id}" is ${Math.round(el.rect.width)}px wide on a split-screen scene — it should only cover the text half (~45-55% width, max ~1050px).`,
+              details: { width: Math.round(el.rect.width), maxRecommended: 1050 },
+            });
+          }
+        }
+        // Also check ost-containers that hold headers
+        for (const container of containers) {
+          const rect = container.getBoundingClientRect();
+          const hasHeader = container.querySelector('[id^="header_"]');
+          if (hasHeader && rect.width > 1920 * 0.65) {
+            const label = container.id || container.className.split(' ').slice(0, 2).join('.') || 'ost-container';
+            results.push({
+              check: 'split-header-width', severity: 'error', elementId: label,
+              message: `Header container "${label}" is ${Math.round(rect.width)}px wide on a split-screen scene — should be ≤55% of canvas width.`,
+              details: { width: Math.round(rect.width) },
+            });
+          }
+        }
+      }
+
+      // Check 10: Missing data-translate attributes (required for translation)
+      for (const id of expectedIds) {
+        const hasTranslate = document.querySelector(`[data-translate="${id}"]`);
+        if (!hasTranslate) {
+          results.push({
+            check: 'missing-translate', severity: 'warning', elementId: id,
+            message: `No element with data-translate="${id}" found — this text cannot be translated.`,
+            details: {},
+          });
+        }
+      }
+
       // Check 4: Element-to-element overlap (pairwise)
       for (let i = 0; i < elementData.length; i++) {
         for (let j = i + 1; j < elementData.length; j++) {
@@ -233,7 +330,7 @@ export async function validateSceneHTML(html, sceneContext) {
       }
 
       return { results, elementData };
-    }, sceneContext.expectedIds);
+    }, { expectedIds: sceneContext.expectedIds, sceneType: sceneContext.sceneType });
 
     issues.push(...checkResults.results);
 

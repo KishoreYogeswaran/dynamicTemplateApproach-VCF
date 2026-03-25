@@ -7,6 +7,8 @@
   "scripts": {
     "start": "node src/pipeline/orchestrator.js",
     "preview": "node src/pipeline/orchestrator.js --preview",
+    "server": "node scripts/start-server.js",
+    "server:dev": "node --watch scripts/start-server.js",
     "test:parser": "node --test src/utils/__tests__/storyboard-parser.test.js",
     "test:theme": "node --test src/utils/__tests__/theme-loader.test.js",
     "test:font": "node --test src/utils/__tests__/font-loader.test.js",
@@ -16,8 +18,12 @@
   "license": "PRIVATE",
   "dependencies": {
     "@azure/storage-blob": "^12.31.0",
+    "@fastify/cors": "^10.0.2",
     "@google/genai": "^1.46.0",
+    "bullmq": "^5.34.8",
     "dotenv": "^17.3.1",
+    "fastify": "^5.2.1",
+    "ioredis": "^5.6.0",
     "playwright": "^1.58.2",
     "puppeteer": "^24.40.0",
     "puppeteer-stream": "^3.0.22"

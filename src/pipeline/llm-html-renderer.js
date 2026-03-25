@@ -105,9 +105,10 @@ This scene features a **composite image** — a single image file containing 4 s
 You have the composite image, a header, and 4 bullet points (one label per panel).
 
 **Layout spec for this 2x2 grid split screen:**
-- **HEADER** at the top, centered. Use a compact glassmorphism card or strip with border-left: 4px solid var(--theme-accent).
+- **HEADER** at the top, horizontally centered. CSS: \`position: absolute; top: 64px; left: 50%; transform: translateX(-50%); width: fit-content; text-align: center;\` with a compact glassmorphism card and border-left: 4px solid var(--theme-accent). The header must NOT be left-aligned or full-width.
 - **IMAGE CONTAINER** below the header: a rounded container (border-radius: 16px; overflow: hidden) that is ${containerWidth}px wide, centered horizontally (left: 50%; transform: translateX(-50%)). The image inside: width: 100%, height: auto, object-fit: cover, max-height: 720px.
-- **BULLET LABELS** below the image in a 2x2 grid matching the image layout. Use a CSS grid or two flex rows, container ${containerWidth}px wide, centered. Each label box: width ~${colWidth}px, text-align: center, no bullet markers or dots, font-size: 28px, border-left: 3px solid var(--theme-accent), padding-left: 12px. Row 1 labels = top-left and top-right panels, Row 2 labels = bottom-left and bottom-right panels.
+- **BULLET LABELS** below the image in a 2x2 grid matching the image layout. Use a CSS grid or two flex rows, container ${containerWidth}px wide, centered. Each label box: width ~${colWidth}px, text-align: center, font-size: 28px, border-left: 3px solid var(--theme-accent), padding-left: 12px. Row 1 labels = top-left and top-right panels, Row 2 labels = bottom-left and bottom-right panels.
+  **IMPORTANT:** Do NOT use \`bullet-item\`, \`bullet-marker\`, or chevron markers for these labels. Use this structure: \`<div class="panel-label anim-hidden" id="bullet_N"><span class="text-bullet" data-translate="bullet_N">label text</span></div>\`. Style \`.panel-label\` in your CSS with: \`text-align: center; padding: 12px 16px; background: var(--theme-bg-card); border: 1px solid var(--theme-bg-card-border); border-left: 3px solid var(--theme-accent); border-radius: 10px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);\` No chevrons, no markers — just clean centered text.
 - The image must be an <img> element, NOT a background.
 - The image must remain completely static — no animation. Only text elements animate.`;
   }
@@ -121,9 +122,10 @@ This scene features a **composite image** — a single image file containing ${n
 You have the composite image, a header, and ${n} bullet points (one label per panel).
 
 **Layout spec for this ${n}-panel split screen:**
-- **HEADER** at the top, centered. Use a compact glassmorphism card or strip with border-left: 4px solid var(--theme-accent).
+- **HEADER** at the top, horizontally centered. CSS: \`position: absolute; top: 64px; left: 50%; transform: translateX(-50%); width: fit-content; text-align: center;\` with a compact glassmorphism card and border-left: 4px solid var(--theme-accent). The header must NOT be left-aligned or full-width.
 - **IMAGE CONTAINER** below the header: a rounded container (border-radius: 16px; overflow: hidden) that is ${containerWidth}px wide, centered horizontally (left: 50%; transform: translateX(-50%)). The image inside: width: 100%, height: auto, object-fit: cover, max-height: 720px.
-- **BULLET LABELS** directly below the image, in a single flex row that is exactly ${containerWidth}px wide, centered the same way. Use ${n} equal-width boxes (each ~${panelWidth}px) with ${gap}px gap between them. Each label box: text-align: center, no bullet markers or dots, font-size: 28px, border-left: 3px solid var(--theme-accent), padding-left: 12px. This ensures each label sits perfectly centered under its corresponding image panel.
+- **BULLET LABELS** directly below the image, in a single flex row that is exactly ${containerWidth}px wide, centered the same way. Use ${n} equal-width boxes (each ~${panelWidth}px) with ${gap}px gap between them. Each label box: text-align: center, font-size: 28px, border-left: 3px solid var(--theme-accent), padding-left: 12px. This ensures each label sits perfectly centered under its corresponding image panel.
+  **IMPORTANT:** Do NOT use \`bullet-item\`, \`bullet-marker\`, or chevron markers for these labels. Use this structure: \`<div class="panel-label anim-hidden" id="bullet_N"><span class="text-bullet" data-translate="bullet_N">label text</span></div>\`. Style \`.panel-label\` in your CSS with: \`text-align: center; padding: 12px 16px; background: var(--theme-bg-card); border: 1px solid var(--theme-bg-card-border); border-left: 3px solid var(--theme-accent); border-radius: 10px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);\` No chevrons, no markers — just clean centered text.
 - The image must be an <img> element, NOT a background.
 - The image must remain completely static — no animation. Only text elements animate.`;
 }
@@ -275,15 +277,25 @@ Do NOT add any gradient overlay, darkening div, or semi-transparent layer on top
 EVERY container, card, box, or wrapper div that holds or surrounds OST text elements (headers, bullets, keyphrases, subheaders) MUST have the CSS class \`ost-container\`. This includes glass-cards, label containers, header strips, bullet wrappers — any div with a visible background, border, or backdrop that wraps text. The container stays invisible until the first OST element inside it animates in. If you have separate containers (e.g. header card at top, bullet card at bottom), EACH one needs \`ost-container\`. Example: \`<div class="glass-card ost-container">\`
 
 ### Bullet structure
-Each bullet must use this exact structure: \`<div class="bullet-item anim-hidden" id="bullet_N"><span class="bullet-marker"></span><span class="text-bullet">text here</span></div>\`
+Each bullet must use this exact structure: \`<div class="bullet-item anim-hidden" id="bullet_N"><span class="bullet-marker"></span><span class="text-bullet" data-translate="bullet_N">text here</span></div>\`
 The bullet-marker span must be EMPTY — the chevron marker is added via CSS ::after. Do NOT put any text or symbol inside the bullet-marker span.
+**NEVER** place chevron characters (›, ▸, ►, >, », →, •) directly in the bullet text. The marker comes ONLY from \`.bullet-marker::after\`. If you inline a chevron in the text, it will appear doubled or misaligned.
 **CRITICAL:** Do NOT restyle \`.bullet-marker\` or \`.bullet-item\` in your CSS. These classes are already fully styled in the base CSS with the correct chevron, padding, background, and border-radius. If you redefine them, you will break the design system.
 
 ### Keyphrase styling
-Keyphrases must use the \`text-keyphrase\` class and one accent class: \`keyphrase-underline\`, \`keyphrase-accent-color\`, or \`keyphrase-left-bar\`. Do NOT create background boxes, padding boxes, or custom containers around keyphrases. The keyphrase should be clean inline text with only the accent style applied.
+Keyphrases must use the \`text-keyphrase\` class and one accent class: \`keyphrase-underline\` or \`keyphrase-left-bar\`. Do NOT use \`keyphrase-accent-color\` (it changes text color and breaks visual consistency). Do NOT create background boxes, padding boxes, or custom containers around keyphrases. The keyphrase should be clean inline text with only the accent style applied.
 
 ### Do NOT override base component styles
-The following CSS classes are pre-styled in the base layout and must NOT be redefined in your scene CSS: \`.bullet-item\`, \`.bullet-marker\`, \`.text-bullet\`, \`.text-header\`, \`.text-subheader\`, \`.text-keyphrase\`, \`.glass-card\`, \`.avatar-circle\`, \`.avatar-torso\`. You may create new custom classes but never redefine these.
+The following CSS classes are pre-styled in the base layout and must NOT be redefined in your scene CSS — not directly, not via parent selectors, not via scoped selectors like \`.my-card .text-keyphrase\`: \`.bullet-item\`, \`.bullet-marker\`, \`.text-bullet\`, \`.text-header\`, \`.text-subheader\`, \`.text-keyphrase\`, \`.glass-card\`, \`.avatar-circle\`, \`.avatar-torso\`. In particular, NEVER set \`font-size\` on any of these classes — sizes are controlled by CSS variables from the design system. You may create new custom classes but never restyle these in any way.
+
+### Card width — fit content, not full-width
+Glass cards should hug their content — use \`width: fit-content\` with comfortable padding (32-48px horizontal). The card should be wide enough that text doesn't wrap unnecessarily, but NOT stretch across the entire available zone when the content is short. A card with "Faster service" should NOT be 1300px wide — it should be just wide enough for the text plus padding. If you have a group of elements (header + bullets), the card width should fit the WIDEST element plus padding, not span the full layout zone. Short bullet text like "Safe repairs" or "Clear updates" does NOT need a card that spans half the screen.
+
+### Split-screen header sizing
+In split-screen scenes, the header card should use \`width: fit-content\` so it sizes to the text naturally — never force a narrow width that wraps short headers to 2 lines. The header should be centered and can be as wide as needed (up to the image container width). Do NOT set a percentage-based width that constrains the header text.
+
+### Container safe zone margins
+ALL \`ost-container\` elements (glass cards, content wrappers) MUST have at least 60px clearance from every canvas edge. When positioning containers, ensure the rendered box (including padding and border) never touches or exceeds the 60px safe zone. \`left: 0\` or \`right: 0\` or \`width: 100%\` will violate the safe zone.
 
 ### Consistent container alignment
 When a scene has multiple content groups (e.g., a header card and a bullet list below it), their left and right edges MUST be aligned flush. Use the same \`left\`, \`width\`, and horizontal \`margin\`/\`padding\` values so all containers form a single clean column. Misaligned containers look broken — treat this as a hard requirement.
@@ -317,6 +329,17 @@ Return ONLY a raw JSON object. No markdown, no backticks, no commentary:
 - Bullets: id="bullet_1", id="bullet_2" ...
 - Key phrases: id="keyphrase_1", id="keyphrase_2" ...
 - Sub-headers: id="subheader_1" ...
+
+**Translation markers (REQUIRED):** Every element that contains displayable text MUST have a \`data-translate\` attribute matching its element type and index. Place \`data-translate\` on the INNERMOST element that directly holds the text content — not on wrapper divs.
+
+Examples:
+- Headers: \`<h1 class="text-header anim-hidden" id="header_1" data-translate="header_1">Header Text</h1>\`
+- Bullets: \`<span class="text-bullet" data-translate="bullet_1">Bullet text</span>\` (NOT on the outer bullet-item div)
+- Key phrases: \`<span class="text-keyphrase ..." id="keyphrase_1" data-translate="keyphrase_1">Phrase</span>\`
+- Sub-headers: \`<div class="text-subheader anim-hidden" id="subheader_1" data-translate="subheader_1">Sub text</div>\`
+- Panel labels: \`<span class="text-bullet" data-translate="bullet_1">Label text</span>\` (inside panel-label divs)
+
+**CRITICAL:** If you skip \`data-translate\`, the scene CANNOT be translated to other languages. Every single text element MUST have it. This is a hard requirement — not optional.
 
 You may still use CSS animation classes for non-text elements like background images (anim-kenBurns) but NEVER on text elements.
 
@@ -507,8 +530,8 @@ export async function renderSceneHTMLWithLLM(scene, storyboard, options = {}) {
     }
   }
 
-  // Clean up validator browser
-  if (validate) await closeValidator();
+  // NOTE: Don't close validator browser here — other parallel scenes may still need it.
+  // The orchestrator calls closeValidator() after all scenes are done.
 
   if (outputDir) {
     await mkdir(outputDir, { recursive: true });

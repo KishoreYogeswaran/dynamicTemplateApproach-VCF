@@ -8,6 +8,43 @@ The Video Content Factory (VCF) pipeline converts storyboard JSON into fully ren
 
 ---
 
+## Parallel I/O & Frame Extraction
+
+Each scene recording captures JPEG frames to a temporary directory on disk, then compiles them to H.264 via FFmpeg. When multiple jobs run in parallel, this creates concurrent disk I/O.
+
+### How Collisions Are Avoided
+
+Each recording creates an isolated frames directory using a timestamp-based name:
+
+```
+/opt/vcf/outputs/.../video/_frames_1711234567890/   ← Job A, Scene 1
+/opt/vcf/outputs/.../video/_frames_1711234567895/   ← Job B, Scene 3 (parallel)
+```
+
+The `_frames_${Date.now()}` naming ensures no two recordings write to the same directory, even when 15+ scenes record simultaneously.
+
+### I/O Load at Peak Concurrency
+
+With `MAX_CONCURRENT_JOBS=5` and `SCENE_CONCURRENCY=3` (15 parallel recordings):
+
+| Metric | Per Scene | 15 Parallel Scenes |
+|--------|-----------|-------------------|
+| Frames written | ~150 files | ~2,250 files |
+| Disk written | ~30MB | ~450MB |
+| Duration | 5-10s of I/O | Same (parallel) |
+
+### Why SSD Handles This Easily
+
+The `pd-ssd` disk specified in Step 2 provides **15,000-30,000 IOPS** and **240-480 MB/s throughput**. Peak pipeline load is ~2,000 IOPS — well under 15% of the disk's capacity.
+
+Frames are also **short-lived** — written during capture, read once by FFmpeg, then immediately deleted. There is no accumulation of frame files on disk.
+
+### Actual Bottleneck
+
+At scale, the bottleneck is **CPU** (Chromium rendering) and **RAM** (15 headless browser instances), not disk I/O. The `c2-standard-16` machine type has sufficient compute and memory for 5 concurrent pipelines.
+
+---
+
 ## API Architecture
 
 ### Endpoints
@@ -654,10 +691,33 @@ redis-cli SCARD bull:video-pipeline:active   # Active jobs
 
 # Disk usage (output videos accumulate)
 du -sh /opt/vcf/outputs/
-
-# Clean up old outputs (older than 7 days)
-find /opt/vcf/outputs/ -name "*.mp4" -mtime +7 -delete
 ```
+
+#### Automated Cleanup (Cron)
+
+Video files accumulate ~50-150MB per pipeline run. At 20 jobs/day that's 1-3GB daily. Set up a daily cron to auto-delete old files:
+
+```bash
+# Open crontab editor
+crontab -e
+
+# Add this line — runs daily at 3 AM, deletes MP4s older than 7 days
+0 3 * * * find /opt/vcf/outputs/ -name "*.mp4" -mtime +7 -delete
+
+# Also clean up temp storyboard files older than 1 day
+0 3 * * * find /opt/vcf/tmp/ -name "*.json" -mtime +1 -delete
+
+# Verify cron is saved
+crontab -l
+```
+
+| What gets cleaned | Retention | Why |
+|-------------------|-----------|-----|
+| Job metadata (Redis) | 24 hours | `JOB_TTL_HOURS=24` in config — after this, `GET /api/jobs/:id` returns 404 |
+| Video files (disk) | 7 days | Cron job above — gives time to re-download if needed |
+| Temp storyboard JSONs (`/tmp`) | 1 day | Inline storyboards written during job submission |
+
+> **Tip:** If your Python client downloads videos immediately after completion, you could reduce the 7-day retention to 1-2 days to save disk space.
 
 ---
 

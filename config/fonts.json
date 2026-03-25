@@ -1,11 +1,110 @@
 {
-  "en": { "primary": "Noto Sans", "heading": "Noto Sans Display", "weight_range": "400;500;600;700" },
-  "hi": { "primary": "Noto Sans Devanagari", "heading": "Noto Sans Devanagari", "weight_range": "400;500;600;700" },
-  "ta": { "primary": "Noto Sans Tamil", "heading": "Noto Sans Tamil", "weight_range": "400;500;600;700" },
-  "te": { "primary": "Noto Sans Telugu", "heading": "Noto Sans Telugu", "weight_range": "400;500;600;700" },
-  "kn": { "primary": "Noto Sans Kannada", "heading": "Noto Sans Kannada", "weight_range": "400;500;600;700" },
-  "ml": { "primary": "Noto Sans Malayalam", "heading": "Noto Sans Malayalam", "weight_range": "400;500;600;700" },
-  "bn": { "primary": "Noto Sans Bengali", "heading": "Noto Sans Bengali", "weight_range": "400;500;600;700" },
-  "mr": { "primary": "Noto Sans Devanagari", "heading": "Noto Sans Devanagari", "weight_range": "400;500;600;700" },
-  "gu": { "primary": "Noto Sans Gujarati", "heading": "Noto Sans Gujarati", "weight_range": "400;500;600;700" }
+  "en": {
+    "primary": "Noto Sans",
+    "heading": "Noto Sans Display",
+    "weight_range": "400;500;600;700",
+    "sizes": {
+      "header": 60,
+      "subheader": 40,
+      "keyphrase": 42,
+      "bullet": 38,
+      "bullet_marker": 32
+    }
+  },
+  "hi": {
+    "primary": "Noto Sans Devanagari",
+    "heading": "Noto Sans Devanagari",
+    "weight_range": "400;500;600;700",
+    "sizes": {
+      "header": 60,
+      "subheader": 40,
+      "keyphrase": 42,
+      "bullet": 38,
+      "bullet_marker": 32
+    }
+  },
+  "ta": {
+    "primary": "Noto Sans Tamil",
+    "heading": "Noto Sans Tamil",
+    "weight_range": "400;500;600;700",
+    "sizes": {
+      "header": 60,
+      "subheader": 40,
+      "keyphrase": 42,
+      "bullet": 38,
+      "bullet_marker": 32
+    }
+  },
+  "te": {
+    "primary": "Noto Sans Telugu",
+    "heading": "Noto Sans Telugu",
+    "weight_range": "400;500;600;700",
+    "sizes": {
+      "header": 60,
+      "subheader": 40,
+      "keyphrase": 42,
+      "bullet": 38,
+      "bullet_marker": 32
+    }
+  },
+  "kn": {
+    "primary": "Noto Sans Kannada",
+    "heading": "Noto Sans Kannada",
+    "weight_range": "400;500;600;700",
+    "sizes": {
+      "header": 60,
+      "subheader": 40,
+      "keyphrase": 42,
+      "bullet": 38,
+      "bullet_marker": 32
+    }
+  },
+  "ml": {
+    "primary": "Noto Sans Malayalam",
+    "heading": "Noto Sans Malayalam",
+    "weight_range": "400;500;600;700",
+    "sizes": {
+      "header": 60,
+      "subheader": 40,
+      "keyphrase": 42,
+      "bullet": 38,
+      "bullet_marker": 32
+    }
+  },
+  "bn": {
+    "primary": "Noto Sans Bengali",
+    "heading": "Noto Sans Bengali",
+    "weight_range": "400;500;600;700",
+    "sizes": {
+      "header": 60,
+      "subheader": 40,
+      "keyphrase": 42,
+      "bullet": 38,
+      "bullet_marker": 32
+    }
+  },
+  "mr": {
+    "primary": "Noto Sans Devanagari",
+    "heading": "Noto Sans Devanagari",
+    "weight_range": "400;500;600;700",
+    "sizes": {
+      "header": 60,
+      "subheader": 40,
+      "keyphrase": 42,
+      "bullet": 38,
+      "bullet_marker": 32
+    }
+  },
+  "gu": {
+    "primary": "Noto Sans Gujarati",
+    "heading": "Noto Sans Gujarati",
+    "weight_range": "400;500;600;700",
+    "sizes": {
+      "header": 60,
+      "subheader": 40,
+      "keyphrase": 42,
+      "bullet": 38,
+      "bullet_marker": 32
+    }
+  }
 }

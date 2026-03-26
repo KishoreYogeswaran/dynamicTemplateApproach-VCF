@@ -1,0 +1,465 @@
+{
+  "timestamp": "2026-01-13T09:22:34Z",
+  "step": "8.2_media_prompts_en",
+  "domain_key": "domestic_electric_works",
+  "dominant_gender": "male",
+  "module_number": 2,
+  "module_name": "Develop Your Personal Business Plan",
+  "lesson_number": 7,
+  "lesson_name": "Operations",
+  "ml_id": "ML2",
+  "ml_title": "Time and Resource Management",
+  "learning_objectives": [
+    "Plan daily tasks and create a schedule that balances production and customer service.",
+    "Identify ways to reduce time waste and optimise the use resources well."
+  ],
+  "recommended_video_type": "Character Conversation",
+  "total_word_count": 204,
+  "approximate_duration_seconds": 130,
+  "number_of_scenes": 10,
+  "scenes": [
+    {
+      "scene_id": "M2_L7_ML2_SC1",
+      "character": "Suresh",
+      "word_count": 9,
+      "approx_duration_seconds": 6,
+      "narrative_arc_step": "Opening / Introduction to Video",
+      "vo_scripts": {
+        "intro_template_1_voScript_1": "Hi, welcome to the video, 'Time and Resource Management'."
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Welcoming learners and briefly introducing the topic of time and resource management in the context of a small electrician business.",
+      "scene_typology_name": "intro_scene",
+      "visualization_notes": "Background shows a modest domestic electrician's workshop in an Indian neighbourhood. A small ground-floor space with a simple concrete floor and pale painted walls that show natural wear but are clean. A sturdy wooden workbench runs along one wall with neatly arranged pliers, screwdrivers, a voltage tester, and insulated cutters on a basic pegboard. Coils of electrical wire hang from hooks, and a few plastic crates with switches and sockets sit on a low shelf under the bench. The front of the workshop is open with a partially raised shutter, giving a soft view of a narrow residential lane outside with a couple of parked scooters blurred in the distance. A ceiling fan and a tube light provide soft, even lighting, making the workspace feel functional and inviting, clearly representing a micro-entrepreneur electrician's setup. No people are visible anywhere in the scene. All text, symbols, numbers illegible through positioning/light blur/camera angle",
+      "selected_family_id": "intro_scene_fam_1",
+      "selected_family_name": "intro_scene_family_1_1avatar_1img_1hdr",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "intro_template_1_header_1": "Time and Resource Management"
+        },
+        "subHeaders": {},
+        "bulletPoints": {},
+        "keyPhrases": {},
+        "media": {
+          "intro_template_1_image_1_prompt": "Vertical portrait view inside a modest domestic electrician's workshop on the ground floor of a semi-urban Indian residential lane, showing a small concrete-floored room with pale painted walls that show natural wear but are kept clean. Along one wall a sturdy wooden workbench holds neatly arranged insulated pliers, screwdrivers, a voltage tester and wire cutters, with a simple pegboard above where additional hand tools hang and coils of electrical wire are suspended from hooks; a few plastic crates filled with switches and sockets sit on a low shelf beneath the bench. At the front, a partially raised metal shutter opens directly to the lane, and through this opening a narrow residential street with a couple of parked scooters is softly blurred in the background, hinting at the surrounding neighbourhood without drawing focus. A ceiling fan is mounted correctly on the ceiling and a tube light fixed near it casts soft, even light across the compact workspace, creating a functional and inviting atmosphere with no people visible anywhere in the frame. Photorealistic, natural indoor daylight mixed with tube light. All text, lettering, numbers illegible through positioning/distance. Symbols and icons naturally integrated and recognizable.",
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "vertical",
+          "numberOf_subImages": 0,
+          "intro_template_1_image_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/domestic_electric_works/2026/03/24/M2_L7_ML2_SC1/background_image.png?st=2026-03-24T07%3A51%3A41Z&se=2036-03-21T07%3A51%3A41Z&sp=r&sv=2026-02-06&sr=b&sig=qhJqkMPufTQoArqt4SNtbPUzxrKXG1QqhgGn1R7RYEI%3D"
+        }
+      },
+      "selected_template_id": "90ed1b8b093147dd9cc70922e49daa34",
+      "selected_template_name": "ME_intro_template_1"
+    },
+    {
+      "scene_id": "M2_L7_ML2_SC2",
+      "character": "Suresh",
+      "word_count": 22,
+      "approx_duration_seconds": 14,
+      "narrative_arc_step": "LO Presentation",
+      "vo_scripts": {
+        "learning_objective_template_1_voScript_1": "By the end of this video, you will be able to plan schedules, balance customer visits, and reduce time and material waste."
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Presenting the learning objectives so learners know they will learn to plan schedules, balance customer visits, and reduce time and material waste in their small electrical business.",
+      "scene_typology_name": "learning_objective_scene",
+      "visualization_notes": "Not applicable. This scene uses the standard learning_objective_scene template with the avatar torso and on-screen learning objectives handled by the template; no additional AI-generated background image is required.",
+      "selected_family_id": "learning_objective_scene_fam_1",
+      "selected_family_name": "learning_objective_scene_family_1_1avatar_1hdr_2bullet",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "learning_objective_template_1_header_1": "Learning Objectives"
+        },
+        "subHeaders": {},
+        "bulletPoints": {
+          "learning_objective_template_1_bulletpoint_1": "Plan daily tasks and create a schedule that balances production and customer service.",
+          "learning_objective_template_1_bulletpoint_2": "Identify ways to reduce time waste and optimise the use resources well."
+        },
+        "keyPhrases": {},
+        "media": {
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "0",
+          "numberOf_subImages": 0
+        }
+      },
+      "selected_template_id": "e55bc07b3eae43519cca1ae895f8cb23",
+      "selected_template_name": "ME_learning_objective_template_1"
+    },
+    {
+      "scene_id": "M2_L7_ML2_SC3",
+      "character": "Suresh",
+      "word_count": 24,
+      "approx_duration_seconds": 15,
+      "narrative_arc_step": "Hook with Conflict",
+      "vo_scripts": {
+        "SplitScreenImage_template_2_voScript_1": "In my days as a micro ontrepreneur, I wasted hours riding around, missing calls and reaching customers late because I never planned my day."
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Hook scenario showing Suresh's past problem of poor daily planning that led to wasted travel time, missed calls, and late customer visits, so learners feel the pain of not managing time well.",
+      "scene_typology_name": "split_screen_image",
+      "visualization_notes": "Use a 3-panel split-screen layout to depict different ways Suresh's time was wasted due to lack of planning.\n\nImage 1: Suresh, an Indian electrician micro-entrepreneur with brown skin tone, rides a small motorbike through a narrow Indian lane lined with modest houses and tiny street-side shops. Suresh carries a simple tool bag slung over his shoulder and looks slightly stressed as he glances sideways, suggesting he is unsure of his route or schedule. The lane is busy with a few parked scooters and overhead electrical wires, representing long, unplanned travel between jobs.\n\nImage 2: Outside a small neighbourhood shop with an open entrance and simple shelves visible inside, Suresh stands near the doorway with his tool bag and helmet in hand, while an Indian customer with brown skin tone stands at the entrance with folded arms, looking impatient. A wall clock is visible inside the shop showing that it is already later in the day, reinforcing that Suresh has arrived late. The shop interior is compact, with everyday products arranged on shelves and a modest counter.\n\nImage 3: Suresh stands just outside the entrance of his small workshop, looking worried at a smartphone in his hand. Only the solid dark-colored back of the phone is visible to the camera, no screen. Behind Suresh, the open doorway reveals a simple workbench with tools and wires, suggesting that while he was moving around, he missed multiple incoming calls and opportunities. His expression shows frustration at seeing many missed calls.\n\nMaintain consistent natural lighting and realistic colours across all three images to make the situations feel like real, small-scale Indian work environments. All text, symbols, numbers illegible through positioning/light blur/camera angle",
+      "selected_family_id": "split_screen_image_fam_3",
+      "selected_family_name": "split_screen_image_family_3_1img_1hdr_3bullet_composite_3subimg_subaspect_vertical",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "SplitScreenImage_template_2_header_1": "Time Lost Without Planning"
+        },
+        "subHeaders": {},
+        "bulletPoints": {
+          "SplitScreenImage_template_2_bulletpoint_1": "Long unplanned travel",
+          "SplitScreenImage_template_2_bulletpoint_2": "Reaching customers late",
+          "SplitScreenImage_template_2_bulletpoint_3": "Missing important calls"
+        },
+        "keyPhrases": {},
+        "media": {
+          "SplitScreenImage_template_2_image_1_prompt": "Three-panel vertical split-screen image with three tall portrait panels arranged side-by-side in one horizontal row filling the full frame, panels touching edge-to-edge with no gaps or borders. Left panel: USE CHARACTER REFERENCE - Suresh (KEY NARRATOR OF THIS SCENE) rides a small motorbike along a narrow lane in a semi-urban Indian neighbourhood lined with modest houses and tiny street-side shops, a simple tool bag slung over his shoulder, his expression slightly stressed as he looks off to the side as if unsure of his route; parked scooters and a web of overhead electrical wires emphasise the long, unplanned travel between scattered customer jobs. Middle panel: Outside a small neighbourhood shop with an open entrance and compact shelves of everyday products visible inside, USE CHARACTER REFERENCE - Suresh (KEY NARRATOR OF THIS SCENE) stands near the doorway holding his tool bag and helmet, while a middle-aged Indian customer in his 40s with brown skin tone, medium height, lean build, short hair and a light-coloured shirt with dark trousers stands at the threshold with arms folded and an impatient expression; a small wall clock on the interior wall shows later daytime, its numbers and markings softly out of focus, reinforcing that Suresh has arrived late. Right panel: In front of the entrance to his own small electrical workshop, USE CHARACTER REFERENCE - Suresh (KEY NARRATOR OF THIS SCENE) stands just outside the open doorway, looking worriedly at a smartphone held in one hand, only the solid dark back of the phone visible to the camera, while behind him the simple interior shows a wooden workbench with neatly arranged tools and coiled electrical wires, suggesting that while he was travelling he missed multiple calls and work opportunities; his face clearly shows frustration. Consistent natural daylight across all three panels in realistic small-scale Indian work environments, photorealistic style. All text, lettering, numbers illegible through positioning/distance. Symbols and icons naturally integrated and recognizable.",
+          "compositeImage": "TRUE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 3,
+          "SplitScreenImage_template_2_image_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/domestic_electric_works/2026/03/24/M2_L7_ML2_SC3/split_screen.png?st=2026-03-24T07%3A51%3A44Z&se=2036-03-21T07%3A51%3A44Z&sp=r&sv=2026-02-06&sr=b&sig=YX%2BHPP4OtGekRVWoJJtJdJTMQfsS7G5K/05uqfyVPEQ%3D"
+        }
+      },
+      "selected_template_id": "b734d0e2ea8f4f3fa8c832f0979a29b6",
+      "selected_template_name": "ME_SplitScreenImage_template_2"
+    },
+    {
+      "scene_id": "M2_L7_ML2_SC4",
+      "character": "Suresh",
+      "word_count": 26,
+      "approx_duration_seconds": 16,
+      "narrative_arc_step": "Avatar's Guidance",
+      "vo_scripts": {
+        "characterAI_template_17_voScript_1": "I learned to plan my day. I list tasks, group jobs, keep buffer time, and prepare tools. Now see a conversation with Prakash, a shop owner."
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Avatar guiding learners by introducing simple planning habits-listing tasks, grouping nearby jobs, keeping buffer time, and preparing tools-and signalling that the upcoming conversation will show these habits in action with a customer.",
+      "scene_typology_name": "character_image_torso",
+      "visualization_notes": "Background shows the interior of a small domestic electrical workshop set up by a micro-entrepreneur. A narrow room with a simple concrete floor and pale painted walls houses a sturdy wooden desk near one side. On the desk are a closed notebook, a pen, and two compact toolboxes with lids shut, suggesting organised preparation. Above the desk, a wall-mounted analog clock, a plain wall calendar, and a small board with hand-drawn lines and writing hint at task lists and time planning; the writing and markings are soft and out-of-focus. On the adjacent wall, a metal rack holds neatly coiled electrical wires, boxes of switches and sockets, and a few hand tools hung on hooks, indicating that equipment is prepared in advance for the day. Near the doorway rests a packed backpack and a small plastic crate with basic electrical items ready to be carried out for field visits. Lighting feels like morning light coming from an unseen entrance, creating a sense of starting the day with a plan. No people are visible in the scene. All text, symbols, numbers illegible through positioning/light blur/camera_angle",
+      "selected_family_id": "character_image_fam_4",
+      "selected_family_name": "character_image_family_4_1img_1vid_1hdr_3bullet_1keyphrase_crop_non_circle",
+      "characterCrop": "non_circle",
+      "characterPosition": "left",
+      "content_elements": {
+        "headers": {
+          "characterAI_template_17_header_1": "Plan Your Day Simply"
+        },
+        "subHeaders": {},
+        "bulletPoints": {
+          "characterAI_template_17_bulletpoint_1": "List all tasks",
+          "characterAI_template_17_bulletpoint_2": "Group nearby jobs",
+          "characterAI_template_17_bulletpoint_3": "Keep buffer, prepare tools"
+        },
+        "keyPhrases": {
+          "characterAI_template_17_keyPhrase_1": "Daily Planning Habits"
+        },
+        "media": {
+          "characterAI_template_17_image_1_prompt": "Interior of a small domestic electrical workshop in a semi-urban Indian neighbourhood, shown as a narrow concrete-floored room with pale painted walls. On the RIGHT side of the frame, a sturdy wooden desk is placed against the wall, its surface holding a closed notebook, a pen and two compact closed toolboxes that suggest organised preparation for the day. Above this desk on the wall, a wall-mounted analog clock, a simple paper calendar and a small board with hand-drawn lines and writing hint at task lists and time planning, with all details softly out of focus so no specific content is readable. On the right-hand wall beside the desk, a metal rack holds neatly coiled electrical wires, small boxes of switches and sockets and a few hand tools hanging on hooks, indicating that equipment is prepared in advance. Near a doorway on the right, a packed backpack and a small plastic crate with basic electrical items rest on the floor ready to be taken for field visits, while the LEFT side of the frame is kept relatively clear with mainly bare wall so the character overlay can appear there without hiding important objects. Soft morning light enters from an unseen entrance, creating a sense of starting the working day in a modest but well-managed micro-entrepreneur electrician's workshop, with no people visible anywhere. Photorealistic, natural indoor lighting. All text, lettering, numbers illegible through positioning/distance. Symbols and icons naturally integrated and recognizable.",
+          "characterAI_template_17_video_1_prompt": "The character stands completely still with body and hands motionless and narrates the provided speech in a calm and professional way. The background must remain completely static. All background elements should stay perfectly still and unchanged throughout the video.",
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 0,
+          "characterAI_template_17_audio_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/domestic_electric_works/2026/03/24/M2_L7_ML2_SC4/voiceover.mp3?st=2026-03-24T07%3A51%3A49Z&se=2036-03-21T07%3A51%3A49Z&sp=r&sv=2026-02-06&sr=b&sig=vtJ78U5TSsDHlZBdlUoi1IalVhBSTDVXAmKWzoOYDNQ%3D",
+          "characterAI_template_17_video_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/domestic_electric_works/2026/03/24/M2_L7_ML2_SC4/character_image_final.mp4?st=2026-03-24T07%3A51%3A47Z&se=2036-03-21T07%3A51%3A47Z&sp=r&sv=2026-02-06&sr=b&sig=bMIYCamcZrMJJGAcg/L1n5I4CGbF6PE/AZnLWnLdAvA%3D"
+        }
+      },
+      "selected_template_id": "f390752110874553a8a90e028366ddf6",
+      "selected_template_name": "ME_characterAI_template_17"
+    },
+    {
+      "scene_id": "M2_L7_ML2_SC5",
+      "character": "Prakash",
+      "word_count": 18,
+      "approx_duration_seconds": 11,
+      "narrative_arc_step": "Roleplay of Scenario",
+      "vo_scripts": {
+        "characterConversation_template_1_voScript_1": "Suresh, yesterday one electrician promised morning and came in evening. I cannot afford such delays during shop hours."
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Roleplay segment where the shop owner raises a challenge: unreliable electricians who arrive very late and disturb shop operations, highlighting why punctuality and planning matter to customers.",
+      "scene_typology_name": "character_based_roleplay",
+      "visualization_notes": "Background depicts the interior of a small Indian neighbourhood shop where an electrician would typically visit during business hours. The camera is at human eye-level facing a modest glass-topped counter in the foreground. Behind the counter, narrow wall-mounted shelves rise almost to the ceiling, stocked with everyday products in small packets, bottles, and boxes arranged in an organized but compact way, indicating a micro-entrepreneur retail setup. Product labels and any branding on packaging are not readable. To one side above the counter, an electrical switchboard and a ceiling fan are visible, with a few neatly routed wires along the wall, hinting at electrical work being relevant to the setting. The shop floor is simple smooth concrete, and the room depth is short, showing a back wall with more shelves and a small open doorway that leads to a storage area. Daylight filters in from the unseen open front shutter, mixing with the cool light of a tube light, making the environment bright but modest. The space clearly feels like a small, owner-run shop where a visiting electrician and the shop owner can stand near the counter to discuss delays and material needs. No people are visible anywhere in the background. All text, symbols, numbers illegible through positioning/light blur/camera angle",
+      "selected_family_id": "character_conversation_fam_1",
+      "selected_family_name": "character_conversation_family_1_1vid",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {},
+        "subHeaders": {},
+        "bulletPoints": {},
+        "keyPhrases": {},
+        "media": {
+          "characterConversation_template_1_video_1_prompt": "External API video generation - no prompt needed",
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 0,
+          "characterConversation_template_1_audio_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/domestic_electric_works/2026/03/24/M2_L7_ML2_SC5/character_roleplay_audio.mp3?st=2026-03-24T07%3A51%3A51Z&se=2036-03-21T07%3A51%3A51Z&sp=r&sv=2026-02-06&sr=b&sig=mMWeDOb5gAOlrtJLpeLpwILj51Qr/8PMocIlVnn13%2BI%3D",
+          "characterConversation_template_1_video_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/domestic_electric_works/2026/03/24/M2_L7_ML2_SC5/character_roleplay_video.mp4?st=2026-03-24T07%3A53%3A29Z&se=2036-03-21T07%3A53%3A29Z&sp=r&sv=2026-02-06&sr=b&sig=HBNmjDY/NP5rEG8OLmgcGW2hg95SPQ6M3fw4AgUYXBY%3D"
+        }
+      },
+      "selected_template_id": "53f7947ac47a4d888f14b7f86f6e72c4",
+      "selected_template_name": "ME_characterConversation_template_1"
+    },
+    {
+      "scene_id": "M2_L7_ML2_SC6",
+      "character": "Suresh",
+      "word_count": 20,
+      "approx_duration_seconds": 13,
+      "narrative_arc_step": "Roleplay of Scenario",
+      "vo_scripts": {
+        "characterConversation_template_1_voScript_1": "I understand your worry. I planned the route, grouped jobs, and kept buffer time, so I can arrive as promised."
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Roleplay segment where Suresh models a professional response, explaining that he has planned his route, grouped nearby jobs, and kept buffer time to keep his promise, demonstrating how planning builds customer trust.",
+      "scene_typology_name": "character_based_roleplay",
+      "visualization_notes": "Background depicts the interior of a small Indian neighbourhood shop where an electrician would typically visit during business hours. The camera is at human eye-level facing a modest glass-topped counter in the foreground. Behind the counter, narrow wall-mounted shelves rise almost to the ceiling, stocked with everyday products in small packets, bottles, and boxes arranged in an organized but compact way, indicating a micro-entrepreneur retail setup. Product labels and any branding on packaging are not readable. To one side above the counter, an electrical switchboard and a ceiling fan are visible, with a few neatly routed wires along the wall, hinting at electrical work being relevant to the setting. The shop floor is simple smooth concrete, and the room depth is short, showing a back wall with more shelves and a small open doorway that leads to a storage area. Daylight filters in from the unseen open front shutter, mixing with the cool light of a tube light, making the environment bright but modest. The space clearly feels like a small, owner-run shop where a visiting electrician and the shop owner can stand near the counter to discuss delays and material needs. No people are visible anywhere in the background. All text, symbols, numbers illegible through positioning/light blur/camera_angle",
+      "selected_family_id": "character_conversation_fam_1",
+      "selected_family_name": "character_conversation_family_1_1vid",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {},
+        "subHeaders": {},
+        "bulletPoints": {},
+        "keyPhrases": {},
+        "media": {
+          "characterConversation_template_1_video_1_prompt": "External API video generation - no prompt needed",
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 0
+        }
+      },
+      "selected_template_id": "53f7947ac47a4d888f14b7f86f6e72c4",
+      "selected_template_name": "ME_characterConversation_template_1"
+    },
+    {
+      "scene_id": "M2_L7_ML2_SC7",
+      "character": "Prakash",
+      "word_count": 20,
+      "approx_duration_seconds": 13,
+      "narrative_arc_step": "Roleplay of Scenario",
+      "vo_scripts": {
+        "characterConversation_template_1_voScript_1": "That sounds better, but often electricians keep running to shops for wire or switches. How will you manage materials today?"
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Roleplay segment where the shop owner expresses a second concern: electricians wasting time making extra trips to buy wires and switches, focusing the learner on material readiness as part of time management.",
+      "scene_typology_name": "character_based_roleplay",
+      "visualization_notes": "Background depicts the interior of a small Indian neighbourhood shop where an electrician would typically visit during business hours. The camera is at human eye-level facing a modest glass-topped counter in the foreground. Behind the counter, narrow wall-mounted shelves rise almost to the ceiling, stocked with everyday products in small packets, bottles, and boxes arranged in an organized but compact way, indicating a micro-entrepreneur retail setup. Product labels and any branding on packaging are not readable. To one side above the counter, an electrical switchboard and a ceiling fan are visible, with a few neatly routed wires along the wall, hinting at electrical work being relevant to the setting. The shop floor is simple smooth concrete, and the room depth is short, showing a back wall with more shelves and a small open doorway that leads to a storage area. Daylight filters in from the unseen open front shutter, mixing with the cool light of a tube light, making the environment bright but modest. The space clearly feels like a small, owner-run shop where a visiting electrician and the shop owner can stand near the counter to discuss delays and material needs. No people are visible anywhere in the background. All text, symbols, numbers illegible through positioning/light blur/camera angle",
+      "selected_family_id": "character_conversation_fam_1",
+      "selected_family_name": "character_conversation_family_1_1vid",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {},
+        "subHeaders": {},
+        "bulletPoints": {},
+        "keyPhrases": {},
+        "media": {
+          "characterConversation_template_1_video_1_prompt": "External API video generation - no prompt needed",
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 0
+        }
+      },
+      "selected_template_id": "53f7947ac47a4d888f14b7f86f6e72c4",
+      "selected_template_name": "ME_characterConversation_template_1"
+    },
+    {
+      "scene_id": "M2_L7_ML2_SC8",
+      "character": "Suresh",
+      "word_count": 20,
+      "approx_duration_seconds": 13,
+      "narrative_arc_step": "Roleplay of Scenario",
+      "vo_scripts": {
+        "characterConversation_template_1_voScript_1": "Before coming, I checked your complaint and packed required tools. I also carry basic stock, so unnecessary shop visits reduce."
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Roleplay segment where Suresh explains his resource management: understanding the complaint beforehand, packing the right tools, and carrying basic stock to avoid extra shop runs, modelling efficient material planning.",
+      "scene_typology_name": "character_based_roleplay",
+      "visualization_notes": "Background depicts the interior of a small Indian neighbourhood shop where an electrician would typically visit during business hours. The camera is at human eye-level facing a modest glass-topped counter in the foreground. Behind the counter, narrow wall-mounted shelves rise almost to the ceiling, stocked with everyday products in small packets, bottles, and boxes arranged in an organized but compact way, indicating a micro-entrepreneur retail setup. Product labels and any branding on packaging are not readable. To one side above the counter, an electrical switchboard and a ceiling fan are visible, with a few neatly routed wires along the wall, hinting at electrical work being relevant to the setting. The shop floor is simple smooth concrete, and the room depth is short, showing a back wall with more shelves and a small open doorway that leads to a storage area. Daylight filters in from the unseen open front shutter, mixing with the cool light of a tube light, making the environment bright but modest. The space clearly feels like a small, owner-run shop where a visiting electrician and the shop owner can stand near the counter to discuss delays and material needs. No people are visible anywhere in the background. All text, symbols, numbers illegible through positioning/light blur/camera angle",
+      "selected_family_id": "character_conversation_fam_1",
+      "selected_family_name": "character_conversation_family_1_1vid",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {},
+        "subHeaders": {},
+        "bulletPoints": {},
+        "keyPhrases": {},
+        "media": {
+          "characterConversation_template_1_video_1_prompt": "External API video generation - no prompt needed",
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 0
+        }
+      },
+      "selected_template_id": "53f7947ac47a4d888f14b7f86f6e72c4",
+      "selected_template_name": "ME_characterConversation_template_1"
+    },
+    {
+      "scene_id": "M2_L7_ML2_SC9",
+      "character": "Suresh",
+      "word_count": 25,
+      "approx_duration_seconds": 16,
+      "narrative_arc_step": "Avatar's Learning Reflection",
+      "vo_scripts": {
+        "firstPerson_template_4_voScript_1": "From this, I realised time and materials are valuable. Simple planning, grouping visits, and preparing tools and basic items saves effort and keeps customers respected."
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Avatar's learning reflection that distils the roleplay into key lessons: valuing time and materials, planning routes, grouping visits, and preparing tools and basic stock to save effort and show respect to customers.",
+      "scene_typology_name": "first_person_video_staticBg",
+      "visualization_notes": "Background shows the interior of a modest domestic electrician's workshop where reflection naturally happens after field work. The camera looks toward a sturdy wooden workbench along one wall, with neatly arranged tools such as insulated pliers, screwdrivers, a voltage tester, and a closed metal toolbox placed on the surface. Above the bench, a pegboard or simple wooden strips hold coiled electrical cables and a few mounted switchboards, indicating prepared stock. A small board with rough diagrams and writing, and a wall-mounted analog clock, suggest both planning and awareness of time, with details softly out of focus. On the floor beside the bench, a compact backpack and a plastic crate hold extra wire rolls and basic switches and holders, ready to be picked up for grouped customer visits. Light from a side window or open doorway gently illuminates the space, making it feel like a small but well-managed workspace of a micro-entrepreneur electrician. No people are visible in the background. All text, symbols, numbers illegible through positioning/light blur/camera angle",
+      "selected_family_id": "first_person_video_staticBg_fam_3",
+      "selected_family_name": "first_person_video_staticBg_family_3_1vid_1hdr_2bullet_1keyphrase",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "firstPerson_template_4_header_1": "Value Time and Materials"
+        },
+        "subHeaders": {},
+        "bulletPoints": {
+          "firstPerson_template_4_bulletpoint_1": "Group customer visits",
+          "firstPerson_template_4_bulletpoint_2": "Prepare tools and stock",
+          "firstPerson_template_4_bulletpoint_3": "Prepare tools and stock"
+        },
+        "keyPhrases": {
+          "firstPerson_template_4_keyPhrase_1": "Planning Habits That Help"
+        },
+        "media": {
+          "firstPerson_template_4_video_1_prompt": "The character stands completely still with body and hands motionless and narrates the provided speech in a calm and professional way. The background must remain completely static. All background elements should stay perfectly still and unchanged throughout the video.",
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 0,
+          "firstPerson_template_4_video_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/domestic_electric_works/2026/03/24/M2_L7_ML2_SC9/first_person_video_muted.mp4?st=2026-03-24T07%3A53%3A34Z&se=2036-03-21T07%3A53%3A34Z&sp=r&sv=2026-02-06&sr=b&sig=TMdR5ygNBPelSkB%2BQ6z6AX0qeBp/nvFBuqntuRPSfvE%3D",
+          "firstPerson_template_4_audio_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/domestic_electric_works/2026/03/24/M2_L7_ML2_SC9/voiceover.mp3?st=2026-03-24T07%3A53%3A35Z&se=2036-03-21T07%3A53%3A35Z&sp=r&sv=2026-02-06&sr=b&sig=s7T36L62AtDJExGOTm9xx47kJSHSaGyQCeiD64uwUKE%3D"
+        }
+      },
+      "selected_template_id": "b4107996b474467eb605fd22697bf545",
+      "selected_template_name": "ME_firstPerson_template_4"
+    },
+    {
+      "scene_id": "M2_L7_ML2_SC10",
+      "character": "Suresh",
+      "word_count": 20,
+      "approx_duration_seconds": 13,
+      "narrative_arc_step": "Outro/Summary & Action Step/real life benefit",
+      "vo_scripts": {
+        "avatarPresenter_template_15_voScript_1": "To recap, a small daily plan, prepared tools, and careful material use support smoother electrical work and respectful customer service."
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Recap scene where Suresh summarises the key habits-daily planning, prepared tools, and careful material use-and links them to smoother electrical work and more respectful customer service.",
+      "scene_typology_name": "avatar_presenter_torso",
+      "visualization_notes": "Not applicable. This scene uses the standard avatar_presenter_torso outro template with the avatar torso and on-screen recap text handled by the template; no additional AI-generated background image is required.",
+      "selected_family_id": "avatar_presenter_fam_3",
+      "selected_family_name": "avatar_presenter_family_3_1avatar_1hdr_3bullet",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "avatarPresenter_template_15_header_1": "Key Takeaways"
+        },
+        "subHeaders": {},
+        "bulletPoints": {
+          "avatarPresenter_template_15_bulletpoint_1": "Plan your day",
+          "avatarPresenter_template_15_bulletpoint_2": "Keep tools ready",
+          "avatarPresenter_template_15_bulletpoint_3": "Use materials carefully"
+        },
+        "keyPhrases": {},
+        "media": {
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "0",
+          "numberOf_subImages": 0
+        }
+      },
+      "selected_template_id": "f9938d8ab4f44d109ab6c34ba557f03f",
+      "selected_template_name": "ME_avatarPresenter_template_15"
+    },
+    {
+      "scene_id": "M2_L7_ML2_SC11",
+      "character": "Suresh",
+      "word_count": 26,
+      "approx_duration_seconds": 16,
+      "narrative_arc_step": "Avatar's Learning Reflection",
+      "vo_scripts": {
+        "SplitScreenImage_template_1_voScript_1": "I noticed this time my clear order of introduction, problem, solution, numbers and calm voice made Prakash listen seriously and consider regular maintenance work with me."
+      },
+      "recommended_video_type": "Character Conversation",
+      "scene_purpose": "Avatar learning reflection that helps learners see how using a clear structure and calm delivery changes customer behaviour, reinforcing the value of the method through Suresh's success with Prakash.",
+      "scene_typology_name": "split_screen_image",
+      "visualization_notes": "Use a split_screen_image scene with 2 images in a cohesive style to contrast Suresh's structured, calm delivery with Prakash's attentive reaction and interest in regular maintenance work.\n\nImage 1: Inside the same modest neighborhood shop used in the roleplay scenario, Suresh, an Indian electrician with brown skin tone, stands in front of the counter speaking to Prakash, an Indian shop owner with brown skin tone. Suresh's posture is relaxed but confident, with shoulders down and face calm, suggesting a steady voice. In one hand he casually holds a single sheet of paper with a simple list, angled so any writing is unseen; the other hand makes a small natural gesture as he explains. Shelves with goods and a few electrical items form the background, keeping the space clearly small-scale and local. This image represents Suresh following a clear order-introduction, problem, solution, numbers-with calm delivery.\n\nImage 2: In the same shop, the viewpoint shifts closer to Prakash behind the counter. Prakash leans slightly forward with focused eyes and a thoughtful expression, clearly listening seriously to Suresh. On the counter between them, there can be a closed notebook and a basic calculator to suggest that they may discuss maintenance plans and approximate amounts, without showing any readable figures. Suresh is partly visible at the edge of the frame, reinforcing that this is the same conversation. The scene should feel like a genuine micro-entrepreneur discussion about ongoing work, not a formal corporate meeting.\n\nMaintain consistent natural daylight and color tone across both images, reflecting a realistic, modest Indian shop environment. Avoid any visible shop names, brand names, or legible text on packaging, notebooks, or the calculator display. All text, symbols, numbers illegible through positioning/light blur/camera angle",
+      "selected_family_id": "split_screen_image_fam_1",
+      "selected_family_name": "split_screen_image_family_1_1img_1hdr_2bullet_composite_2subimg_subaspect_square",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "SplitScreenImage_template_1_header_1": "Clear Pitch Results"
+        },
+        "subHeaders": {},
+        "bulletPoints": {
+          "SplitScreenImage_template_1_bulletpoint_1": "Calm voice with clear order",
+          "SplitScreenImage_template_1_bulletpoint_2": "Customer considers maintenance"
+        },
+        "keyPhrases": {},
+        "media": {
+          "SplitScreenImage_template_1_image_1_prompt": "Two-panel square split-screen composite with two equal square panels placed side-by-side in one horizontal row. NO GAPS OR BORDERS BETWEEN PANELS - panels directly touch edge-to-edge with zero space, seamless composite. In the left panel, inside the same small neighborhood general shop used in the roleplay, USE CHARACTER REFERENCE - Suresh (KEY NARRATOR OF THIS SCENE) stands in front of the low counter speaking calmly to USE CHARACTER REFERENCE - Prakash (middle-aged Indian male shop owner with brown skin tone, average build, wearing a light-colored cotton shirt and dark trousers); Suresh's posture is relaxed but confident with shoulders down and face composed, and in one hand he casually holds a single sheet of paper bearing a simple list, the page angled away so any writing is blurred and unreadable, while shelves of everyday goods and a few electrical items form a modest background that clearly signals a local micro-business. In the right panel, the viewpoint moves closer to show USE CHARACTER REFERENCE - Prakash (middle-aged Indian male shop owner with brown skin tone, average build, wearing a light-colored cotton shirt and dark trousers) behind the counter, leaning slightly forward with focused eyes and a serious, thoughtful expression as he listens to Suresh, whose arm and torso are partially visible at the edge of the frame; on the counter between them lies a closed notebook and a basic calculator suggesting discussion of regular maintenance work and approximate amounts in Indian Rupees (₹), with covers and displays positioned so no text, symbols, or digits can be read. The modest shop interior, with concrete floor and simple painted walls, is lit by soft natural daylight from the entrance, and both panels share consistent color and lighting to feel like two connected moments from the same real conversation between a micro-entrepreneur electrician and his customer. Photorealistic, natural lighting. All text, lettering, numbers illegible through positioning/distance. Symbols and icons naturally integrated and recognizable.",
+          "compositeImage": "TRUE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 2,
+          "SplitScreenImage_template_1_image_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/01/13/M2_L9_ML2_SC8/split_screen.png?st=2026-01-13T04%3A05%3A15Z&se=2036-01-11T04%3A05%3A15Z&sp=r&sv=2025-07-05&sr=b&sig=RX%2BSmdZ1t5PLDE3pF2I9qzx8valWQnMhRRkOjGSJfHQ%3D"
+        }
+      },
+      "selected_template_id": "6198de6e145e4254b05a9117b41483ba",
+      "selected_template_name": "ME_SplitScreenImage_template_1"
+    },
+    {
+      "scene_id": "M2_L7_ML2_SC12",
+      "character": "Suresh",
+      "word_count": 28,
+      "approx_duration_seconds": 18,
+      "vo_scripts": {
+        "SplitScreenImage_template_3_voScript_1": "He also noted income and expenses, kept profit aside, then bought better tools, a safer ladder and common materials so he could work faster and accept bigger jobs."
+      },
+      "narrative_arc_step": "Key Decisions Analyzed",
+      "recommended_video_type": "Case Studies / Examples",
+      "scene_purpose": "Highlights the key business decisions: tracking income and expenses, setting aside profit, and reinvesting in better tools, a safe ladder, and stock of common materials to improve speed and take on larger jobs.",
+      "scene_typology_name": "split_screen_image",
+      "visualization_notes": "This split_screen_image scene uses four panels shown together, all with consistent warm indoor lighting and realistic colours. Image 1: Ravi, an Indian electrician with brown skin tone, sits on the floor next to a low wooden table in his small room, carefully writing figures in a simple notebook while a few Indian Rupee notes and coins lie to the side, showing that he is noting income and expenses; the main focus is on Ravi's thoughtful expression and organised way of working, with the notebook and money only as supporting elements. Image 2: Inside a compact electrical supply shop with shelves full of coiled wires, switches, and small cardboard boxes, Ravi discusses options with Mahesh, an Indian shopkeeper with brown skin tone standing behind a worn wooden counter; Ravi is pointing toward a sturdy aluminium ladder leaning against the wall, highlighting his decision to buy a safer ladder. Image 3: Back in Ravi's modest room, a simple metal rack and plastic crates neatly hold newly purchased tools, insulation tape rolls, electrical wire coils, and common fittings, indicating that he has reinvested profit into keeping essential materials ready for work. Image 4: In a slightly larger neighbourhood grocery shop, still small and densely shelved, Ravi stands on his new ladder installing multiple LED lights along the ceiling, using his stocked materials so he can complete a bigger job efficiently for a local micro-entrepreneur customer. Across all panels, setups remain modest and practical rather than expensive or large-scale. All text, symbols, numbers illegible through positioning/light blur/camera_angle",
+      "selected_family_id": "split_screen_image_fam_2",
+      "selected_family_name": "split_screen_image_family_2_1img_1hdr_4bullet_composite_4subimg_subaspect_square",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "SplitScreenImage_template_3_header_1": "Reinvest Profit to Grow"
+        },
+        "subHeaders": {},
+        "bulletPoints": {
+          "SplitScreenImage_template_3_bulletpoint_1": "Note income and expenses",
+          "SplitScreenImage_template_3_bulletpoint_2": "Buy a safer ladder",
+          "SplitScreenImage_template_3_bulletpoint_3": "Stock tools and materials",
+          "SplitScreenImage_template_3_bulletpoint_4": "Take on bigger jobs"
+        },
+        "keyPhrases": {},
+        "media": {
+          "SplitScreenImage_template_3_image_1_prompt": "Four-panel square grid layout arranged in a 2x2 pattern filling the full frame, with all panels of equal size touching edge-to-edge with no gaps or borders, each showing modest indoor Indian settings that illustrate reinvesting profit in a domestic electrical business. Top-left panel: inside his small bedroom-workspace, USE CHARACTER REFERENCE - Ravi (young Indian male electrician with brown skin tone wearing a simple shirt and trousers) sits on the floor beside a low wooden table, concentrating as he writes figures in a plain notebook while a few Indian Rupee notes and coins lie to one side on the table, indicating income and expenses being noted without making the notebook or money the main focus of the image. Top-right panel: inside a compact electrical supply shop with shelves stacked with coils of wire, switches and small cardboard boxes, USE CHARACTER REFERENCE - Ravi (young Indian male electrician with brown skin tone wearing the same simple work clothes) stands at a worn wooden counter speaking with USE CHARACTER REFERENCE - Mahesh (middle-aged Indian male shopkeeper with brown skin tone wearing a simple shirt and trousers), as Ravi points toward a sturdy aluminium ladder leaning against the wall to show his decision to buy a safer ladder. Bottom-left panel: back in Ravi's modest room, a simple metal rack and a couple of plastic crates are neatly arranged and stocked with newly purchased tools, insulation tape rolls, electrical wire coils and common electrical fittings, clearly showing how he has reinvested profit into keeping essential materials ready for work. Bottom-right panel: inside a slightly larger but still cramped neighbourhood grocery shop with densely packed shelves, USE CHARACTER REFERENCE - Ravi (young Indian male electrician with brown skin tone in the same outfit) stands securely on his new aluminium ladder reaching up to install an LED ceiling light, using his stocked materials to complete a bigger job efficiently for the small grocery shop while the rest of the interior remains practical and cluttered in a realistic way. Photorealistic, natural lighting. All text, lettering, numbers illegible through positioning/distance. Symbols and icons naturally integrated and recognizable.",
+          "compositeImage": "TRUE",
+          "image_aspectRatio": "horizontal",
+          "numberOf_subImages": 4,
+          "SplitScreenImage_template_3_image_1": "https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/01/07/M1_L3_ML1_SC6/split_screen.png?st=2026-01-07T09%3A44%3A55Z&se=2036-01-05T09%3A44%3A55Z&sp=r&sv=2025-07-05&sr=b&sig=0Na0/PQamBHIa2ux7V5b7yQ4j7HtYtssj/HnpeBdkqI%3D"
+        }
+      },
+      "selected_template_id": "f7ca3e906e6f47e9996aa1609bcd293e",
+      "selected_template_name": "ME_SplitScreenImage_template_3"
+    }
+  ],
+  "template_selection_timestamp": "20260113_084926",
+  "random_seed_used": "none",
+  "language": "en"
+}

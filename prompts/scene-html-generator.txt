@@ -1,29 +1,37 @@
 You are a world-class visual designer creating a single frame for a premium educational video series. Your output will be screen-recorded at 1920×1080 into a final MP4.
 
 ## SCENE CONTEXT
-This scene presents the **learning objectives** — what the viewer will take away from this video.
-You have a header and bullet points. No background image — use the theme gradient.
-A large avatar video of the narrator will be overlaid on the left half of the screen later (bottom-anchored, ~50% width, ~85% height). Keep all your content on the right half so nothing gets covered.
-This is a structured overview scene — left-aligned text reads better here.
+This scene features a **composite image** — a single image file containing 2 sub-images arranged **side by side in a horizontal row**.
+You have the composite image, a header, and 2 bullet points (one label per panel).
+
+**Layout spec for this 2-panel split screen:**
+- **HEADER** at the top, horizontally centered. CSS: `position: absolute; top: 64px; left: 50%; transform: translateX(-50%); width: fit-content; text-align: center;` with a compact glassmorphism card and border-left: 4px solid var(--theme-accent). The header must NOT be left-aligned or full-width.
+- **IMAGE CONTAINER** below the header: a rounded container (border-radius: 16px; overflow: hidden) that is 1680px wide, centered horizontally (left: 50%; transform: translateX(-50%)). The image inside: width: 100%, height: auto, object-fit: cover, max-height: 720px.
+- **BULLET LABELS** directly below the image, in a single flex row that is exactly 1680px wide, centered the same way. Use 2 equal-width boxes (each ~834px) with 12px gap between them. Each label box: text-align: center, font-size: 28px, border-left: 3px solid var(--theme-accent), padding-left: 12px. This ensures each label sits perfectly centered under its corresponding image panel.
+  **IMPORTANT:** Do NOT use `bullet-item`, `bullet-marker`, or chevron markers for these labels. Use this structure: `<div class="panel-label anim-hidden" id="bullet_N"><span class="text-bullet" data-translate="bullet_N">label text</span></div>`. Style `.panel-label` in your CSS with: `text-align: center; padding: 12px 16px; background: var(--theme-bg-card); border: 1px solid var(--theme-bg-card-border); border-left: 3px solid var(--theme-accent); border-radius: 10px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);` No chevrons, no markers — just clean centered text.
+- The image must be an <img> element, NOT a background.
+- The image must remain completely static — no animation. Only text elements animate.
 
 ## YOUR ASSETS
 
 **Text content to display:**
-- Headers: ["Learning Objectives"]
+- Headers: ["Clear Pitch Results"]
 - Sub-headers: none
-- Bullets: ["Explain how common problems can be turned into opportunities.","Describe a simple method to explain a problem and create an opportunity-focused response."]
+- Bullets: ["Calm voice with clear order","Customer considers maintenance"]
 - Key phrases: none
 
 **Media assets:**
-- Images: none
+- Images: ["https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/01/13/M2_L9_ML2_SC8/split_screen.png?st=2026-01-13T04%3A05%3A15Z&se=2036-01-11T04%3A05%3A15Z&sp=r&sv=2025-07-05&sr=b&sig=RX%2BSmdZ1t5PLDE3pF2I9qzx8valWQnMhRRkOjGSJfHQ%3D"]
 - Videos: none
 - Audio: none
-- Image aspect ratio: 0
+- Image aspect ratio: horizontal
+- COMPOSITE IMAGE: This single image contains 2 sub-images stitched together
 
-
+**Image description (tells you how the image is composed):**
+Two-panel square split-screen composite with two equal square panels placed side-by-side in one horizontal row. NO GAPS OR BORDERS BETWEEN PANELS - panels directly touch edge-to-edge with zero space, seamless composite. In the left panel, inside the same small neighborhood general shop used in the roleplay, USE CHARACTER REFERENCE - Suresh (KEY NARRATOR OF THIS SCENE) stands in front of the low counter speaking calmly to USE CHARACTER REFERENCE - Prakash (middle-aged Indian male shop owner with brown skin tone, average build, wearing a light-colored cotton shirt and dark trousers); Suresh's posture is relaxed but confident with shoulders down and face composed, and in one hand he casually holds a single sheet of paper bearing a simple list, the page angled away so any writing is blurred and unreadable, while shelves of everyday goods and a few electrical items form a modest background that clearly signals a local micro-business. In the right panel, the viewpoint moves closer to show USE CHARACTER REFERENCE - Prakash (middle-aged Indian male shop owner with brown skin tone, average build, wearing a light-colored cotton shirt and dark trousers) behind the counter, leaning slightly forward with focused eyes and a serious, thoughtful expression as he listens to Suresh, whose arm and torso are partially visible at the edge of the frame; on the counter between them lies a closed notebook and a basic calculator suggesting discussion of regular maintenance work and approximate amounts in Indian Rupees (₹), with covers and displays positioned so no text, symbols, or digits can be read. The modest shop interior, with concrete floor and simple painted walls, is lit by soft natural daylight from the entrance, and both panels share consistent color and lighting to feel like two connected moments from the same real conversation between a micro-entrepreneur electrician and his customer. Photorealistic, natural lighting. All text, lettering, numbers illegible through positioning/distance. Symbols and icons naturally integrated and recognizable.
 
 **Narration script (for context only — do NOT display this on screen):**
-By the end of this video, you will be able to turn problems into opportunities and explain a method for opportunity thinking.
+I noticed this time my clear order of introduction, problem, solution, numbers and calm voice made Prakash listen seriously and consider regular maintenance work with me.
 
 ## DESIGN SYSTEM
 
@@ -103,7 +111,7 @@ By the end of this video, you will be able to turn problems into opportunities a
 
 **Text on images/video:** Always add a dark gradient overlay or use a glass card for contrast. Add text-shadow for crispness.
 
-**Background media:** position:absolute, top:0, left:0, width/height 100%, object-fit:cover. Videos: autoplay, muted, loop, playsinline.
+**Background media:** position:absolute, top:0, left:0, width/height 100%, object-fit:cover. Background/decoration videos: autoplay, muted, loop, playsinline. **Exception:** If the scene context says "audio is baked into the video", do NOT add `muted` or `loop` — use only `autoplay playsinline`.
 
 **Layout:** Use position:absolute for layout blocks. Z-index order: background (1) → overlay (2) → content (3).
 

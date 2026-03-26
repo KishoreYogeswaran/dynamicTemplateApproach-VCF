@@ -309,6 +309,71 @@ async function downloadMediaAudio(scene, outputDir) {
   }
 }
 
+// ─── Step 1b: Pre-mux media video + audio for lip-sync scenes ────────────────
+
+/**
+ * For scenes with both a muted video and separate audio (e.g., first_person_video_staticBg,
+ * character_based_roleplay), mux them into a single video-with-audio file.
+ * This ensures lip sync is preserved — the browser plays one <video> element
+ * with audio baked in, identical to how avatar scenes work.
+ *
+ * Returns the path to the muxed video, or null if not applicable.
+ */
+async function premuxMediaVideoAudio(scene, audioPath, outputDir) {
+  const videos = scene.content?.media?.videos || [];
+  if (videos.length === 0 || !audioPath) return null;
+
+  const videoUrl = videos[0].url;
+  const sceneId = scene.sceneId;
+  const mutedVideoPath = join(outputDir, `${sceneId}_media_video_muted.mp4`);
+  const muxedVideoPath = join(outputDir, `${sceneId}_media_video_muxed.mp4`);
+
+  // Check if already muxed
+  try {
+    await stat(muxedVideoPath);
+    console.log(`  [premux] ${sceneId}: Reusing existing muxed video`);
+    return muxedVideoPath;
+  } catch { /* needs muxing */ }
+
+  // Download the muted video
+  try {
+    console.log(`  [premux] ${sceneId}: Downloading media video...`);
+    const response = await fetch(videoUrl, { signal: AbortSignal.timeout(180_000) });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const buffer = Buffer.from(await response.arrayBuffer());
+    await writeFile(mutedVideoPath, buffer);
+  } catch (err) {
+    console.error(`  [premux] ${sceneId}: Video download failed — ${err.message}`);
+    return null;
+  }
+
+  // Mux video + audio
+  try {
+    console.log(`  [premux] ${sceneId}: Muxing video + audio...`);
+    await execFileAsync('ffmpeg', [
+      '-y',
+      '-i', mutedVideoPath,
+      '-i', audioPath,
+      '-c:v', 'libx264',
+      '-preset', 'fast',
+      '-crf', '18',
+      '-pix_fmt', 'yuv420p',
+      '-c:a', 'aac',
+      '-b:a', '192k',
+      '-shortest',
+      muxedVideoPath,
+    ], { timeout: 180000 });
+
+    // Clean up the muted video
+    await unlink(mutedVideoPath).catch(() => {});
+    console.log(`  [premux] ${sceneId}: ✓ Muxed video ready`);
+    return muxedVideoPath;
+  } catch (err) {
+    console.error(`  [premux] ${sceneId}: Mux failed — ${err.message}`);
+    return null;
+  }
+}
+
 // ─── Step 3b: Generate alignment for scenes with media audio ─────────────────
 
 /**
@@ -316,6 +381,10 @@ async function downloadMediaAudio(scene, outputDir) {
  * alignment for OST sync. Generate TTS just for timestamps, discard the audio.
  */
 async function getAlignmentForMediaAudio(scene, storyboard, outputDir) {
+  // character_based_roleplay scenes have dialogue audio baked into the video —
+  // no TTS or alignment needed (and character voices aren't in the voice mapping)
+  if (scene.sceneType === 'character_based_roleplay') return null;
+
   const voText = getFullVoText(scene);
   if (!voText.trim()) return null;
 
@@ -488,6 +557,25 @@ async function processScene(scene, sceneIdx, allScenes, storyboard, ctx) {
 
   // Step 3: Upload assets to Azure
   const uploader = getUploader(storyboard.domainKey);
+
+  // Step 2b: Pre-mux media video + audio for lip-sync scenes
+  // For scenes like first_person_video_staticBg and character_based_roleplay,
+  // mux the muted video with its audio so the browser plays a single video-with-audio
+  // element — preserving lip sync exactly like avatar scenes.
+  if (needs.hasMediaVideo && needs.hasMediaAudio && result.audioPath) {
+    const muxedVideoPath = await premuxMediaVideoAudio(scene, result.audioPath, audioDir);
+    if (muxedVideoPath) {
+      const muxedUrl = await uploader.uploadFile({
+        localPath: muxedVideoPath,
+        sceneId,
+        contentType: 'video/mp4',
+      });
+      if (muxedUrl && scene.content?.media?.videos?.length > 0) {
+        scene.content.media.videos[0].url = muxedUrl;
+        console.log(`  [premux] ${sceneId}: Media video URL updated to muxed version`);
+      }
+    }
+  }
 
   if (result.audioPath) {
     result.audioUrl = await uploader.uploadFile({
@@ -715,6 +803,28 @@ export async function runPipeline(storyboardPath, opts = {}) {
 
   // Expand slideshow scenes into individual slides
   let scenes = expandSlideshowScenes(storyboard.scenes);
+
+  // Deduplicate consecutive character_based_roleplay scenes — the first one in a
+  // batch contains the full video covering all consecutive roleplay scripts.
+  {
+    const before = scenes.length;
+    let inRoleplayBatch = false;
+    scenes = scenes.filter(s => {
+      if (s.sceneType === 'character_based_roleplay') {
+        if (inRoleplayBatch) {
+          console.log(`  [skip] ${s.sceneId}: consecutive character_based_roleplay — covered by previous scene's video`);
+          return false;
+        }
+        inRoleplayBatch = true;
+        return true;
+      }
+      inRoleplayBatch = false;
+      return true;
+    });
+    if (scenes.length < before) {
+      console.log(`Skipped ${before - scenes.length} consecutive character_based_roleplay scene(s)\n`);
+    }
+  }
 
   if (sceneFilter) {
     scenes = scenes.filter(s => s.sceneId.includes(sceneFilter));

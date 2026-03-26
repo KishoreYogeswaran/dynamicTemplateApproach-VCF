@@ -38,7 +38,7 @@ export function normalizeStoryboard(raw) {
 }
 
 function parseScene(scene) {
-  return {
+  const parsed = {
     sceneId: scene.scene_id,
     character: scene.character,
     wordCount: scene.word_count,
@@ -51,6 +51,13 @@ function parseScene(scene) {
     characterPosition: scene.characterPosition,
     content: parseContentElements(scene.content_elements),
   };
+
+  // Fill in subimageAspectRatio from family name if not in media data
+  if (parsed.content?.media && !parsed.content.media.subimageAspectRatio) {
+    parsed.content.media.subimageAspectRatio = extractSubimageAspect(scene.selected_family_name);
+  }
+
+  return parsed;
 }
 
 /**
@@ -156,6 +163,16 @@ function parseMedia(media) {
     audios,
     videos,
   };
+}
+
+/**
+ * Extracts subimage aspect ratio from the family name when not in media.
+ * Family names contain patterns like: subaspect_square, subaspect_vertical
+ */
+function extractSubimageAspect(familyName) {
+  if (!familyName) return '';
+  const match = familyName.match(/subaspect_(\w+)/);
+  return match ? match[1] : '';
 }
 
 function escapeRegex(str) {

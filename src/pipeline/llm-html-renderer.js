@@ -48,14 +48,11 @@ An avatar video of the narrator will be overlaid later. You must choose ONE of t
 
 Choose the option that best fits the amount of content you have and provides visual variety from neighboring scenes. Set avatarPosition to one of: "presenter-left", "presenter-center", "presenter-right".`,
 
-  character_image_torso: `## SCENE CONTEXT
-A **character** (not the narrator) is speaking in a pre-rendered video. The video plays as the full-screen background — the character is already visible in it.
-You have a header, bullets, and optionally a keyphrase. Audio comes from the media URL.
-Do NOT add any avatar element — the character is in the video. Place text creatively so it complements the character without covering them.`,
+  // character_image_torso is handled dynamically in buildPrompt (needs characterPosition)
 
   character_based_roleplay: `## SCENE CONTEXT
 This is a **roleplay dialogue** between characters. The video plays as a full-screen background with the characters already in it.
-Audio comes from the media URL. There may or may not be text elements to display.
+Audio is baked into the video file. The \`<video>\` element must have **autoplay playsinline** but must **NOT have \`muted\`** (the video contains dialogue audio) and must **NOT have \`loop\`** (it plays once).
 Do NOT add any avatar element. If there is text content, keep it subtle so it doesn't obstruct the dialogue scene.`,
 
   ai_image_slideshow: `## SCENE CONTEXT
@@ -74,8 +71,10 @@ Let the video be the star — if there's text, keep it compact and unobtrusive.`
 
   first_person_video_staticBg: `## SCENE CONTEXT
 The **narrator is speaking directly to camera** in a pre-rendered video that plays as the full-screen background.
-Audio comes from the media URL. You may have a header, bullets, and keyphrase.
-The speaker is already in the video — do NOT add an avatar. Keep any text minimal so the focus stays on the speaker.`,
+Audio is baked into the video file. The \`<video>\` element must have **autoplay playsinline** but must **NOT have \`muted\`** (the video contains dialogue audio) and must **NOT have \`loop\`** (it plays once).
+You may have a header, bullets, and keyphrase.
+The speaker is already in the video — do NOT add an avatar. Keep any text minimal so the focus stays on the speaker.
+**Layout constraint:** Place ALL text/OST elements in a compact glass card at the **bottom-left** or **bottom-right** corner of the screen (position:absolute; bottom:60px). Use width:fit-content with max-width:45% so it doesn't stretch across the screen. The speaker's face is in the upper-center — keep the card in a bottom corner so the face stays fully visible.`,
 
   table_image: `## SCENE CONTEXT
 This scene shows a **data table or chart** as a pre-rendered image. The image IS the content.
@@ -105,10 +104,16 @@ This scene features a **composite image** — a single image file containing 4 s
 You have the composite image, a header, and 4 bullet points (one label per panel).
 
 **Layout spec for this 2x2 grid split screen:**
-- **HEADER** at the top, horizontally centered. CSS: \`position: absolute; top: 64px; left: 50%; transform: translateX(-50%); width: fit-content; text-align: center;\` with a compact glassmorphism card and border-left: 4px solid var(--theme-accent). The header must NOT be left-aligned or full-width.
-- **IMAGE CONTAINER** below the header: a rounded container (border-radius: 16px; overflow: hidden) that is ${containerWidth}px wide, centered horizontally (left: 50%; transform: translateX(-50%)). The image inside: width: 100%, height: auto, object-fit: cover, max-height: 720px.
-- **BULLET LABELS** below the image in a 2x2 grid matching the image layout. Use a CSS grid or two flex rows, container ${containerWidth}px wide, centered. Each label box: width ~${colWidth}px, text-align: center, font-size: 28px, border-left: 3px solid var(--theme-accent), padding-left: 12px. Row 1 labels = top-left and top-right panels, Row 2 labels = bottom-left and bottom-right panels.
-  **IMPORTANT:** Do NOT use \`bullet-item\`, \`bullet-marker\`, or chevron markers for these labels. Use this structure: \`<div class="panel-label anim-hidden" id="bullet_N"><span class="text-bullet" data-translate="bullet_N">label text</span></div>\`. Style \`.panel-label\` in your CSS with: \`text-align: center; padding: 12px 16px; background: var(--theme-bg-card); border: 1px solid var(--theme-bg-card-border); border-left: 3px solid var(--theme-accent); border-radius: 10px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);\` No chevrons, no markers — just clean centered text.
+- **HEADER** at the top, horizontally centered. CSS: \`position: absolute; top: 40px; left: 50%; transform: translateX(-50%); width: fit-content; text-align: center;\` with a compact glassmorphism card and border-left: 4px solid var(--theme-accent). The header must NOT be left-aligned or full-width.
+- **IMAGE CONTAINER** below the header: a \`position: relative\` container that is ${containerWidth}px wide, centered (position:absolute; top:120px; left:50%; transform:translateX(-50%)). Use border-radius:16px and overflow:hidden. The composite image inside: \`<img>\` with width:100%, height:auto, object-fit:cover, max-height:860px, display:block.
+- **4 PANEL LABELS overlaid on the image** — positioned absolutely INSIDE the image container, one at the bottom of each quadrant:
+  - bullet_1 (top-left panel): \`position:absolute; bottom:calc(50% + 8px); left:5%; right:calc(50% + 5%);\`
+  - bullet_2 (top-right panel): \`position:absolute; bottom:calc(50% + 8px); left:calc(50% + 5%); right:5%;\`
+  - bullet_3 (bottom-left panel): \`position:absolute; bottom:16px; left:5%; right:calc(50% + 5%);\`
+  - bullet_4 (bottom-right panel): \`position:absolute; bottom:16px; left:calc(50% + 5%); right:5%;\`
+  Each label: \`padding:10px 16px; background:var(--theme-ost-bg); backdrop-filter:blur(8px); border:1px solid var(--theme-ost-border); border-left:3px solid var(--theme-accent); border-radius:8px; text-align:center; color:var(--theme-text-primary); text-shadow:var(--theme-shadow-text);\`
+  Use this structure: \`<div class="panel-label anim-hidden" id="bullet_N" style="position:absolute; ..."><span class="text-bullet" data-translate="bullet_N">label text</span></div>\`
+  **IMPORTANT:** Do NOT use \`bullet-item\`, \`bullet-marker\`, or chevron markers. No chevrons, no markers — just clean centered text.
 - The image must be an <img> element, NOT a background.
 - The image must remain completely static — no animation. Only text elements animate.`;
   }
@@ -188,6 +193,16 @@ function buildPrompt(scene, _storyboard, themeCSS, neighbors = {}) {
   let sceneContext;
   if (scene.sceneType === 'split_screen_image') {
     sceneContext = buildSplitScreenContext(media.numberOfSubImages, media.subimageAspectRatio || '');
+  } else if (scene.sceneType === 'character_image_torso') {
+    const charPos = scene.characterPosition || 'left';
+    const ostSide = charPos === 'left' ? 'right' : 'left';
+    sceneContext = `## SCENE CONTEXT
+A **character** (not the narrator) is speaking in a pre-rendered video. The video plays as the full-screen background — the character is already visible in it.
+Audio is baked into the video file. The \`<video>\` element must have **autoplay playsinline** but must **NOT have \`muted\`** (the video contains dialogue audio) and must **NOT have \`loop\`** (it plays once).
+You have a header, bullets, and optionally a keyphrase.
+Do NOT add any avatar element — the character is in the video.
+
+**Character position: ${charPos}** — The character is on the ${charPos} side of the video. Place ALL text/OST elements on the **${ostSide} side** of the screen so they don't overlap the character. Use position:absolute with ${ostSide}: 60px and constrain the text container to roughly 45-50% of the screen width on the ${ostSide} half.`;
   } else if (scene.sceneType === 'infographics_scene') {
     const numBullets = scene.content.bulletPoints?.length || 3;
     sceneContext = buildInfographicsContext(numBullets);
@@ -266,7 +281,7 @@ ${themeCSS}
 
 **Text on images/video:** Always add a dark gradient overlay or use a glass card for contrast. Add text-shadow for crispness.
 
-**Background media:** position:absolute, top:0, left:0, width/height 100%, object-fit:cover. Videos: autoplay, muted, loop, playsinline.
+**Background media:** position:absolute, top:0, left:0, width/height 100%, object-fit:cover. Background/decoration videos: autoplay, muted, loop, playsinline. **Exception:** If the scene context says "audio is baked into the video", do NOT add \`muted\` or \`loop\` — use only \`autoplay playsinline\`.
 
 **Layout:** Use position:absolute for layout blocks. Z-index order: background (1) → overlay (2) → content (3).
 
@@ -505,6 +520,7 @@ export async function renderSceneHTMLWithLLM(scene, storyboard, options = {}) {
 
     const responseText = await generateContent({ prompt: currentPrompt });
     result = parseLLMResponse(responseText);
+
     html = assembleHTML(baseLayout, result, assemblyArgs);
 
     if (!validate) break;
@@ -588,6 +604,7 @@ export async function renderAllScenesWithLLM(storyboard, options = {}) {
 
           const responseText = await generateContent({ prompt: currentPrompt });
           result = parseLLMResponse(responseText);
+      
           html = assembleHTML(baseLayout, result, assemblyArgs);
 
           if (!validate) break;

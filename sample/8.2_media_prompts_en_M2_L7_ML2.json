@@ -457,6 +457,91 @@
       },
       "selected_template_id": "f7ca3e906e6f47e9996aa1609bcd293e",
       "selected_template_name": "ME_SplitScreenImage_template_3"
+    },
+    {
+      "scene_id": "M2_L7_ML2_SC13",
+      "character": "Suresh",
+      "word_count": 39,
+      "approx_duration_seconds": 24,
+      "narrative_arc_step": "Tool Definition (SWOT Introduction)",
+      "vo_scripts": {
+        "swot_template_2_voScript_1": "This analysis is called SWOT, which stands for Strengths, Weaknesses, Opportunities, and Threats. It is a simple tool to think about what an idea does well, where it is weak, how it can grow, and what risks it faces."
+      },
+      "recommended_video_type": "SWOT Analysis_DAME",
+      "scene_purpose": "Process/tool demonstration by defining the SWOT framework and briefly explaining each part so learners understand the tool before applying it.",
+      "scene_typology_name": "swot_scene",
+      "visualization_notes": "Not applicable. This scene uses the standard swot_scene template (family swot_scene_fam_2 / ME_swot_template_2) with a clean header such as a generic SWOT title and four clearly labeled keyphrases for Strengths, Weaknesses, Opportunities, and Threats. There is no background image and no avatar on screen; the structured grid and on-screen text are handled entirely by the predefined template.",
+      "selected_family_id": "swot_scene_fam_2",
+      "selected_family_name": "swot_scene_family_2_1hdr_4keyphrase",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "swot_template_2_header_1": "What Is SWOT?"
+        },
+        "subHeaders": {},
+        "bulletPoints": {},
+        "keyPhrases": {
+          "swot_template_2_keyPhrase_1": "Strengths",
+          "swot_template_2_keyPhrase_2": "Weaknesses",
+          "swot_template_2_keyPhrase_3": "Opportunities",
+          "swot_template_2_keyPhrase_4": "Threats"
+        },
+        "media": {
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "0",
+          "numberOf_subImages": 0
+        }
+      },
+      "selected_template_id": "b8d33c07c13b4bf8a6518926293969a2",
+      "selected_template_name": "ME_swot_template_2"
+    },
+    {
+      "scene_id": "M2_L7_ML2_SC14",
+      "character": "Suresh",
+      "word_count": 31,
+      "approx_duration_seconds": 19,
+      "narrative_arc_step": "Structured SWOT Summary (Idea 1: Home Tiffin Service)",
+      "vo_scripts": {
+        "swot_template_1_voScript_1": "Neeraj writes SWOT for tiffin. Strengths are cooking skill and mother's help. Weaknesses are no staff and limited savings. Opportunities are workers and students. Threats are cheap dabba and vegetable prices."
+      },
+      "recommended_video_type": "SWOT Analysis_DAME",
+      "scene_purpose": "Process/tool demonstration and recap that presents Neeraj's tiffin-service SWOT in a clear, structured grid to reinforce the four categories and their key points.",
+      "scene_typology_name": "swot_scene",
+      "visualization_notes": "Not applicable. This scene uses the standard swot_scene template (family swot_scene_fam_1 / ME_swot_template_1) with a header for Neeraj's tiffin service and a structured SWOT grid showing four labeled quadrants, each with two bullet points matching the narration. There is no background image and no avatar overlay; all on-screen text and layout are handled by the predefined SWOT template.",
+      "selected_family_id": "swot_scene_fam_1",
+      "selected_family_name": "swot_scene_family_1_1hdr_8bullet_4keyphrase",
+      "characterCrop": "0",
+      "characterPosition": "0",
+      "content_elements": {
+        "headers": {
+          "swot_template_1_header_1": "Tiffin Service"
+        },
+        "subHeaders": {},
+        "bulletPoints": {
+          "swot_template_1_bulletpoint_1": "Cooking skill",
+          "swot_template_1_bulletpoint_2": "Mother's help",
+          "swot_template_1_bulletpoint_3": "No delivery staff",
+          "swot_template_1_bulletpoint_4": "Limited savings",
+          "swot_template_1_bulletpoint_5": "Office workers",
+          "swot_template_1_bulletpoint_6": "Students",
+          "swot_template_1_bulletpoint_7": "Cheap tiffin rivals",
+          "swot_template_1_bulletpoint_8": "Vegetable prices"
+        },
+        "keyPhrases": {
+          "swot_template_1_keyPhrase_1": "Strengths",
+          "swot_template_1_keyPhrase_2": "Weaknesses",
+          "swot_template_1_keyPhrase_3": "Opportunities",
+          "swot_template_1_keyPhrase_4": "Threats"
+        },
+        "media": {
+          "compositeImage": "FALSE",
+          "image_aspectRatio": "0",
+          "numberOf_subImages": 0
+        }
+      },
+      "selected_template_id": "836fc0e38a2746598845a13d9227aadc",
+      "selected_template_name": "ME_swot_template_1"
     }
   ],
   "template_selection_timestamp": "20260113_084926",

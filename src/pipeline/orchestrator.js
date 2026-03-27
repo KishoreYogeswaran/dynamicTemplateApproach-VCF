@@ -24,7 +24,7 @@ import { ElevenLabsTTSClient } from '../clients/elevenlabs-tts-client.js';
 import { WanS2VClient } from '../clients/wan-s2v-client.js';
 import { TransparentVideoClient } from '../clients/transparent-video-client.js';
 import { AzureMediaUploader } from '../clients/azure-uploader.js';
-import { renderSceneHTMLWithLLM } from './llm-html-renderer.js';
+import { renderSceneHTMLWithLLM, renderSceneHTMLWithHumanReview } from './llm-html-renderer.js';
 import { adaptSceneHTML, checkEnglishHTMLExists } from './language-adapter.js';
 import { recordScene } from './puppeteer-recorder.js';
 import { stitchScenes } from './video-stitcher.js';
@@ -277,6 +277,10 @@ async function generateAvatar(scene, storyboard, audioPath, outputDir) {
     const compressedSize = (await stat(compressedPath)).size;
     console.log(`  [avatar] ${scene.sceneId}: ✓ Compressed ${(originalSize / 1024 / 1024).toFixed(1)}MB → ${(compressedSize / 1024 / 1024).toFixed(1)}MB`);
 
+    // Delete the large .mov file now that we have the compressed .webm
+    await unlink(bgResult.transparentVideo).catch(() => {});
+    console.log(`  [avatar] ${scene.sceneId}: Deleted .mov (${(originalSize / 1024 / 1024).toFixed(1)}MB freed)`);
+
     return { videoPath: compressedPath, extractedAudioPath };
   } catch (err) {
     console.error(`  [avatar] ${scene.sceneId}: Compression failed — ${err.message}, using uncompressed`);
@@ -448,7 +452,7 @@ async function runWithConcurrency(tasks, limit, { abortSignal } = {}) {
  * Each scene is self-contained — dependencies are resolved internally.
  */
 async function processScene(scene, sceneIdx, allScenes, storyboard, ctx) {
-  const { audioDir, avatarDir, htmlDir, videoDir, skipTTS, skipAvatar, skipHTML, skipRecord, fps, themeOverride, englishHtmlDir, language } = ctx;
+  const { audioDir, avatarDir, htmlDir, videoDir, llmResultsDir, skipTTS, skipAvatar, skipHTML, skipRecord, fps, themeOverride, englishHtmlDir, language } = ctx;
   const sceneId = scene.sceneId;
   const needs = await analyzeScene(scene, storyboard);
 
@@ -666,6 +670,7 @@ async function processScene(scene, sceneIdx, allScenes, storyboard, ctx) {
         avatarVideoUrl: result.avatarVideoUrl,
         timings,
         outputDir: htmlDir,
+        llmResultsDir,
         neighbors,
       });
     }
@@ -755,6 +760,7 @@ export async function runPipeline(storyboardPath, opts = {}) {
     crossfadeMs = 0,
     gapMs = 700,
     themeOverride = null,
+    humanComment = null,
   } = opts;
 
   // Reset uploader for this run (domain-scoped)
@@ -778,11 +784,13 @@ export async function runPipeline(storyboardPath, opts = {}) {
   const avatarDir = join(langDir, 'avatars');
   const htmlDir = join(langDir, 'html');
   const videoDir = join(langDir, 'video');
+  const llmResultsDir = join(langDir, 'llm-results');
 
   await mkdir(audioDir, { recursive: true });
   await mkdir(avatarDir, { recursive: true });
   await mkdir(htmlDir, { recursive: true });
   await mkdir(videoDir, { recursive: true });
+  await mkdir(llmResultsDir, { recursive: true });
 
   console.log(`Output: ${langDir}\n`);
 
@@ -844,7 +852,86 @@ export async function runPipeline(storyboardPath, opts = {}) {
   let results = [];
   let successfulRecordings = [];
 
-  if (stitchOnly) {
+  if (humanComment) {
+    // ── Human review mode: re-generate a single scene from reviewer feedback ──
+    console.log(`── Human review mode ──\n`);
+    if (scenes.length !== 1) {
+      console.error(`[error] Human review requires exactly 1 scene (--scene). Got ${scenes.length}.`);
+      return { scenes: [], recordings: [], finalVideo: null };
+    }
+    const scene = scenes[0];
+    const sceneId = scene.sceneId;
+    const sceneIdx = storyboard.scenes.findIndex(s => s.sceneId === sceneId);
+
+    // Load saved LLM result
+    const savedPath = join(llmResultsDir, `${sceneId}.json`);
+    let saved;
+    try {
+      saved = JSON.parse(await readFile(savedPath, 'utf-8'));
+    } catch {
+      console.error(`[error] No saved LLM result for ${sceneId}. Run the pipeline without --humanComment first.`);
+      return { scenes: [], recordings: [], finalVideo: null };
+    }
+
+    const { _meta, ...previousResult } = saved;
+    console.log(`[${sceneId}] Loaded saved LLM result + meta`);
+    console.log(`[${sceneId}] Human comment: "${humanComment}"`);
+
+    // Rebuild neighbors for prompt context
+    const neighbors = {
+      prev: sceneIdx > 0 ? storyboard.scenes[sceneIdx - 1] : null,
+      next: sceneIdx < storyboard.scenes.length - 1 ? storyboard.scenes[sceneIdx + 1] : null,
+    };
+
+    // Call the human review renderer (re-prompts LLM with comment + validates)
+    const htmlPath = await renderSceneHTMLWithHumanReview(scene, storyboard, {
+      previousResult,
+      humanComment,
+      themeOverride,
+      audioUrl: _meta.audioUrl,
+      avatarVideoUrl: _meta.avatarVideoUrl,
+      timings: _meta.timings,
+      outputDir: htmlDir,
+      llmResultsDir,
+      neighbors,
+      meta: _meta,
+    });
+
+    // Resolve local audio file from audio dir
+    let recordAudioPath = _meta.audioPath || '';
+    if (!recordAudioPath) {
+      const { readdirSync } = await import('fs');
+      const audioFiles = readdirSync(audioDir).filter(f => f.startsWith(sceneId) && f.endsWith('.mp3'));
+      if (audioFiles.length > 0) {
+        recordAudioPath = join(audioDir, audioFiles[0]);
+        console.log(`[${sceneId}] Resolved audio: ${recordAudioPath}`);
+      }
+    }
+
+    // Re-record with Puppeteer
+    const videoPath = join(videoDir, `${sceneId}.mp4`);
+    console.log(`[${sceneId}] Re-recording...`);
+    const recResult = await recordScene({
+      htmlPath,
+      outputPath: videoPath,
+      audioPath: recordAudioPath,
+      durationMs: _meta.audioDurationMs,
+      fps,
+    });
+
+    if (recResult.success) {
+      console.log(`[${sceneId}] ✓ Re-recorded → ${videoPath}`);
+      successfulRecordings = [{ sceneId, videoPath, recordSuccess: true }];
+    } else {
+      console.error(`[${sceneId}] ✗ Recording failed: ${recResult.error}`);
+    }
+
+    results = [{ sceneId, htmlPath, videoPath, recordSuccess: recResult.success }];
+
+    // Clean up validator browser
+    const { closeValidator } = await import('./html-validator.js');
+    await closeValidator();
+  } else if (stitchOnly) {
     // Stitch-only mode: find existing MP4s in video dir
     console.log(`── Stitch-only mode: finding existing scene videos ──\n`);
     const { readdir } = await import('fs/promises');
@@ -869,7 +956,7 @@ export async function runPipeline(storyboardPath, opts = {}) {
     // Normal mode: process all scenes
     console.log(`── Processing ${scenes.length} scenes ─────────────────────\n`);
 
-    const ctx = { audioDir, avatarDir, htmlDir, videoDir, skipTTS, skipAvatar, skipHTML, skipRecord, fps, themeOverride, englishHtmlDir, language: storyboard.language };
+    const ctx = { audioDir, avatarDir, htmlDir, videoDir, llmResultsDir, skipTTS, skipAvatar, skipHTML, skipRecord, fps, themeOverride, englishHtmlDir, language: storyboard.language };
 
     // Abort signal — stops new scenes from starting when one fails
     const abortSignal = { aborted: false, failedScene: null, abort(sceneId) { this.aborted = true; this.failedScene = sceneId; } };

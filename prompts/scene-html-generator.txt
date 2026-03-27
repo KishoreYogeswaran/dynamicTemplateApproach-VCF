@@ -1,37 +1,71 @@
 You are a world-class visual designer creating a single frame for a premium educational video series. Your output will be screen-recorded at 1920×1080 into a final MP4.
 
 ## SCENE CONTEXT
-This scene features a **composite image** — a single image file containing 2 sub-images arranged **side by side in a horizontal row**.
-You have the composite image, a header, and 2 bullet points (one label per panel).
+This is a **SWOT analysis scene** — a 2×2 quadrant grid showing Strengths, Weaknesses, Opportunities, and Threats. No background image, no avatar — use the theme solid background.
+You have a header, 4 keyphrases (one per quadrant), and 8 bullet points (2 per quadrant).
 
-**Layout spec for this 2-panel split screen:**
-- **HEADER** at the top, horizontally centered. CSS: `position: absolute; top: 64px; left: 50%; transform: translateX(-50%); width: fit-content; text-align: center;` with a compact glassmorphism card and border-left: 4px solid var(--theme-accent). The header must NOT be left-aligned or full-width.
-- **IMAGE CONTAINER** below the header: a rounded container (border-radius: 16px; overflow: hidden) that is 1680px wide, centered horizontally (left: 50%; transform: translateX(-50%)). The image inside: width: 100%, height: auto, object-fit: cover, max-height: 720px.
-- **BULLET LABELS** directly below the image, in a single flex row that is exactly 1680px wide, centered the same way. Use 2 equal-width boxes (each ~834px) with 12px gap between them. Each label box: text-align: center, font-size: 28px, border-left: 3px solid var(--theme-accent), padding-left: 12px. This ensures each label sits perfectly centered under its corresponding image panel.
-  **IMPORTANT:** Do NOT use `bullet-item`, `bullet-marker`, or chevron markers for these labels. Use this structure: `<div class="panel-label anim-hidden" id="bullet_N"><span class="text-bullet" data-translate="bullet_N">label text</span></div>`. Style `.panel-label` in your CSS with: `text-align: center; padding: 12px 16px; background: var(--theme-bg-card); border: 1px solid var(--theme-bg-card-border); border-left: 3px solid var(--theme-accent); border-radius: 10px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);` No chevrons, no markers — just clean centered text.
-- The image must be an <img> element, NOT a background.
-- The image must remain completely static — no animation. Only text elements animate.
+**Layout spec for SWOT grid:**
+
+- **HEADER** at the top, full-width centered. CSS: `position: absolute; top: 30px; left: 60px; right: 60px; text-align: center;` with a glassmorphism card (`background: var(--theme-accent); border-radius: 12px; padding: 16px 32px;`). Header text color: `#fff` (white on accent).
+
+- **SWOT GRID** below the header. Use `position: absolute; top: 120px; left: 60px; right: 60px; bottom: 40px;` with `display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px;` to create 4 equal quadrants.
+
+- **QUADRANT BACKGROUNDS** — each quadrant gets a subtle, distinct tinted background using low-opacity theme-derived colors. Use these approaches:
+  - Top-left (S): `background: color-mix(in srgb, var(--theme-accent) 12%, transparent);`
+  - Top-right (W): `background: color-mix(in srgb, var(--theme-text-secondary) 10%, transparent);`
+  - Bottom-left (O): `background: color-mix(in srgb, var(--theme-accent) 8%, transparent);`
+  - Bottom-right (T): `background: color-mix(in srgb, var(--theme-text-secondary) 15%, transparent);`
+  Each quadrant: `border-radius: 12px; padding: 24px 28px; position: relative;`
+
+- **SWOT CENTER ICON** — a 2×2 mini-grid of 4 square letter boxes centered at the intersection of the 4 quadrants. The icon must be positioned on the SWOT GRID container (not on the page body), using `position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5;` on the grid container. The grid container MUST have `position: relative;` for this to work. Use `display: grid; grid-template-columns: 1fr 1fr; gap: 3px;` for the icon layout. Each letter box: `width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 28px; color: #fff; border-radius: 8px;`. Colors for each letter:
+  - S: `background: #c47328;` (warm orange-brown)
+  - W: `background: #2d5a3d;` (dark green)
+  - O: `background: #3d6a8a;` (muted blue)
+  - T: `background: #6a3d6a;` (muted purple)
+  The SWOT icon is decorative — it must have `class="ost-container"` so it reveals with the content. Do NOT give individual letter boxes `anim-hidden` or IDs.
+
+- **KEYPHRASE LABELS** — one per quadrant, centered horizontally and vertically within each quadrant (vertically in the upper portion since bullets go below). Each keyphrase: glassmorphism pill (`background: var(--theme-accent); padding: 10px 24px; border-radius: 8px; display: inline-block;`). Text: white, font-weight: 600, 28-30px. Use `text-keyphrase` class but do NOT use `keyphrase-underline` or `keyphrase-left-bar` accent classes — the pill background IS the accent.
+  Each quadrant should use `display: flex; flex-direction: column; align-items: center; justify-content: center;` so the keyphrase is centered within it.
+  Structure: `<span class="text-keyphrase anim-hidden" id="keyphrase_N" data-translate="keyphrase_N" style="background:var(--theme-accent); padding:10px 24px; border-radius:8px; color:#fff;">phrase</span>`
+
+- **BULLET POINTS** — 2 per quadrant, below the keyphrase. The 2 bullets in each quadrant must be wrapped in a SINGLE shared glassmorphism container (glass card with `ost-container` class). Do NOT give each bullet its own separate card/background — they share one card.
+  Structure per quadrant:
+  ```
+  <div class="quadrant-bullets ost-container" style="background:var(--theme-ost-bg); backdrop-filter:blur(12px); border:1px solid var(--theme-ost-border); border-radius:12px; padding:12px 20px; margin-top:16px;">
+    <div class="bullet-item anim-hidden" id="bullet_N"><span class="bullet-marker"></span><span class="text-bullet" data-translate="bullet_N">text</span></div>
+    <div class="bullet-item anim-hidden" id="bullet_M"><span class="bullet-marker"></span><span class="text-bullet" data-translate="bullet_M">text</span></div>
+  </div>
+  ```
+  Bullets are assigned to quadrants in order: bullet_1 & bullet_2 in top-left, bullet_3 & bullet_4 in top-right, bullet_5 & bullet_6 in bottom-left, bullet_7 & bullet_8 in bottom-right.
+  Do NOT override `.bullet-item` or `.bullet-marker` styles — they are pre-styled.
+
+**Animation order:** header → keyphrase_1 → bullet_1 → bullet_2 → keyphrase_2 → bullet_3 → bullet_4 → keyphrase_3 → bullet_5 → bullet_6 → keyphrase_4 → bullet_7 → bullet_8. The SWOT center icon reveals with the first keyphrase via ost-container.
+
+**Important:**
+- Do NOT use any images. This is a pure CSS layout.
+- Do NOT use the `infographic-card` classes — this is a SWOT grid, not an infographic.
+- Quadrant backgrounds must be subtle tints, not opaque solid colors.
+- The SWOT letters (S, W, O, T) are the ONLY hardcoded text allowed — everything else comes from the provided content.
+- Keep padding generous so content doesn't crowd the edges of each quadrant.
 
 ## YOUR ASSETS
 
 **Text content to display:**
-- Headers: ["Clear Pitch Results"]
+- Headers: ["Tiffin Service"]
 - Sub-headers: none
-- Bullets: ["Calm voice with clear order","Customer considers maintenance"]
-- Key phrases: none
+- Bullets: ["Cooking skill","Mother's help","No delivery staff","Limited savings","Office workers","Students","Cheap tiffin rivals","Vegetable prices"]
+- Key phrases: ["Strengths","Weaknesses","Opportunities","Threats"]
 
 **Media assets:**
-- Images: ["https://videocontentfactory.blob.core.windows.net/heygen-pipeline-images/2026/01/13/M2_L9_ML2_SC8/split_screen.png?st=2026-01-13T04%3A05%3A15Z&se=2036-01-11T04%3A05%3A15Z&sp=r&sv=2025-07-05&sr=b&sig=RX%2BSmdZ1t5PLDE3pF2I9qzx8valWQnMhRRkOjGSJfHQ%3D"]
+- Images: none
 - Videos: none
 - Audio: none
-- Image aspect ratio: horizontal
-- COMPOSITE IMAGE: This single image contains 2 sub-images stitched together
+- Image aspect ratio: 0
 
-**Image description (tells you how the image is composed):**
-Two-panel square split-screen composite with two equal square panels placed side-by-side in one horizontal row. NO GAPS OR BORDERS BETWEEN PANELS - panels directly touch edge-to-edge with zero space, seamless composite. In the left panel, inside the same small neighborhood general shop used in the roleplay, USE CHARACTER REFERENCE - Suresh (KEY NARRATOR OF THIS SCENE) stands in front of the low counter speaking calmly to USE CHARACTER REFERENCE - Prakash (middle-aged Indian male shop owner with brown skin tone, average build, wearing a light-colored cotton shirt and dark trousers); Suresh's posture is relaxed but confident with shoulders down and face composed, and in one hand he casually holds a single sheet of paper bearing a simple list, the page angled away so any writing is blurred and unreadable, while shelves of everyday goods and a few electrical items form a modest background that clearly signals a local micro-business. In the right panel, the viewpoint moves closer to show USE CHARACTER REFERENCE - Prakash (middle-aged Indian male shop owner with brown skin tone, average build, wearing a light-colored cotton shirt and dark trousers) behind the counter, leaning slightly forward with focused eyes and a serious, thoughtful expression as he listens to Suresh, whose arm and torso are partially visible at the edge of the frame; on the counter between them lies a closed notebook and a basic calculator suggesting discussion of regular maintenance work and approximate amounts in Indian Rupees (₹), with covers and displays positioned so no text, symbols, or digits can be read. The modest shop interior, with concrete floor and simple painted walls, is lit by soft natural daylight from the entrance, and both panels share consistent color and lighting to feel like two connected moments from the same real conversation between a micro-entrepreneur electrician and his customer. Photorealistic, natural lighting. All text, lettering, numbers illegible through positioning/distance. Symbols and icons naturally integrated and recognizable.
+
 
 **Narration script (for context only — do NOT display this on screen):**
-I noticed this time my clear order of introduction, problem, solution, numbers and calm voice made Prakash listen seriously and consider regular maintenance work with me.
+Neeraj writes SWOT for tiffin. Strengths are cooking skill and mother's help. Weaknesses are no staff and limited savings. Opportunities are workers and students. Threats are cheap dabba and vegetable prices.
 
 ## DESIGN SYSTEM
 

@@ -4,9 +4,11 @@
 
 import { Queue, Worker } from 'bullmq';
 import IORedis from 'ioredis';
+import { randomUUID } from 'crypto';
 import { config } from '../config.js';
 import { processFullPipeline } from './processors/full-pipeline.js';
 import { processRegenScene } from './processors/regen-scene.js';
+import { processHumanReview } from './processors/human-review.js';
 
 const QUEUE_NAME = 'video-pipeline';
 
@@ -37,6 +39,9 @@ export function initJobStore() {
       }
       if (job.name === 'regen-scene') {
         return processRegenScene(job);
+      }
+      if (job.name === 'human-review') {
+        return processHumanReview(job);
       }
       throw new Error(`Unknown job type: ${job.name}`);
     },
@@ -76,7 +81,7 @@ export async function addPipelineJob(storyboardPath, options = {}) {
     storyboardPath,
     options,
     jobKey,
-  });
+  }, { jobId: randomUUID() });
 
   return { jobId: job.id, status: 'queued', duplicate: false };
 }
@@ -84,9 +89,9 @@ export async function addPipelineJob(storyboardPath, options = {}) {
 /**
  * Add a scene regeneration job to the queue.
  */
-export async function addRegenJob({ module, lesson, ml, language, scenes, skipTTS, skipAvatar }) {
+export async function addRegenJob({ storyboardPath, scenes, skipTTS, skipAvatar }) {
   const scenesSorted = [...scenes].sort().join(',');
-  const jobKey = `regen:M${module}_L${lesson}_ML${ml}_${language}:${scenesSorted}`;
+  const jobKey = `regen:${storyboardPath}:${scenesSorted}`;
 
   const existing = await findActiveJobByKey(jobKey);
   if (existing) {
@@ -94,8 +99,26 @@ export async function addRegenJob({ module, lesson, ml, language, scenes, skipTT
   }
 
   const job = await queue.add('regen-scene', {
-    module, lesson, ml, language, scenes, skipTTS, skipAvatar, jobKey,
-  });
+    storyboardPath, scenes, skipTTS, skipAvatar, jobKey,
+  }, { jobId: randomUUID() });
+
+  return { jobId: job.id, status: 'queued', duplicate: false };
+}
+
+/**
+ * Add a human review job to the queue.
+ */
+export async function addHumanReviewJob({ storyboardPath, scene, comment }) {
+  const jobKey = `review:${storyboardPath}:${scene}`;
+
+  const existing = await findActiveJobByKey(jobKey);
+  if (existing) {
+    return { jobId: existing.id, status: 'active', duplicate: true };
+  }
+
+  const job = await queue.add('human-review', {
+    storyboardPath, scene, comment, jobKey,
+  }, { jobId: randomUUID() });
 
   return { jobId: job.id, status: 'queued', duplicate: false };
 }

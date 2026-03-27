@@ -62,6 +62,7 @@ Flags:
 
 Options:
   --scene <id>       Only process scenes matching this ID substring
+  --humanComment <text>  Human review: re-generate scene with this feedback (requires --scene)
   --concurrency <n>  Max concurrent LLM calls (default: 3)
   --skip-tts         Skip TTS audio generation
   --skip-avatar      Skip avatar video generation
@@ -80,6 +81,12 @@ Options:
   process.exit(1);
 }
 
+const humanComment = getFlagValue('--humanComment');
+if (humanComment && !getFlagValue('--scene')) {
+  console.error('[cli] --scene is required when using --humanComment');
+  process.exit(1);
+}
+
 const startTime = Date.now();
 
 const stitchOnly = getFlag('--stitch-only');
@@ -89,8 +96,8 @@ const result = await runPipeline(storyboardPath, {
   outputDir: resolve(getFlagValue('--output') || 'outputs'),
   concurrency: parseInt(getFlagValue('--concurrency') || '3', 10),
   sceneFilter: getFlagValue('--scene') || null,
-  skipTTS: stitchOnly || recordOnly || getFlag('--skip-tts'),
-  skipAvatar: stitchOnly || recordOnly || getFlag('--skip-avatar'),
+  skipTTS: humanComment || stitchOnly || recordOnly || getFlag('--skip-tts'),
+  skipAvatar: humanComment || stitchOnly || recordOnly || getFlag('--skip-avatar'),
   skipHTML: recordOnly || getFlag('--skip-html'),
   skipRecord: stitchOnly || getFlag('--skip-record'),
   skipStitch: getFlag('--skip-stitch'),
@@ -99,6 +106,7 @@ const result = await runPipeline(storyboardPath, {
   crossfadeMs: parseInt(getFlagValue('--crossfade') ?? '0', 10),
   gapMs: parseInt(getFlagValue('--gap') ?? '700', 10),
   themeOverride: getFlagValue('--theme') || null,
+  humanComment: humanComment || null,
 });
 
 const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);

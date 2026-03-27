@@ -39,16 +39,22 @@ export async function processFullPipeline(job) {
     fps: options.fps || config.defaultFps,
     gapMs: options.gapMs ?? config.defaultGapMs,
     themeOverride: options.themeOverride || null,
+    skipStitch: true,
   });
 
-  if (!result.finalVideo?.success) {
-    throw new Error(result.finalVideo?.error || 'Pipeline completed but no final video was produced');
+  const scenes = (result.recordings || [])
+    .filter(r => r.recordSuccess && r.videoPath)
+    .map(r => ({
+      sceneId: r.sceneId,
+      videoPath: r.videoPath,
+      fileName: r.videoPath.split('/').pop(),
+    }));
+
+  if (scenes.length === 0) {
+    throw new Error('Pipeline completed but no scene videos were produced');
   }
 
   await job.updateProgress('Complete');
 
-  const videoPath = result.finalVideo.outputPath;
-  const fileName = videoPath.split('/').pop();
-
-  return { videoPath, fileName };
+  return { scenes };
 }

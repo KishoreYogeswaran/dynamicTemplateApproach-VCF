@@ -37,15 +37,32 @@ export function calculateTimings(scene, audioDurationMs = 0, alignment = null) {
       elements.push({ id: `subheader_${i + 1}`, text: s.text, animation: defaultAnim, type: 'subheader' });
     });
   }
-  if (content.keyPhrases) {
-    content.keyPhrases.forEach((k, i) => {
-      elements.push({ id: `keyphrase_${i + 1}`, text: k.text, animation: defaultAnim, type: 'keyphrase' });
+
+  // SWOT scenes: interleave keyphrases and bullets (keyphrase → 2 bullets per quadrant)
+  if (scene.sceneType === 'swot_scene' && content.keyPhrases?.length && content.bulletPoints?.length) {
+    const kps = content.keyPhrases;
+    const bps = content.bulletPoints;
+    const bulletsPerQuadrant = Math.ceil(bps.length / kps.length);
+
+    kps.forEach((k, ki) => {
+      elements.push({ id: `keyphrase_${ki + 1}`, text: k.text, animation: defaultAnim, type: 'keyphrase' });
+      // Add the bullets that belong to this quadrant
+      const startBullet = ki * bulletsPerQuadrant;
+      for (let bi = startBullet; bi < startBullet + bulletsPerQuadrant && bi < bps.length; bi++) {
+        elements.push({ id: `bullet_${bi + 1}`, text: bps[bi].text, animation: bulletAnim, type: 'bullet' });
+      }
     });
-  }
-  if (content.bulletPoints) {
-    content.bulletPoints.forEach((b, i) => {
-      elements.push({ id: `bullet_${i + 1}`, text: b.text, animation: bulletAnim, type: 'bullet' });
-    });
+  } else {
+    if (content.keyPhrases) {
+      content.keyPhrases.forEach((k, i) => {
+        elements.push({ id: `keyphrase_${i + 1}`, text: k.text, animation: defaultAnim, type: 'keyphrase' });
+      });
+    }
+    if (content.bulletPoints) {
+      content.bulletPoints.forEach((b, i) => {
+        elements.push({ id: `bullet_${i + 1}`, text: b.text, animation: bulletAnim, type: 'bullet' });
+      });
+    }
   }
 
   let timings;

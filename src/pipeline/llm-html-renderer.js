@@ -82,6 +82,9 @@ Display it centered and fully visible (object-fit: contain) so every cell is rea
 
   // infographics_scene is built dynamically in buildInfographicsContext() below
   infographics_scene: null,
+
+  // swot_scene is built dynamically in buildSwotContext() below
+  swot_scene: null,
 };
 
 // ─── Split screen context builder ───────────────────────────────────────────
@@ -181,6 +184,61 @@ You have full freedom to style these custom classes — just don't use bullet-it
 - This should look like a professionally designed infographic, not a bulleted list with decorations.`;
 }
 
+// ─── SWOT scene context builder ─────────────────────────────────────────────
+
+function buildSwotContext(numBullets, numKeyPhrases) {
+  const hasBullets = numBullets > 0;
+
+  return `## SCENE CONTEXT
+This is a **SWOT analysis scene** — a 2×2 quadrant grid showing Strengths, Weaknesses, Opportunities, and Threats. No background image, no avatar — use the theme solid background.
+You have a header, 4 keyphrases (one per quadrant), ${hasBullets ? `and ${numBullets} bullet points (2 per quadrant).` : 'and no bullet points — keyphrases only.'}
+
+**Layout spec for SWOT grid:**
+
+- **HEADER** at the top, full-width centered. CSS: \`position: absolute; top: 30px; left: 60px; right: 60px; text-align: center;\` with a glassmorphism card (\`background: var(--theme-accent); border-radius: 12px; padding: 16px 32px;\`). Header text color: \`#fff\` (white on accent).
+
+- **SWOT GRID** below the header. Use \`position: absolute; top: 120px; left: 60px; right: 60px; bottom: 40px;\` with \`display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px;\` to create 4 equal quadrants.
+
+- **QUADRANT BACKGROUNDS** — each quadrant gets a subtle, distinct tinted background using low-opacity theme-derived colors. Use these approaches:
+  - Top-left (S): \`background: color-mix(in srgb, var(--theme-accent) 12%, transparent);\`
+  - Top-right (W): \`background: color-mix(in srgb, var(--theme-text-secondary) 10%, transparent);\`
+  - Bottom-left (O): \`background: color-mix(in srgb, var(--theme-accent) 8%, transparent);\`
+  - Bottom-right (T): \`background: color-mix(in srgb, var(--theme-text-secondary) 15%, transparent);\`
+  Each quadrant: \`border-radius: 12px; padding: 24px 28px; position: relative;\`
+
+- **SWOT CENTER ICON** — a 2×2 mini-grid of 4 square letter boxes centered at the intersection of the 4 quadrants. The icon must be positioned on the SWOT GRID container (not on the page body), using \`position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5;\` on the grid container. The grid container MUST have \`position: relative;\` for this to work. Use \`display: grid; grid-template-columns: 1fr 1fr; gap: 3px;\` for the icon layout. Each letter box: \`width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 28px; color: #fff; border-radius: 8px;\`. Colors for each letter:
+  - S: \`background: #c47328;\` (warm orange-brown)
+  - W: \`background: #2d5a3d;\` (dark green)
+  - O: \`background: #3d6a8a;\` (muted blue)
+  - T: \`background: #6a3d6a;\` (muted purple)
+  The SWOT icon is decorative — it must have \`class="ost-container"\` so it reveals with the content. Do NOT give individual letter boxes \`anim-hidden\` or IDs.
+
+- **KEYPHRASE LABELS** — one per quadrant, centered horizontally and vertically within each quadrant${hasBullets ? ' (vertically in the upper portion since bullets go below)' : ''}. Each keyphrase: glassmorphism pill (\`background: var(--theme-accent); padding: 10px 24px; border-radius: 8px; display: inline-block;\`). Text: white, font-weight: 600, 28-30px. Use \`text-keyphrase\` class but do NOT use \`keyphrase-underline\` or \`keyphrase-left-bar\` accent classes — the pill background IS the accent.
+  Each quadrant should use \`display: flex; flex-direction: column; align-items: center; justify-content: center;\` so the keyphrase is centered within it.
+  Structure: \`<span class="text-keyphrase anim-hidden" id="keyphrase_N" data-translate="keyphrase_N" style="background:var(--theme-accent); padding:10px 24px; border-radius:8px; color:#fff;">phrase</span>\`
+${hasBullets ? `
+- **BULLET POINTS** — 2 per quadrant, below the keyphrase. The 2 bullets in each quadrant must be wrapped in a SINGLE shared glassmorphism container (glass card with \`ost-container\` class). Do NOT give each bullet its own separate card/background — they share one card.
+  Structure per quadrant:
+  \`\`\`
+  <div class="quadrant-bullets ost-container" style="background:var(--theme-ost-bg); backdrop-filter:blur(12px); border:1px solid var(--theme-ost-border); border-radius:12px; padding:12px 20px; margin-top:16px;">
+    <div class="bullet-item anim-hidden" id="bullet_N"><span class="bullet-marker"></span><span class="text-bullet" data-translate="bullet_N">text</span></div>
+    <div class="bullet-item anim-hidden" id="bullet_M"><span class="bullet-marker"></span><span class="text-bullet" data-translate="bullet_M">text</span></div>
+  </div>
+  \`\`\`
+  Bullets are assigned to quadrants in order: bullet_1 & bullet_2 in top-left, bullet_3 & bullet_4 in top-right, bullet_5 & bullet_6 in bottom-left, bullet_7 & bullet_8 in bottom-right.
+  Do NOT override \`.bullet-item\` or \`.bullet-marker\` styles — they are pre-styled.` : `
+- No bullet points — each quadrant contains only the keyphrase label centered in the quadrant. The quadrants should have enough visual presence through their tinted backgrounds.`}
+
+**Animation order:** header → keyphrase_1 → ${hasBullets ? 'bullet_1 → bullet_2 → ' : ''}keyphrase_2 → ${hasBullets ? 'bullet_3 → bullet_4 → ' : ''}keyphrase_3 → ${hasBullets ? 'bullet_5 → bullet_6 → ' : ''}keyphrase_4${hasBullets ? ' → bullet_7 → bullet_8' : ''}. The SWOT center icon reveals with the first keyphrase via ost-container.
+
+**Important:**
+- Do NOT use any images. This is a pure CSS layout.
+- Do NOT use the \`infographic-card\` classes — this is a SWOT grid, not an infographic.
+- Quadrant backgrounds must be subtle tints, not opaque solid colors.
+- The SWOT letters (S, W, O, T) are the ONLY hardcoded text allowed — everything else comes from the provided content.
+- Keep padding generous so content doesn't crowd the edges of each quadrant.`;
+}
+
 // ─── Prompt builder ─────────────────────────────────────────────────────────
 
 function buildPrompt(scene, _storyboard, themeCSS, neighbors = {}) {
@@ -206,6 +264,10 @@ Do NOT add any avatar element — the character is in the video.
   } else if (scene.sceneType === 'infographics_scene') {
     const numBullets = scene.content.bulletPoints?.length || 3;
     sceneContext = buildInfographicsContext(numBullets);
+  } else if (scene.sceneType === 'swot_scene') {
+    const numBullets = scene.content.bulletPoints?.length || 0;
+    const numKeyPhrases = scene.content.keyPhrases?.length || 4;
+    sceneContext = buildSwotContext(numBullets, numKeyPhrases);
   } else {
     sceneContext = SCENE_CONTEXT[scene.sceneType] || '## SCENE CONTEXT\nDesign an appropriate layout for the given content and media.';
   }
@@ -482,6 +544,7 @@ export async function renderSceneHTMLWithLLM(scene, storyboard, options = {}) {
     avatarVideoUrl = '',
     timings = null,
     outputDir = null,
+    llmResultsDir = null,
     neighbors = {},
     validate = true,
   } = options;
@@ -548,6 +611,23 @@ export async function renderSceneHTMLWithLLM(scene, storyboard, options = {}) {
 
   // NOTE: Don't close validator browser here — other parallel scenes may still need it.
   // The orchestrator calls closeValidator() after all scenes are done.
+
+  // Persist LLM result + assembly metadata for human review
+  if (llmResultsDir) {
+    await mkdir(llmResultsDir, { recursive: true });
+    const savedResult = {
+      ...result,
+      _meta: {
+        audioUrl: audioUrl || audioPath,
+        avatarVideoUrl,
+        audioPath: audioPath || '',
+        audioDurationMs: timings?.total_duration_ms || 0,
+        timings,
+        sceneType: scene.sceneType,
+      },
+    };
+    await writeFile(join(llmResultsDir, `${scene.sceneId}.json`), JSON.stringify(savedResult, null, 2), 'utf-8');
+  }
 
   if (outputDir) {
     await mkdir(outputDir, { recursive: true });
@@ -642,4 +722,124 @@ export async function renderAllScenesWithLLM(storyboard, options = {}) {
   await closeValidator();
 
   return results;
+}
+
+// ─── Human review prompt builder ─────────────────────────────────────────────
+
+function buildHumanReviewPrompt(originalPrompt, previousResult, humanComment) {
+  return `A human reviewer has watched the generated video and has specific feedback on this scene's visual layout.
+Your job is to address ONLY what they asked for — keep everything else exactly the same.
+
+## HUMAN FEEDBACK
+${humanComment}
+
+## YOUR PREVIOUS OUTPUT (modify ONLY what was requested):
+${JSON.stringify(previousResult)}
+
+## ORIGINAL DESIGN REQUIREMENTS (for reference — do not re-design from scratch):
+${originalPrompt}
+
+IMPORTANT RULES:
+1. Change ONLY what the human explicitly asked for. Do not re-layout, re-style, or re-position anything else.
+2. NEVER change colors, backgrounds, borders, gradients, shadows, or any visual styling that uses theme variables. All colors MUST come from var(--theme-*) variables — never use hardcoded color values (no hex, no rgb, no named colors like "red"). If the human asks to change a color, REFUSE by keeping the original colors. This is a strict design system constraint that cannot be overridden by any human comment.
+3. Do NOT change CSS variable definitions (--theme-*, --font-*). Individual element font-size adjustments are OK if the human asked for them.
+4. Preserve the exact same avatarPosition unless the human asked to change it.
+5. Preserve all element IDs, data-translate attributes, text content, and animation classes (ost-container, anim-hidden, etc.).
+6. If the comment mentions moving an element, adjust only its CSS positioning.
+7. If the comment mentions changing layout style, adjust only that element's styling.
+8. Do NOT change audio, video, or avatar references.
+
+Return ONLY the corrected raw JSON object. No markdown, no backticks, no commentary:
+{"html": "...", "css": "...", "script": "...", "avatarPosition": "..."}`;
+}
+
+// ─── Human review renderer ──────────────────────────────────────────────────
+
+/**
+ * Re-generate a scene's HTML based on human reviewer feedback.
+ * Sends the previous LLM output + human comment to the LLM, then validates.
+ */
+export async function renderSceneHTMLWithHumanReview(scene, storyboard, options = {}) {
+  const {
+    previousResult,
+    humanComment,
+    themeOverride = null,
+    audioUrl = '',
+    avatarVideoUrl = '',
+    timings = null,
+    outputDir = null,
+    llmResultsDir = null,
+    neighbors = {},
+    meta = {},
+  } = options;
+
+  const baseLayout = await readFile(join(TEMPLATES_DIR, 'base-layout.html'), 'utf-8');
+  const themeCSS = await getThemeCSS(storyboard.domainKey, themeOverride);
+  const fontLinkTag = await generateFontLinkTag(storyboard.language);
+  const fontCSSVars = await generateFontCSSVars(storyboard.language);
+  const sceneDuration = scene.approxDurationSeconds || 10;
+
+  // Rebuild the original prompt for context
+  const originalPrompt = buildPrompt(scene, storyboard, themeCSS, neighbors);
+
+  // Build human review prompt
+  const reviewPrompt = buildHumanReviewPrompt(originalPrompt, previousResult, humanComment);
+
+  const assemblyArgs = {
+    language: storyboard.language,
+    fontLinkTag, themeCSS, fontCSSVars, sceneDuration,
+    audioSrc: audioUrl,
+    timings, avatarVideoUrl, sceneType: scene.sceneType,
+  };
+
+  // ── Generate + validate loop (same retry behavior as normal generation) ──
+  let result = null;
+  let html = null;
+  let currentPrompt = reviewPrompt;
+
+  for (let attempt = 0; attempt <= MAX_VALIDATION_RETRIES; attempt++) {
+    if (attempt === 0) {
+      console.log(`  [llm] Human review: regenerating ${scene.sceneId}...`);
+    } else {
+      console.log(`  [llm] Human review: retrying ${scene.sceneId} (attempt ${attempt + 1}/${MAX_VALIDATION_RETRIES + 1})...`);
+    }
+
+    const responseText = await generateContent({ prompt: currentPrompt });
+    result = parseLLMResponse(responseText);
+
+    html = assembleHTML(baseLayout, result, assemblyArgs);
+
+    const sceneContext = buildSceneContext(scene, result.avatarPosition);
+    const validation = await validateSceneHTML(html, sceneContext);
+
+    if (validation.pass) {
+      if (attempt > 0) console.log(`  [validate] ✓ ${scene.sceneId} passed on retry ${attempt}`);
+      else console.log(`  [validate] ✓ ${scene.sceneId} — ${validation.summary}`);
+      break;
+    }
+
+    console.warn(`  [validate] ✗ ${scene.sceneId} — ${validation.summary}`);
+    validation.issues.forEach(issue => console.warn(`    → [${issue.check}] ${issue.message}`));
+
+    if (attempt < MAX_VALIDATION_RETRIES) {
+      currentPrompt = buildCorrectionPrompt(reviewPrompt, result, validation.issues);
+    } else {
+      console.warn(`  [validate] Proceeding with best effort for ${scene.sceneId}`);
+    }
+  }
+
+  // Persist updated LLM result
+  if (llmResultsDir) {
+    const savedResult = { ...result, _meta: meta };
+    await writeFile(join(llmResultsDir, `${scene.sceneId}.json`), JSON.stringify(savedResult, null, 2), 'utf-8');
+  }
+
+  if (outputDir) {
+    await mkdir(outputDir, { recursive: true });
+    const outputPath = join(outputDir, `${scene.sceneId}.html`);
+    await writeFile(outputPath, html, 'utf-8');
+    return outputPath;
+  }
+
+  return html;
 }

@@ -51,9 +51,10 @@ At scale, the bottleneck is **CPU** (Chromium rendering) and **RAM** (15 headles
 
 ```
 POST /api/jobs                    Full pipeline run
-POST /api/jobs/regenerate-scene   Single scene regen + re-stitch
+POST /api/jobs/regenerate-scene   Scene regen (returns individual scene MP4s)
+POST /api/jobs/human-review       Re-generate scene from reviewer feedback
 GET  /api/jobs/:jobId             Poll job status
-GET  /api/jobs/:jobId/video       Download final MP4
+GET  /api/jobs/:jobId/video?scene=SC1  Download individual scene MP4
 GET  /health                      Queue depth, active workers, memory usage
 ```
 
@@ -78,29 +79,60 @@ Response: { "jobId": "abc123", "status": "queued" }
 
 ### Scene Regeneration
 
-Regenerates a single scene (LLM HTML + record) and re-stitches the final video using all existing scene MP4s + the newly generated one.
+Regenerates specific scenes (LLM HTML + record). Returns individual scene MP4s — stitching is handled by the caller (Python pipeline).
+
+Pass the full storyboard in the request body. If you edited VO scripts or scene content, the pipeline picks up the changes. Set `skipTTS: false` / `skipAvatar: false` to re-generate TTS / avatar from the updated storyboard.
 
 ```
 POST /api/jobs/regenerate-scene
 Content-Type: application/json
 
 {
-  "module": 2,
-  "lesson": 3,
-  "ml": 3,
-  "language": "en",
-  "scenes": ["SC3"],              // Single or multiple: ["SC3", "SC7", "SC12"]
-  "skipTTS": true,
-  "skipAvatar": true
+  "storyboard": { ... },           // Full storyboard JSON (required)
+  "scenes": ["SC3"],               // Single or multiple: ["SC3", "SC7", "SC12"]
+  "skipTTS": true,                  // default: true (reuse existing audio)
+  "skipAvatar": true                // default: true (reuse existing avatar)
 }
 
 Response: { "jobId": "def456", "status": "queued" }
 ```
 
 Internal flow:
-1. Run pipeline for each scene in the `scenes` array (with specified skip flags)
-2. Re-stitch ALL scene MP4s in the output folder (existing + newly generated ones)
-3. Return updated `M2_L3_ML3_Complete_en.mp4`
+1. Write storyboard to temp file
+2. Run pipeline for each scene in the `scenes` array (with specified skip flags)
+3. Return individual scene MP4s (only the regenerated scenes)
+
+### Human Review
+
+Re-generates a single scene based on human reviewer feedback (e.g. layout adjustments, font size changes, element repositioning). Skips TTS and avatar generation — only the visual layout is regenerated. The LLM receives the previous output + the reviewer's comment and changes only what was requested. Validation retries run as normal.
+
+**Prerequisite:** The scene must have been generated at least once (the pipeline saves an `llm-results/<sceneId>.json` file during generation that is required for review).
+
+```
+POST /api/jobs/human-review
+Content-Type: application/json
+
+{
+  "storyboard": { ... },           // Full storyboard JSON (required)
+  "scene": "SC12",
+  "comment": "Move the OST to bottom right not top left"
+}
+
+Response: { "jobId": "ghi789", "status": "queued" }
+```
+
+Internal flow:
+1. Write storyboard to temp file
+2. Load saved LLM result from `llm-results/<sceneId>.json`
+3. Build review prompt with human comment + previous output + original design requirements
+4. LLM regenerates (only changes what was requested) → validate + retry loop
+5. Re-record scene with Puppeteer
+6. Return the single reviewed scene MP4
+
+CLI equivalent:
+```bash
+node scripts/run-pipeline.js --module 2 --lesson 7 --ml 2 --scene SC12 --humanComment "Move the OST to bottom right not top left"
+```
 
 ### Poll Status
 
@@ -113,19 +145,22 @@ Response:
   "status": "active",           // queued | active | completed | failed
   "progress": "Recording SC5",  // Human-readable progress
   "createdAt": "2026-03-25T10:00:00Z",
-  "result": null                // On completion: { videoPath, fileName }
+  "result": null                // On completion: { scenes: [{ sceneId, videoPath, fileName }] }
 }
 ```
 
-### Download Video
+### Download Scene Video
 
 ```
-GET /api/jobs/:jobId/video
+GET /api/jobs/:jobId/video?scene=SC1
 
 Response: MP4 binary stream
 Content-Type: video/mp4
-Content-Disposition: attachment; filename="M2_L3_ML3_Complete_en.mp4"
+Content-Disposition: attachment; filename="M2_L3_ML3_SC1.mp4"
 ```
+
+- If the job has **one scene**, you can omit `?scene=` and it returns that scene directly
+- If the job has **multiple scenes**, `?scene=` is required — without it, the API returns the list of available scene IDs
 
 ---
 
@@ -164,10 +199,13 @@ src/
     queue/
       job-store.js           BullMQ queue + worker setup
       processors/
-        full-pipeline.js     Worker: calls runPipeline()
-        regen-scene.js       Worker: single scene + re-stitch
+        full-pipeline.js     Worker: full pipeline (all scenes)
+        regen-scene.js       Worker: regenerate specific scenes
+        human-review.js      Worker: re-generate from reviewer feedback
 scripts/
   start-server.js            Entry point: loads env, starts server
+  cleanup.js                 TTL-based cleanup for video files and temp storyboards
+ecosystem.config.cjs         PM2 config: vcf-api + vcf-cleanup cron
 ```
 
 ---
@@ -289,7 +327,9 @@ src/server/routes/health.js
 src/server/queue/job-store.js
 src/server/queue/processors/full-pipeline.js
 src/server/queue/processors/regen-scene.js
+src/server/queue/processors/human-review.js
 scripts/start-server.js
+scripts/cleanup.js
 ecosystem.config.cjs
 ```
 
@@ -605,36 +645,33 @@ curl https://vcf-api.yourdomain.com/health
 
 #### Step 9: Setup PM2 for Production
 
-Create the PM2 ecosystem config:
+> **Why PM2?** Running `node server.js` directly dies the moment you close the SSH session. PM2 is a process manager that keeps the server running as a background daemon, auto-restarts it if it crashes, survives VM reboots (`pm2 startup`), captures logs, and can run scheduled cron jobs — all without a separate init system.
 
-```bash
-cat > /opt/vcf/ecosystem.config.cjs << 'EOF'
-module.exports = {
-  apps: [{
-    name: 'vcf-api',
-    script: 'scripts/start-server.js',
-    cwd: '/opt/vcf',
-    instances: 1,                // Single process — BullMQ handles job concurrency
-    max_memory_restart: '4G',    // Restart if memory exceeds 4GB (leak protection)
-    env: {
-      NODE_ENV: 'production',
-      PORT: 3000,
-    }
-  }]
-};
-EOF
-```
+The `ecosystem.config.cjs` file is already in the repo. It configures two PM2 apps:
+
+- **vcf-api** — the Fastify server (always running)
+- **vcf-cleanup** — daily cleanup cron at 3 AM (deletes video MP4s older than 7 days, temp files older than 12 hours)
+
+> **No need to create this file manually** — it's deployed with the repo in Step 5. If you need to customize TTL values, edit the env vars in the file:
+> ```js
+> // In ecosystem.config.cjs → vcf-cleanup → env
+> VIDEO_TTL_DAYS: 7,       // Change to desired retention period
+> TMP_TTL_HOURS: 12,       // Change to desired temp file retention
+> ```
 
 Start with PM2:
 
 ```bash
 cd /opt/vcf
 
-# Start the server
+# Start both apps (server + cleanup cron)
 pm2 start ecosystem.config.cjs
 
-# Verify it's running
+# Verify both are running
 pm2 status
+# vcf-api      should show "online"
+# vcf-cleanup  should show "stopped" with cron pattern (runs at 3 AM daily)
+
 pm2 logs vcf-api --lines 20
 
 # Save the process list so PM2 restarts it after reboot
@@ -667,8 +704,8 @@ curl -X POST $VCF_URL/api/jobs \
 # Poll status
 curl $VCF_URL/api/jobs/<jobId>
 
-# Download video
-curl -o test_video.mp4 $VCF_URL/api/jobs/<jobId>/video
+# Download a scene video (use a scene ID from the result)
+curl -o test_scene.mp4 "$VCF_URL/api/jobs/<jobId>/video?scene=SC1"
 ```
 
 ---
@@ -683,7 +720,7 @@ pm2 logs vcf-api
 pm2 monit
 
 # Restart after code update
-cd /opt/vcf && git pull && npm install && pm2 restart vcf-api
+cd /opt/vcf && git pull && npm install && pm2 restart ecosystem.config.cjs
 
 # Check Redis queue status
 redis-cli LLEN bull:video-pipeline:wait     # Queued jobs
@@ -693,31 +730,36 @@ redis-cli SCARD bull:video-pipeline:active   # Active jobs
 du -sh /opt/vcf/outputs/
 ```
 
-#### Automated Cleanup (Cron)
+#### Automated Cleanup
 
-Video files accumulate ~50-150MB per pipeline run. At 20 jobs/day that's 1-3GB daily. Set up a daily cron to auto-delete old files:
-
-```bash
-# Open crontab editor
-crontab -e
-
-# Add this line — runs daily at 3 AM, deletes MP4s older than 7 days
-0 3 * * * find /opt/vcf/outputs/ -name "*.mp4" -mtime +7 -delete
-
-# Also clean up temp storyboard files older than 1 day
-0 3 * * * find /opt/vcf/tmp/ -name "*.json" -mtime +1 -delete
-
-# Verify cron is saved
-crontab -l
-```
+Cleanup is handled by the `vcf-cleanup` PM2 cron job (configured in `ecosystem.config.cjs`, started in Step 9). It runs daily at 3 AM and deletes:
 
 | What gets cleaned | Retention | Why |
 |-------------------|-----------|-----|
-| Job metadata (Redis) | 24 hours | `JOB_TTL_HOURS=24` in config — after this, `GET /api/jobs/:id` returns 404 |
-| Video files (disk) | 7 days | Cron job above — gives time to re-download if needed |
-| Temp storyboard JSONs (`/tmp`) | 1 day | Inline storyboards written during job submission |
+| `video/*.mp4` (scene videos) | 7 days | Python client downloads immediately; 7-day buffer for re-downloads |
+| `tmp/storyboard_*.json` (temp files) | 12 hours | Only needed during job execution |
+| Job metadata (Redis) | 24 hours | `JOB_TTL_HOURS=24` — after this, `GET /api/jobs/:id` returns 404 |
 
-> **Tip:** If your Python client downloads videos immediately after completion, you could reduce the 7-day retention to 1-2 days to save disk space.
+**Preserved indefinitely** (needed for regen / human review):
+- `audio/` — TTS mp3s (FFmpeg mux during re-recording)
+- `html/` — generated HTML files
+- `avatar/` — avatar .webm files (expensive to regenerate)
+- `llm-results/` — saved LLM JSON (human review base)
+
+To run cleanup manually:
+
+```bash
+cd /opt/vcf
+
+# Dry run — see what would be deleted
+node scripts/cleanup.js
+
+# Actually delete
+node scripts/cleanup.js --run
+
+# Custom retention
+VIDEO_TTL_DAYS=3 node scripts/cleanup.js --run
+```
 
 ---
 
@@ -736,8 +778,8 @@ git pull origin main
 # Install any new dependencies
 npm install
 
-# Restart the server (zero-downtime with PM2)
-pm2 restart vcf-api
+# Restart all apps (server + cleanup cron)
+pm2 restart ecosystem.config.cjs
 
 # Verify
 pm2 logs vcf-api --lines 10
@@ -770,18 +812,20 @@ class VCFClient:
     """
     Client for the Video Content Factory API.
 
-    Usage:
-        # With domain + SSL
-        client = VCFClient("https://vcf-api.yourdomain.com")
+    All endpoints return individual scene MP4s (no stitching on server).
+    Stitching is handled by the caller's Python pipeline.
 
-        # Without domain — just use the VM's external IP
+    Usage:
         client = VCFClient("http://34.123.45.67")
 
-        # Full pipeline
-        video_path = client.generate_video(storyboard_json, output_dir="./videos")
+        # Full pipeline — returns all scene videos
+        scenes = client.generate_video(storyboard_json, output_dir="./videos")
 
-        # Regenerate a single scene
-        video_path = client.regenerate_scene(module=2, lesson=3, ml=3, scene="SC3")
+        # Regenerate scenes — returns only regenerated scene videos
+        scenes = client.regenerate_scenes(storyboard=storyboard_json, scenes=["SC3"])
+
+        # Human review — returns the reviewed scene video
+        scenes = client.human_review(storyboard=storyboard_json, scene="SC12", comment="...")
     """
 
     def __init__(self, base_url: str, timeout: int = 30, poll_interval: int = 15):
@@ -815,27 +859,27 @@ class VCFClient:
         fps: int = 24,
         gap_ms: int = 700,
         theme_override: str = None,
-    ) -> str:
+    ) -> list[dict]:
         """
-        Run the full pipeline: TTS → Avatar → HTML → Record → Stitch.
+        Run the full pipeline: TTS → Avatar → HTML → Record.
+        Returns individual scene MP4s (no stitching — handle that in your pipeline).
 
         Args:
             storyboard: The storyboard JSON dict (same format as 8.2_media_prompts_en_M2_L3_ML3.json)
-            output_dir: Local directory to save the downloaded video
+            output_dir: Local directory to save the downloaded videos
             concurrency: Max parallel scenes within this job (default 3)
             fps: Video frames per second (default 24)
             gap_ms: Gap between scenes in ms (default 700)
             theme_override: Override theme name (e.g., "dark_blue"), or None for default
 
         Returns:
-            str: Local file path of the downloaded video
+            list[dict]: List of { sceneId, localPath } for each downloaded scene video
 
         Raises:
             RuntimeError: If the pipeline job fails
             requests.HTTPError: If API returns an error status code
         """
 
-        # ── Build payload ────────────────────────────────────────
         payload = {
             "storyboard": storyboard,
             "options": {
@@ -847,7 +891,6 @@ class VCFClient:
         if theme_override:
             payload["options"]["themeOverride"] = theme_override
 
-        # ── Submit job ───────────────────────────────────────────
         logger.info("Submitting full pipeline job...")
         resp = self.session.post(
             f"{self.base_url}/api/jobs",
@@ -859,59 +902,48 @@ class VCFClient:
         job_id = job_data["jobId"]
         logger.info(f"Job submitted: {job_id}")
 
-        # ── Poll until done ──────────────────────────────────────
         result = self._poll_job(job_id)
 
-        # ── Download video ───────────────────────────────────────
-        video_path = self._download_video(job_id, result, output_dir)
-        return video_path
+        return self._download_scenes(job_id, result, output_dir)
 
     # ─── Scene Regeneration ──────────────────────────────────────
 
     def regenerate_scenes(
         self,
-        module: int,
-        lesson: int,
-        ml: int,
+        storyboard: dict,
         scenes: list[str],
-        language: str = "en",
         skip_tts: bool = True,
         skip_avatar: bool = True,
         output_dir: str = "./videos",
-    ) -> str:
+    ) -> list[dict]:
         """
-        Regenerate one or more scenes (new HTML + record) and re-stitch the full video.
+        Regenerate one or more scenes (new HTML + record).
+        Returns only the regenerated scene MP4s.
 
-        Use this when scene layouts need fixing — it regenerates the HTML via LLM,
-        re-records the specified scenes, then stitches ALL scenes into a new final video.
+        Pass the full (possibly updated) storyboard — if you edited VO scripts,
+        scene content, or any other field, the pipeline picks up the changes.
+        Set skip_tts=False / skip_avatar=False to re-generate TTS / avatar
+        from the updated storyboard.
 
         Args:
-            module: Module number (e.g., 2)
-            lesson: Lesson number (e.g., 3)
-            ml: Micro-lesson number (e.g., 3)
+            storyboard: Full storyboard JSON dict (same format as generate_video)
             scenes: List of scene IDs to regenerate (e.g., ["SC3"] or ["SC3", "SC7", "SC12"])
-            language: Language code (default "en")
             skip_tts: Skip TTS generation, reuse existing audio (default True)
             skip_avatar: Skip avatar generation, reuse existing avatar (default True)
-            output_dir: Local directory to save the downloaded video
+            output_dir: Local directory to save the downloaded videos
 
         Returns:
-            str: Local file path of the downloaded video
+            list[dict]: List of { sceneId, localPath } for each regenerated scene
         """
 
-        # ── Build payload ────────────────────────────────────────
         payload = {
-            "module": module,
-            "lesson": lesson,
-            "ml": ml,
-            "language": language,
+            "storyboard": storyboard,
             "scenes": scenes,
             "skipTTS": skip_tts,
             "skipAvatar": skip_avatar,
         }
 
-        # ── Submit job ───────────────────────────────────────────
-        logger.info(f"Submitting scene regeneration: M{module}_L{lesson}_ML{ml} {scenes}...")
+        logger.info(f"Submitting scene regeneration: {scenes}...")
         resp = self.session.post(
             f"{self.base_url}/api/jobs/regenerate-scene",
             json=payload,
@@ -922,12 +954,60 @@ class VCFClient:
         job_id = job_data["jobId"]
         logger.info(f"Regen job submitted: {job_id}")
 
-        # ── Poll until done ──────────────────────────────────────
         result = self._poll_job(job_id)
 
-        # ── Download video ───────────────────────────────────────
-        video_path = self._download_video(job_id, result, output_dir)
-        return video_path
+        return self._download_scenes(job_id, result, output_dir)
+
+    # ─── Human Review ─────────────────────────────────────────────
+
+    def human_review(
+        self,
+        storyboard: dict,
+        scene: str,
+        comment: str,
+        output_dir: str = "./videos",
+    ) -> list[dict]:
+        """
+        Re-generate a single scene based on human reviewer feedback.
+        Returns the reviewed scene MP4.
+
+        The LLM receives the previous output + your comment and changes only
+        what was requested (layout, positioning, font sizes, etc.).
+        Theme colors, fonts, avatars, audio, and text content are preserved.
+
+        Prerequisite: The scene must have been generated at least once
+        (the pipeline needs the saved LLM result from the first generation).
+
+        Args:
+            storyboard: Full storyboard JSON dict (same format as generate_video)
+            scene: Single scene ID (e.g., "SC12")
+            comment: Human reviewer feedback (e.g., "Move the OST to bottom right")
+            output_dir: Local directory to save the downloaded video
+
+        Returns:
+            list[dict]: List with single { sceneId, localPath }
+        """
+
+        payload = {
+            "storyboard": storyboard,
+            "scene": scene,
+            "comment": comment,
+        }
+
+        logger.info(f"Submitting human review: {scene}...")
+        resp = self.session.post(
+            f"{self.base_url}/api/jobs/human-review",
+            json=payload,
+            timeout=self.timeout,
+        )
+        resp.raise_for_status()
+        job_data = resp.json()
+        job_id = job_data["jobId"]
+        logger.info(f"Review job submitted: {job_id}")
+
+        result = self._poll_job(job_id)
+
+        return self._download_scenes(job_id, result, output_dir)
 
     # ─── Polling ─────────────────────────────────────────────────
 
@@ -956,31 +1036,38 @@ class VCFClient:
 
     # ─── Download ────────────────────────────────────────────────
 
-    def _download_video(self, job_id: str, result: dict, output_dir: str) -> str:
-        """Download the completed video to a local file."""
+    def _download_scenes(self, job_id: str, result: dict, output_dir: str) -> list[dict]:
+        """Download all scene videos from a completed job."""
         os.makedirs(output_dir, exist_ok=True)
 
-        # Use the filename from the result, or fall back to jobId
-        filename = result.get("fileName", f"{job_id}.mp4")
-        local_path = os.path.join(output_dir, filename)
+        scenes = result.get("scenes", [])
+        downloaded = []
 
-        logger.info(f"Downloading video → {local_path}")
-        resp = self.session.get(
-            f"{self.base_url}/api/jobs/{job_id}/video",
-            stream=True,
-            timeout=300,  # longer timeout for large video downloads
-        )
-        resp.raise_for_status()
+        for scene in scenes:
+            scene_id = scene["sceneId"]
+            filename = scene.get("fileName", f"{scene_id}.mp4")
+            local_path = os.path.join(output_dir, filename)
 
-        total_bytes = 0
-        with open(local_path, "wb") as f:
-            for chunk in resp.iter_content(chunk_size=8192):
-                f.write(chunk)
-                total_bytes += len(chunk)
+            logger.info(f"Downloading {scene_id} → {local_path}")
+            resp = self.session.get(
+                f"{self.base_url}/api/jobs/{job_id}/video",
+                params={"scene": scene_id},
+                stream=True,
+                timeout=300,
+            )
+            resp.raise_for_status()
 
-        size_mb = total_bytes / (1024 * 1024)
-        logger.info(f"Downloaded {size_mb:.1f}MB → {local_path}")
-        return local_path
+            total_bytes = 0
+            with open(local_path, "wb") as f:
+                for chunk in resp.iter_content(chunk_size=8192):
+                    f.write(chunk)
+                    total_bytes += len(chunk)
+
+            size_mb = total_bytes / (1024 * 1024)
+            logger.info(f"  {scene_id}: {size_mb:.1f}MB")
+            downloaded.append({"sceneId": scene_id, "localPath": local_path})
+
+        return downloaded
 ```
 
 ### Usage Examples
@@ -1002,44 +1089,96 @@ print(f"API status: {health['status']}, queue depth: {health.get('queueSize', 0)
 with open("storyboard_M2_L3_ML3.json") as f:
     storyboard = json.load(f)
 
-# Generate — blocks until video is ready
-video_path = client.generate_video(
+# Generate — blocks until all scene videos are ready
+scenes = client.generate_video(
     storyboard=storyboard,
     output_dir="./output/videos",
     concurrency=3,
     fps=24,
 )
-print(f"Video saved to: {video_path}")
-# → ./output/videos/M2_L3_ML3_Complete_en.mp4
+# scenes = [
+#   {"sceneId": "M2_L3_ML3_SC1", "localPath": "./output/videos/M2_L3_ML3_SC1.mp4"},
+#   {"sceneId": "M2_L3_ML3_SC2", "localPath": "./output/videos/M2_L3_ML3_SC2.mp4"},
+#   ...
+# ]
+for s in scenes:
+    print(f"  {s['sceneId']} → {s['localPath']}")
+
+# Stitch on your side (Python/FFmpeg) in whatever order you need
 ```
 
 #### 2. Regenerate a Single Scene
 
 ```python
-# Single scene — SC3 had a layout issue
-video_path = client.regenerate_scenes(
-    module=2,
-    lesson=3,
-    ml=3,
+# Load the storyboard (possibly with edits you made)
+with open("storyboard_M2_L3_ML3.json") as f:
+    storyboard = json.load(f)
+
+# Single scene — SC3 had some issues (reuse existing TTS + avatar)
+scenes = client.regenerate_scenes(
+    storyboard=storyboard,
     scenes=["SC3"],
-    language="en",
     skip_tts=True,      # Reuse existing TTS audio
     skip_avatar=True,    # Reuse existing avatar video
     output_dir="./output/videos",
 )
-print(f"Updated video: {video_path}")
-# → ./output/videos/M2_L3_ML3_Complete_en.mp4 (with new SC3)
+# Returns only the regenerated scene(s)
+# scenes = [{"sceneId": "M2_L3_ML3_SC3", "localPath": "./output/videos/M2_L3_ML3_SC3.mp4"}]
+print(f"Regenerated: {scenes[0]['localPath']}")
 
-# Multiple scenes at once — SC3 and SC7 both need new layouts
-video_path = client.regenerate_scenes(
-    module=2,
-    lesson=3,
-    ml=3,
+# VO script changed? Set skip_tts=False to re-generate TTS from updated storyboard
+scenes = client.regenerate_scenes(
+    storyboard=storyboard,       # updated VO text in SC3
+    scenes=["SC3"],
+    skip_tts=False,              # Re-generate TTS with new script
+    skip_avatar=False,           # Re-generate avatar with new audio
+    output_dir="./output/videos",
+)
+
+# Multiple scenes at once — SC3, SC7, SC12 all need have issues
+scenes = client.regenerate_scenes(
+    storyboard=storyboard,
     scenes=["SC3", "SC7", "SC12"],
     output_dir="./output/videos",
 )
-print(f"Updated video: {video_path}")
-# → re-generates SC3, SC7, SC12 then re-stitches all scenes
+for s in scenes:
+    print(f"  Regenerated {s['sceneId']} → {s['localPath']}")
+# → only the 3 regenerated scene MP4s are returned
+```
+
+#### 3. Human Review — Adjust a Scene from Reviewer Feedback
+
+```python
+# Load the storyboard (same one used for generation)
+with open("storyboard_M2_L7_ML2.json") as f:
+    storyboard = json.load(f)
+
+# Reviewer watched the video and wants the OST moved
+scenes = client.human_review(
+    storyboard=storyboard,
+    scene="SC12",
+    comment="Move the OST to bottom right not top left",
+    output_dir="./output/videos",
+)
+# Returns only the reviewed scene
+# scenes = [{"sceneId": "M2_L7_ML2_SC12", "localPath": "./output/videos/M2_L7_ML2_SC12.mp4"}]
+print(f"Reviewed: {scenes[0]['localPath']}")
+
+# Font size adjustment
+scenes = client.human_review(
+    storyboard=storyboard,
+    scene="SC2",
+    comment="Make the bullet text slightly bigger, increase font-size by 4px",
+    output_dir="./output/videos",
+)
+
+# Multiple rounds of review on the same scene (iterative)
+scenes = client.human_review(
+    storyboard=storyboard,
+    scene="SC12",
+    comment="The labels are overlapping the image border, add more padding",
+    output_dir="./output/videos",
+)
 ```
 
 #### 4. Error Handling
@@ -1052,8 +1191,10 @@ from requests.exceptions import ConnectionError, Timeout, HTTPError
 client = VCFClient("http://34.123.45.67")  # or "https://vcf-api.yourdomain.com"
 
 try:
-    video_path = client.generate_video(storyboard, output_dir="./videos")
-    print(f"Success: {video_path}")
+    scenes = client.generate_video(storyboard, output_dir="./videos")
+    print(f"Success: {len(scenes)} scene(s) downloaded")
+    for s in scenes:
+        print(f"  {s['sceneId']} → {s['localPath']}")
 
 except ConnectionError:
     print("VCF API is not reachable — check if the server is running")
@@ -1085,18 +1226,102 @@ def process_micro_lesson(module: int, lesson: int, ml: int, language: str = "en"
     # Step 1: Generate storyboard (your existing logic)
     storyboard = build_storyboard(module, lesson, ml, language)
 
-    # Step 2: Send to VCF for video generation
+    # Step 2: Send to VCF for video generation (returns individual scene MP4s)
     vcf = VCFClient("http://34.123.45.67")  # or "https://vcf-api.yourdomain.com"
-    video_path = vcf.generate_video(
+    scenes = vcf.generate_video(
         storyboard=storyboard,
         output_dir=f"./output/M{module}_L{lesson}_ML{ml}",
     )
 
-    # Step 3: Upload to your storage / LMS / CDN
-    upload_to_cdn(video_path)
+    # Step 3: Stitch scenes in order, then upload
+    scene_paths = [s["localPath"] for s in scenes]
+    final_video = stitch_scenes(scene_paths)  # your FFmpeg stitching logic
+    upload_to_cdn(final_video)
 
-    return video_path
+    return scenes
 ```
+
+---
+
+## Storage & Cleanup
+
+### What's Stored on Disk
+
+All pipeline outputs are saved under `outputs/<domain>/<module>/<lesson>/<ml>/<language>/`:
+
+| Directory | Contents | Needed for regen/review? | Auto-cleaned? |
+|-----------|----------|--------------------------|---------------|
+| `video/` | Scene MP4 files (~2-5MB each) | No — Python client downloads immediately | Yes (7 days) |
+| `audio/` | TTS mp3s, alignment JSONs | Yes — FFmpeg mux during re-recording | No |
+| `html/` | Generated HTML files | Yes — regeneration reference | No |
+| `avatar/` | Avatar .webm files | Yes — reused with `skipAvatar: true` | No |
+| `llm-results/` | Saved LLM JSON outputs | Yes — human review builds on these | No |
+| `tmp/` | Temp storyboard JSONs from API | No — only needed during job execution | Yes (12 hours) |
+
+> **Note:** The large `.mov` files from Fibo (50-75MB each) are automatically deleted right after compression to `.webm` (2-3MB). No manual cleanup needed.
+
+### Automatic Cleanup
+
+A PM2 cron job (`vcf-cleanup`) runs daily at 3 AM and deletes:
+- `video/*.mp4` files older than 7 days
+- `tmp/storyboard_*.json` files older than 12 hours
+
+Everything else (`audio/`, `html/`, `avatar/`, `llm-results/`) is preserved indefinitely for regen and human review.
+
+### Configuration
+
+TTL values are set in `ecosystem.config.cjs` and can be overridden via environment variables:
+
+```bash
+# In ecosystem.config.cjs (already configured)
+VIDEO_TTL_DAYS=7      # Delete scene MP4s after 7 days
+TMP_TTL_HOURS=12      # Delete temp storyboard files after 12 hours
+```
+
+### Manual Cleanup
+
+```bash
+# Dry run — see what would be deleted without deleting anything
+node scripts/cleanup.js
+
+# Actually delete
+node scripts/cleanup.js --run
+
+# Custom TTL
+VIDEO_TTL_DAYS=3 node scripts/cleanup.js --run
+```
+
+### Disk Space Planning
+
+Rough estimates per micro-lesson (10 scenes):
+- Videos: ~20-50MB (cleaned after 7 days)
+- Audio: ~5-10MB (kept)
+- HTML: ~1MB (kept)
+- Avatars: ~2-4MB as .webm (kept)
+- LLM results: ~0.5MB (kept)
+
+For **100 micro-lessons**, expect ~0.7–1.5GB of persistent data (audio + HTML + avatars + LLM results) plus up to ~5GB of video files that rotate out weekly. A **30GB disk** gives plenty of headroom.
+
+### Deployment Checklist for Cleanup
+
+1. PM2 starts both apps automatically:
+   ```bash
+   pm2 start ecosystem.config.cjs
+   # Starts: vcf-api (always running) + vcf-cleanup (cron at 3 AM daily)
+   ```
+
+2. Verify cleanup is scheduled:
+   ```bash
+   pm2 list
+   # vcf-cleanup should show status "stopped" with a cron pattern
+   ```
+
+3. Test manually on first deploy:
+   ```bash
+   cd /opt/vcf
+   node scripts/cleanup.js          # dry run first
+   node scripts/cleanup.js --run    # if output looks correct
+   ```
 
 ---
 
@@ -1170,6 +1395,140 @@ SCENE_CONCURRENCY=3
 GOOGLE_GENAI_API_KEY=...
 ELEVENLABS_API_KEY=...
 AZURE_STORAGE_CONNECTION_STRING=...
+```
+
+---
+
+## CI/CD — Automatic Deployment on Push
+
+### Overview
+
+When you push to `main`, GitHub Actions SSHs into the GCE VM, pulls the latest code, installs dependencies, and restarts PM2. No Docker, no containers — just a direct deploy to the VM.
+
+```
+Push to main → GitHub Actions → SSH into VM → git pull → npm install → pm2 restart
+```
+
+### Setup (One-Time)
+
+#### 1. Create an SSH key for the deploy bot
+
+On your **local machine** (not the VM):
+
+```bash
+ssh-keygen -t ed25519 -f vcf-deploy-key -C "vcf-deploy-bot" -N ""
+```
+
+This creates `vcf-deploy-key` (private) and `vcf-deploy-key.pub` (public).
+
+#### 2. Add the public key to the VM
+
+SSH into the VM and add the public key to authorized_keys:
+
+```bash
+gcloud compute ssh vcf-api --zone=us-central1-a
+
+# Add the deploy bot's public key
+echo "ssh-ed25519 AAAA... vcf-deploy-bot" >> ~/.ssh/authorized_keys
+```
+
+Replace with the actual content of `vcf-deploy-key.pub`.
+
+#### 3. Add secrets to GitHub
+
+Go to your repo → Settings → Secrets and variables → Actions → New repository secret:
+
+| Secret Name | Value |
+|-------------|-------|
+| `VM_SSH_KEY` | Contents of `vcf-deploy-key` (the private key file) |
+| `VM_HOST` | Your VM's external IP (e.g., `34.123.45.67`) |
+| `VM_USER` | SSH username (usually your GCP username, check with `whoami` on the VM) |
+
+#### 4. Create the workflow file
+
+Create `.github/workflows/deploy.yml` in your repo:
+
+```yaml
+name: Deploy to GCE VM
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '*.md'
+      - 'sample/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            cd /opt/vcf
+
+            echo "=== Pulling latest code ==="
+            git pull origin main
+
+            echo "=== Installing dependencies ==="
+            npm install --production
+
+            echo "=== Restarting PM2 ==="
+            pm2 restart ecosystem.config.cjs
+
+            echo "=== Verifying ==="
+            sleep 3
+            curl -sf http://localhost:3000/health || echo "WARNING: Health check failed"
+
+            echo "=== Deploy complete ==="
+            pm2 status
+```
+
+> **`paths-ignore`**: Pushes that only change markdown files or sample storyboards won't trigger a deploy. Remove this if you want every push to deploy.
+
+### How It Works
+
+1. You push code (including `config/` changes) to `main`
+2. GitHub Actions runs the workflow
+3. It SSHs into your VM and runs:
+   - `git pull` — pulls the latest code + config changes
+   - `npm install` — installs any new/updated dependencies
+   - `pm2 restart` — restarts the server and cleanup cron with the new code
+   - Health check — verifies the server came back up
+4. If health check fails, you'll see it in the Actions log
+
+### Config Changes
+
+Changes to `config/` (fonts, themes, etc.) are deployed the same way — they're part of the git repo. When `git pull` runs on the VM, the config files update and PM2 restart picks them up. No extra steps needed.
+
+### Rollback
+
+If a deploy breaks something:
+
+```bash
+# SSH into VM
+gcloud compute ssh vcf-api --zone=us-central1-a
+
+# Revert to previous commit
+cd /opt/vcf
+git log --oneline -5          # Find the last good commit
+git checkout <commit-hash> -- .
+pm2 restart ecosystem.config.cjs
+```
+
+Or revert the commit on GitHub and push — CI/CD will auto-deploy the revert.
+
+### Manual Deploy (without CI/CD)
+
+If you need to deploy without pushing to GitHub:
+
+```bash
+gcloud compute ssh vcf-api --zone=us-central1-a
+cd /opt/vcf && git pull origin main && npm install && pm2 restart ecosystem.config.cjs
 ```
 
 ---
